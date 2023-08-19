@@ -15,7 +15,7 @@ pip install -r requirements.txt
 Then set your OpenAI API key (if you don't have one, get one [here](https://beta.openai.com/playground))
 
 ```shell
-export OPENAI_API_KEY=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
+$global:OPENAI_API_KEY=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
 ```
 
 # 📄 What is in here?
