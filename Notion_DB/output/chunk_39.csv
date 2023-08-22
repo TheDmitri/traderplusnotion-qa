@@ -1,0 +1,1570 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+135355238990348288,djctavia,09/13/2019 8:07 AM,Make directory was working in 1.04 waq it break in 1.05 test serv. ?,,
+105574798691680256,totallynotgrim,09/13/2019 8:07 AM,Yea they broke / fixed it 4 times now,,
+105574798691680256,totallynotgrim,09/13/2019 8:07 AM,:FeelsGladMan:,,
+105574798691680256,totallynotgrim,09/13/2019 8:07 AM,But works fine now,,
+135355238990348288,djctavia,09/13/2019 8:34 AM,"🐷 aya, gon a need to check if my mods still working too :goo:",,
+356557233578049537,dr_j0nes,09/13/2019 1:57 PM,@novadose keep in mind that if the print function is executed on the client it writes into the clients log files and not into the server log files,,
+537328585388851200,novadose,09/13/2019 3:04 PM,I'll check it out @Dr_J0nes thanks for the tip.  Since scripted lights are client side thats highly likely what is happening here,,
+356557233578049537,dr_j0nes,09/13/2019 3:33 PM,Just Checkout appdata/local/DayZ/ or something similar :D can't remember the exact path,,
+537328585388851200,novadose,09/13/2019 4:38 PM,"Actually, I thought I had posted something different @Dr_J0nes the script I posted above is server side, just a really basic ""Hello World"" type of script that should have at a bare minimum the constructor's Print call showing in the server log but should also have the desctructor I think as long as the server exits gracefully",,
+537328585388851200,novadose,09/13/2019 4:39 PM,"its basically a config.cpp and one script.c file with a constructor and desctructor that have a print statement and thats it.  I have no clue why those print statements aren't showing, makes me think its not being loaded at all....",,
+135355238990348288,djctavia,09/13/2019 4:40 PM,Are you sure your launcher start with all options for debugging ? In parameters of launcher or on DayZSA launcher you should have something to check before seing logs,,
+537328585388851200,novadose,09/13/2019 4:43 PM,"I'm sure, yup",,
+537328585388851200,novadose,09/13/2019 4:50 PM,Does everything look correct in the file I linked above?  Like my paths are correct etc (do I need a / at the end of the path in the config.cpp or something perhaps?),,
+561680015578759196,wrdg,09/13/2019 5:05 PM,"It really depends on what class your modding, a quick server side hello world would be modifying missionserver",,
+537328585388851200,novadose,09/13/2019 5:07 PM,"This is my config.cpp
+
+`class cfgPatches
+{
+    class TestMod_scripts
+    {
+        units[]={};
+        weapons[]={};
+        requiredVersion=0.1;
+        requiredAddons[]={};
+    };
+};
+
+class cfgMods
+{
+    class TestMod
+    {
+        dir = ""TestMod"";
+        picture = """";
+        action = """";
+        hideName = 1;
+        hidePicture = 1;
+        name = ""TestMod"";
+        credits = ""yourname"";
+        author = ""yourname"";
+        authorID = ""0"";
+        version = ""1.0"";
+        extra = 0;
+        type = ""mod"";
+
+        dependencies[] = {""World""};
+
+        class defs
+        {
+            class worldScriptModule
+            {
+                value = """";
+                files[] = {""TestMod/scripts/4_World""};
+            };
+        };
+    };
+};`",,
+537328585388851200,novadose,09/13/2019 5:07 PM,Then I have a scripts/4world/ directory with testmod.c in it.  this is the only code in testmod.c,,
+537328585388851200,novadose,09/13/2019 5:07 PM,"`class PluginTestMod extends PluginBase
+{
+    void PluginTestMod()
+    {
+        Print(""Init: PluginTestMod"");
+    }
+    
+    void ~PluginTestMod()
+    {
+        Print(""Closed PluginTestMod"");
+    }
+    
+}
+
+modded class PluginManager
+{
+    override void Init()
+    {
+        //----------------------------------------------------------------------
+        // Register modules
+        //----------------------------------------------------------------------
+        //                Module Class Name                         Client    Server
+        //----------------------------------------------------------------------
+        RegisterPlugin( ""PluginTestMod"",                        false,    true);
+        super.Init();
+    }
+}`",,
+537328585388851200,novadose,09/13/2019 5:08 PM,The constructor and desctuctor in testmod.c dont appear to be firing or are not printing to the scripts log...not sure which,,
+537328585388851200,novadose,09/13/2019 5:17 PM,"Does ""Print"" just not work anymore?",,
+561680015578759196,wrdg,09/13/2019 5:20 PM,Works just fine,,
+561680015578759196,wrdg,09/13/2019 5:22 PM,"I haven't really used the plugin system in DayZ, but if your constructor isn't firing then simply registering the plugin doesn't initialize it then.",,
+537328585388851200,novadose,09/13/2019 5:39 PM,Ok so I added a Print to the modded PluginManager class which should always be loaded at some point if the game is running right?  Still nothing in scripts.  Is the problem definitely with my config.cpp then?,,
+537328585388851200,novadose,09/13/2019 5:40 PM,"I guess you need that ending ""/"" on your path afterall huh?  I've added it before and I'm pretty sure it broke the game but I guess I can try again",,
+537328585388851200,novadose,09/13/2019 6:02 PM,Yeah nothing works 😅,,
+356744388447043584,s4mt3k,09/13/2019 6:06 PM,Try to „if“ it,,
+356744388447043584,s4mt3k,09/13/2019 6:08 PM,"’’’bool myDebug = true:
+
+If(myDebug)
+{Print(""DebugPrint“)}’’’",,
+356744388447043584,s4mt3k,09/13/2019 6:08 PM,"🤷🏼‍♂️ Im on mobile idk, how to make backticks... sry",,
+537328585388851200,novadose,09/13/2019 6:21 PM,"no change 😫 
+
+Made this edit to the above posted script
+
+`modded class PluginManager
+{
+    override void Init()
+    {
+        bool myDebug = true;
+        if (myDebug)
+        {
+            Print(Bing Bong);
+        }
+        super.Init();
+    }
+}`",,
+537328585388851200,novadose,09/13/2019 6:22 PM,"I've also tried without the If think that this class should ALWAYS fire, therefore that print should always be hit, correct?",,
+294242516427997184,gammeloni,09/13/2019 6:28 PM,"ah I wrote you on the other discord - CfgMods and CfgPatches are with uppercase C, which is why your mod might not get registered. https://community.bistudio.com/wiki/DayZ:Modding_Structure#PBO_structure",,
+537328585388851200,novadose,09/13/2019 6:31 PM,"good suggestion, just tried it, no dice 😦",,
+276987111108771840,NachoNinjaGnome#0300,09/13/2019 6:56 PM,"@DiGiaComTech thx, I'll give it a try...  don't suppose there's a ""player.GetGender()"" function, is there?...  what language is this?...  is there a list of functions and global variables laying around somewhere?...",,
+537328585388851200,novadose,09/13/2019 6:57 PM,http://lystic.net/dayzwiki/,,
+276987111108771840,NachoNinjaGnome#0300,09/13/2019 6:59 PM,@novadose thx... looks like I've got some reading to do...,,👍 (1)
+537328585388851200,novadose,09/13/2019 7:30 PM,"I've done some trimming down, the entire ""mod"" is now 16 lines all to get ""Hello World"" to show up in the scripts log.  
+
+Here is my config.cpp in the root folder
+
+`class CfgPatches
+{
+    class TestMod_scripts
+    {
+        requiredAddons[]={};
+    };
+};
+
+class CfgMods
+{
+    class TestMod
+    {
+        dir = ""TestMod"";
+        type = ""mod"";
+        dependencies[] = {""World""};
+        class defs
+        {
+            class worldScriptModule
+            {
+                    value = """";
+                    files[] = {""TestMod/scripts/4_World""};
+            };
+        };
+    };
+};`
+
+then in scripts/4_world/testmod.c I have
+
+`modded class PluginManager
+{
+    override void Init()
+    {
+        Print(""Hello World"");
+        super.Init();
+    }
+}`
+
+Thats all.  Still no dice lol.",,
+189062938487685120,spelso,09/13/2019 8:12 PM,"Anyone knows how I can print out a 64-bit integer without it getting trimmed to a 32-bit one? ( the first 32 most significant bits are getting discarded upon conversion to string apparently )
+
+```
+// this outputs 94978280
+FPrint(file_index,1344419741928);
+```",,
+158294510080753665,gravitywolf,09/13/2019 8:18 PM,?,,
+158294510080753665,gravitywolf,09/13/2019 8:19 PM,It's never going to work correctly. Your integer is higher than what enforce allows sadly.,,
+158294510080753665,gravitywolf,09/13/2019 8:21 PM,,https://cdn.discordapp.com/attachments/492295576470290433/622134620745498624/unknown.png,
+158294510080753665,gravitywolf,09/13/2019 8:21 PM,Maybe bitwise operators.,,
+158294510080753665,gravitywolf,09/13/2019 8:21 PM,¯\_(ツ)_/¯,,
+189062938487685120,spelso,09/13/2019 8:34 PM,"I've tried... I know that is the maximum cap.. it trims it to a 32-bit Int
+
+The thing is ... I've printed an array location as I need it ( the exact pointer, which is an Int64 ).
+
+```
+FPrint(file_index,myarray);
+```
+
+Now.. this works, but it trims it to the first 32 least significant bits..
+
+If I try to use bitwise operators to get the other 32 bits I get an error ( something about mixing arrays and integers )
+
+```
+FPrint(file_index,myarray>>32); // throws error for mixing ints and arrays
+```",,
+189062938487685120,spelso,09/13/2019 8:35 PM,"Somehow, because FPrint takes a fileindex and a generic var as parameter.... it somehow processes the ""myarray"" variable to its address and prints those 32 bits....
+
+I cannot typecast ""myarray"" to an integer ( so i could then use a bit shift to the right )",,
+189062938487685120,spelso,09/13/2019 8:38 PM,"( I need the exact address of the array to inject data into the server's memory in a way I can read it from the scripts, because I am working on an external bridge/injector )
+
+I managed to pinpoint the exact location of the array in memory by using Cheat Engine's value scan ( for some specific values I have assigned to the bytes in the array ( hardcoded ) )
+
+But I want to automatize the task of finding the array in memory so I would love to print the address of it to a file, from the server itself, without the need of cheat engine.",,
+189062938487685120,spelso,09/13/2019 8:42 PM,@GravityWolf,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,You cant,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,Really,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,PlayerBase<0xDeadbeef>,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,That deadbeef part is ToString virtual,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,That always truncates bottom 32,,
+105574798691680256,totallynotgrim,09/13/2019 8:52 PM,Sooo,,
+189062938487685120,spelso,09/13/2019 8:59 PM,"I found this in 1_Core/proto/ensystem.c, however it is not a ""native"" ... is there an actual body declaration somewhere else?",https://cdn.discordapp.com/attachments/492295576470290433/622144243250757642/unknown.png,
+105574798691680256,totallynotgrim,09/13/2019 8:59 PM,proto is native,,
+189062938487685120,spelso,09/13/2019 8:59 PM,"then what is ""proto native"" ?",,
+105574798691680256,totallynotgrim,09/13/2019 8:59 PM,Difference in how arguments are passed to native func,,
+189062938487685120,spelso,09/13/2019 9:00 PM,can you be more specific?,,
+105574798691680256,totallynotgrim,09/13/2019 9:00 PM,Noup,,
+189062938487685120,spelso,09/13/2019 9:00 PM,🤔,,
+105574798691680256,totallynotgrim,09/13/2019 9:01 PM,There isnt really a reason you would ever need a address of script var,,
+189062938487685120,spelso,09/13/2019 9:01 PM,I want to connect the dayz server to another process... and there are no TCP sockets exposed ... the only thing possible ( except memory injection ) is file I/O,,
+105574798691680256,totallynotgrim,09/13/2019 9:02 PM,Eeeeh,,
+189062938487685120,spelso,09/13/2019 9:02 PM,( but i've only researched the matter for like 4 hours so i might be wrong ),,
+105574798691680256,totallynotgrim,09/13/2019 9:02 PM,You sure about that,,
+105574798691680256,totallynotgrim,09/13/2019 9:02 PM,,https://cdn.discordapp.com/attachments/492295576470290433/622145105427562527/unknown.png,
+105574798691680256,totallynotgrim,09/13/2019 9:02 PM,Not a pure socket,,
+105574798691680256,totallynotgrim,09/13/2019 9:03 PM,But close enough,,
+189062938487685120,spelso,09/13/2019 9:03 PM,yes.. i know...,,
+189062938487685120,spelso,09/13/2019 9:03 PM,well.. never thought about that... awesome 😄,,
+189062938487685120,spelso,09/13/2019 9:03 PM,I am glad I was wrong 🙂,,
+105574798691680256,totallynotgrim,09/13/2019 9:03 PM,:FeelsNeat:,,
+189062938487685120,spelso,09/13/2019 9:03 PM,thx @Happy,,
+105574798691680256,totallynotgrim,09/13/2019 9:04 PM,And you thank me by pinging me,,🙃 (1)
+105574798691680256,totallynotgrim,09/13/2019 9:04 PM,:Sadheart:,,
+178875470115373056,definitely_not_philipp,09/13/2019 9:18 PM,Somebody knows how to retrieve the server fps via scripts?,,
+105574798691680256,totallynotgrim,09/13/2019 9:26 PM,,https://cdn.discordapp.com/attachments/492295576470290433/622151250464473115/unknown.png,
+189062938487685120,spelso,09/13/2019 9:39 PM,btw today is Programmer's day 🙂,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:11 PM,@Happy GetFPS() always returns 0 and GetGame().GetFps() returns 0.7,,
+105574798691680256,totallynotgrim,09/13/2019 10:11 PM,Its not really returning 0,,
+105574798691680256,totallynotgrim,09/13/2019 10:11 PM,Its returning 0.000000000001563,,
+105574798691680256,totallynotgrim,09/13/2019 10:11 PM,And game tends to autocast that to int,,
+105574798691680256,totallynotgrim,09/13/2019 10:11 PM,As its fps in milliseconds because,,
+105574798691680256,totallynotgrim,09/13/2019 10:12 PM,Makes sense if your server is running at 10k fps,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:15 PM,Which one do you mean? The native GetFPS is an int,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:16 PM,Or do you mean GetGame().GetFps() (the float one) is getting converted to 0.7 for some reason,,
+105574798691680256,totallynotgrim,09/13/2019 10:16 PM,Well .7 makes sense,,
+105574798691680256,totallynotgrim,09/13/2019 10:16 PM,1000/.7,,
+105574798691680256,totallynotgrim,09/13/2019 10:16 PM,1300 fps?,,
+105574798691680256,totallynotgrim,09/13/2019 10:16 PM,Ish,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:17 PM,Its always returning 0.7,,
+105574798691680256,totallynotgrim,09/13/2019 10:17 PM,:hmm:,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:17 PM,The server fps vary from 500 to 11k,,
+189062938487685120,spelso,09/13/2019 10:17 PM,"Hello, @philipp, what do you use the server fps for ? 😄",,
+178875470115373056,definitely_not_philipp,09/13/2019 10:18 PM,Iam kinda lost on this one,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:18 PM,@Spelso Its a somewhat acceptable indicator for server performance,,
+189062938487685120,spelso,09/13/2019 10:18 PM,It's probably averaging ?,,
+189062938487685120,spelso,09/13/2019 10:18 PM,over 10 seconds or something.. I think I saw a note regarding that somewhere in code,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:18 PM,"```c
+/**
+    \brief Returns average FPS of last 16 frames
+    @return fps in milliseconds
+    */
+    proto native float        GetFps();
+```",,
+105574798691680256,totallynotgrim,09/13/2019 10:18 PM,Ok GetFPS is not even linked,,
+105574798691680256,totallynotgrim,09/13/2019 10:18 PM,Base game one,,
+105574798691680256,totallynotgrim,09/13/2019 10:18 PM,So that will never work,,
+105574798691680256,totallynotgrim,09/13/2019 10:19 PM,"```
+SCRIPT    (E): Function not linked
+Class:      'DayZGame'
+Function: '#main'
+Stack trace:
+execCode:2
+SCRIPT       : 0
+```",,
+189062938487685120,spelso,09/13/2019 10:19 PM,How do you get these results?,,
+105574798691680256,totallynotgrim,09/13/2019 10:19 PM,Also server FPS is kind :hmm:,,
+105574798691680256,totallynotgrim,09/13/2019 10:19 PM,Maybe you can capture it in OnUpdate,,
+105574798691680256,totallynotgrim,09/13/2019 10:19 PM,And get delta time,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:20 PM,That would probably be an acceptable solution,,
+105574798691680256,totallynotgrim,09/13/2019 10:21 PM,That is also a bit yikes,,
+105574798691680256,totallynotgrim,09/13/2019 10:21 PM,:weird:,,
+105574798691680256,totallynotgrim,09/13/2019 10:21 PM,Maybe im just getting erroneous data due to breakpointing,,
+105574798691680256,totallynotgrim,09/13/2019 10:22 PM,:PepoShrug:,,
+178875470115373056,definitely_not_philipp,09/13/2019 10:22 PM,Dont think so,,
+253481613772587018,t3z_one,09/14/2019 7:53 PM,"Hello everyone. How i can create global array? Which can be accessed from any class, pls help.",,
+561680015578759196,wrdg,09/14/2019 8:12 PM,Create an array in or out of a class and don't give it access modifiers,,
+561680015578759196,wrdg,09/14/2019 8:14 PM,"like 
+`autoptr ref array<type> someArray = {value1, value2, value3};`",,
+253481613772587018,t3z_one,09/14/2019 8:48 PM,@Wardog  ty it's works 🙂,,
+251796151760715777,remoz_,09/15/2019 1:05 AM,"Hello, how it's possible to convert a string to a vector? i.e. like ""500 10 350"" to a vector (position) that can be used to spawn an object with ""GetGame().CreateObject( type, position );""",,
+251796151760715777,remoz_,09/15/2019 1:05 AM,(initially it's a string cause i read position from a file),,
+107560637399306240,cooltrain,09/15/2019 1:24 AM,Split the string and use each part of the split as part of the vector?,,
+107560637399306240,cooltrain,09/15/2019 1:25 AM,probably a better way but thats just off the top of my head,,
+356744388447043584,s4mt3k,09/15/2019 1:27 AM,"`ToVector();`
+
+```/**
+    \brief Returns a vector from a string
+        \return \p vector Converted s as vector
+        @code
+            string str = ""1 0 1"";
+            vector v = str.ToVector();
+            Print(v);
+
+            >> v = <1,0,1>
+        @endcode
+    */```",,
+251796151760715777,remoz_,09/15/2019 1:44 AM,@S4MT3Kツ @Cooltrain Thanks a lot both I will try it now!,,
+105574798691680256,totallynotgrim,09/15/2019 1:50 AM,"oooor just do `` vector v = ""1 0 1"";``",,
+105574798691680256,totallynotgrim,09/15/2019 1:50 AM,:FeelsGladMan:,,
+356744388447043584,s4mt3k,09/15/2019 1:50 AM,"as you can see, the vector is already a string. so:
+
+```string ThisIsAVector = ""12 12 124"";
+
+Vector MyVector = ThisIsAVector;```
+
+a friend also confirms that",,
+105574798691680256,totallynotgrim,09/15/2019 1:50 AM,Vector is not a string,,
+105574798691680256,totallynotgrim,09/15/2019 1:50 AM,vector just have a constructor that takes a string,,
+105574798691680256,totallynotgrim,09/15/2019 1:50 AM,Big difference,,
+251796151760715777,remoz_,09/15/2019 2:05 AM,👍 it works 😉,,
+561680015578759196,wrdg,09/15/2019 2:05 AM,"`Vector(1,0,1);` is also a thing 🤔",,
+456226577798135808,Deleted User,09/15/2019 3:10 AM,"is there a weekday or similar in enfusion? I want to find out which weekday it is. IE: 
+```c
+GetYearMonthDayUTC(year,  month,  day);
+(year, month, day).weekday(weekday);
+//weekday == 6
+```",,
+356744388447043584,s4mt3k,09/15/2019 3:12 AM,@Happy thats what i meant 😛,,
+158294510080753665,gravitywolf,09/15/2019 4:13 AM,@Happy,https://cdn.discordapp.com/attachments/492295576470290433/622616044753649664/unknown.png,
+158294510080753665,gravitywolf,09/15/2019 4:14 AM,,https://cdn.discordapp.com/attachments/492295576470290433/622616071425490953/unknown.png,
+158294510080753665,gravitywolf,09/15/2019 4:14 AM,wym?,,
+158294510080753665,gravitywolf,09/15/2019 4:15 AM,Or did you mean the conversion of type string to vector was wrong?,,
+105574798691680256,totallynotgrim,09/15/2019 4:34 AM,I mean that vector is not a string,,
+105574798691680256,totallynotgrim,09/15/2019 4:34 AM,Vector is 3xfloat usually,,
+105574798691680256,totallynotgrim,09/15/2019 4:34 AM,Enscript vector class just has a constructor that takes a string,,
+105574798691680256,totallynotgrim,09/15/2019 4:34 AM,As if you say to people vector is a string they will start comparing them as strings and shit hits the fan,,
+158294510080753665,gravitywolf,09/15/2019 6:00 AM,Thank you for explain further for the masses.,,
+159871816477835264,thecloud_,09/15/2019 6:28 AM,"I really can't get this script debugging to work lol, i've followed the guide like 3 times",,
+356744388447043584,s4mt3k,09/15/2019 6:46 AM,"Yeah ok 😄 Thats right. Its not my Comfort language ¯\_(ツ)_/¯ but as larry showed, you can write is in quotation marks. Thats what i meant 😄",,
+251796151760715777,remoz_,09/15/2019 3:49 PM,"Guys, please, another question... i'm trying to read a custom json file and put the content in a object... Never user json on DayZ before then i choosed to start with a very simply object (like a kind of hello world), but i can't get working despite the simplicity... The problem is that the result string is empty
+
+```
+static void ReadSpawnItem()
+{
+    string file_path = ""$CurrentDir:\\mpmissions\\dayzOffline.chernarusplus\\SpawnTest.json"";
+    ref SpawnObject so;
+    
+    JsonFileLoader<ref SpawnObject>.JsonLoadFile( file_path, so );
+    logger(""Result: "" + so.GetItem());
+}
+
+class SpawnObject
+{
+    private string item;
+    
+    string GetItem()
+    {
+        return item;
+    }
+    
+    void SetItem(string newitem)
+    {
+        item = newitem;
+    }
+    
+}
+```
+Result is the line:
+SCRIPT       : 2019-9-15 15:43:44: Result:",,
+239201186933112833,da0ne_,09/15/2019 3:53 PM,string item does not hold anything :PepeYikes:,,
+239201186933112833,da0ne_,09/15/2019 3:54 PM,i dont see anywhere where you call `SetItem` or give the string a value,,
+239201186933112833,da0ne_,09/15/2019 3:54 PM,so you will always get nothing,,
+251796151760715777,remoz_,09/15/2019 3:57 PM,"the file content is this:
+```
+{
+  ""Item"": ""ThisIsOnlyATry""
+}
+```",,
+251796151760715777,remoz_,09/15/2019 3:58 PM,"But it's not the JsonLoadFile method that read file and set all properties of the object ""so"" ?",,
+239201186933112833,da0ne_,09/15/2019 4:00 PM,https://pastebin.com/MWQjiGqD,,
+239201186933112833,da0ne_,09/15/2019 4:00 PM,better example,,
+251796151760715777,remoz_,09/15/2019 4:00 PM,"i've based my code on this one (from a original script module):
+    ```
+    static JsonDataCredits GetData()
+    {
+        ref JsonDataCredits data;
+        JsonFileLoader<ref JsonDataCredits>.JsonLoadFile( JSON_FILE_PATH, data );
+        
+        return data;
+    }
+```",,
+239201186933112833,da0ne_,09/15/2019 4:01 PM,edit on the comment: you need to call `SaveData()` for it to save to the file.,,
+239201186933112833,da0ne_,09/15/2019 4:01 PM,"also, you can write to this path btw:",https://cdn.discordapp.com/attachments/492295576470290433/622794188999884801/unknown.png,
+239201186933112833,da0ne_,09/15/2019 4:01 PM,you can only read,,
+239201186933112833,da0ne_,09/15/2019 4:02 PM,you are only allowed to write in `$profile & $saves`,,
+239201186933112833,da0ne_,09/15/2019 4:02 PM,eg: `$profile:Myfolder/myfile.txt`,,
+251796151760715777,remoz_,09/15/2019 4:02 PM,"yeah, but actually i must only read the json",,
+251796151760715777,remoz_,09/15/2019 4:03 PM,"thanks for help Bro, now i read the example (seems that the use of ""this"" is the big difference) and try to adeguate my code 🙂",,
+239201186933112833,da0ne_,09/15/2019 4:04 PM,👌 no problem,,
+239201186933112833,da0ne_,09/15/2019 4:04 PM,also adding `[NonSerialized()]` above any variable will not save to file,,
+239201186933112833,da0ne_,09/15/2019 4:04 PM,it also cant be sent over the network using RPCs,,
+239201186933112833,da0ne_,09/15/2019 4:05 PM,as it can not be serialized in any form,,👍 (1)
+251796151760715777,remoz_,09/15/2019 4:53 PM,"ok, solved @DaOne(Mark) with your script was the same result, then i've tried to move the file in profile folder (as you said me before 😄 ) and magically now it works 😉",,
+214427063665295362,aeryes,09/15/2019 10:03 PM,How can I make my p3ds bulletproof?,,
+107560637399306240,cooltrain,09/15/2019 10:11 PM,You mean binarized?,,
+214427063665295362,aeryes,09/15/2019 10:12 PM,I want bullets to stop going through my objects ingame,,
+214427063665295362,aeryes,09/15/2019 10:12 PM,I made a sandbag wall but people can still get shot behind it,,
+214427063665295362,aeryes,09/15/2019 10:12 PM,@Cooltrain,,
+356557233578049537,dr_j0nes,09/15/2019 10:29 PM,Wrong channel? ^^ #configs-dayz or #modelling-dayz should fit better I guess,,
+214427063665295362,aeryes,09/15/2019 10:42 PM,@Dr_J0nes  do you know how to fix it? I posted in #modelling-dayz,,
+356557233578049537,dr_j0nes,09/15/2019 10:46 PM,Sorry nope. I knew it for Arma 2 years ago but can't remember :D sorry,,
+251796151760715777,remoz_,09/15/2019 11:42 PM,"Please, to spawn an object (like a seachest, not a building) on the ground, i've found this useful method:
+
+cY = GetGame().SurfaceY(cX,cZ);
+
+that calculate Y coord starting by X and Z, but... this give me Y coord of the terrain, not the ""real"" Y that can be used to spawn an object and sometimes if there are a concrete building over the terrain in this place the item spawn under this building, like this situation on the pic...
+There are an alternative that consider also ""hard"" surfaces? Thanks you guys",https://cdn.discordapp.com/attachments/492295576470290433/622910049391738892/unknown.png,
+239201186933112833,da0ne_,09/16/2019 12:44 AM,@Remoz try PlaceOnSurface function,,👍 (1)
+239201186933112833,da0ne_,09/16/2019 12:45 AM,Can be found in ItemBase class. From what I remember.,,
+158294510080753665,gravitywolf,09/16/2019 12:53 AM,class Object*,,👍 (1)
+239201186933112833,da0ne_,09/16/2019 1:09 AM,:peepoOkay:,,
+561680015578759196,wrdg,09/16/2019 1:28 AM,Doesn't work with vehicles for what ever reason,,
+239201186933112833,da0ne_,09/16/2019 1:29 AM,Cuz they have simulation,,
+239201186933112833,da0ne_,09/16/2019 1:29 AM,Simulation = :guh: :PagTooth:,,
+561680015578759196,wrdg,09/16/2019 1:33 AM,"Even then, when I was working on fliptransport, even disabling simulation on the vehicle before using place on surface, it wouldn't actually place it on the surface.",,
+561680015578759196,wrdg,09/16/2019 1:34 AM,Also the only quick way I could figure out how to force sync it on both the client and server was to apply force after re-enabling simulation,,
+214427063665295362,aeryes,09/16/2019 3:44 AM,@DaOne(Mark)  do you know how to prevent bullets from going theough on p3d objects?,,
+239201186933112833,da0ne_,09/16/2019 3:44 AM,You already got your answer in like 3 different channels dude,,
+207328818203983872,notabanana,09/16/2019 3:44 AM,https://discordapp.com/channels/452035973786632194/492295593075539993/622898459875475466,,
+239201186933112833,da0ne_,09/16/2019 3:45 AM,Properly setup you material for the object.,,
+239201186933112833,da0ne_,09/16/2019 3:45 AM,Just use examples from DayZ. It’s mostly config work,,
+214427063665295362,aeryes,09/16/2019 4:12 AM,I didnt see anyone @ me so I didnt notice,,
+356744388447043584,s4mt3k,09/16/2019 5:06 AM,"Hey guys, another question ^^ i hope you can help me. i really want to get rid of this.
+
+i have my ToolBox scripted that it can receive some items as attachments. but it always shows me the blue frame, even when the attachment is not allowed to be attached.
+https://cdn.discordapp.com/attachments/606558251038802014/622972297988538378/unknown.png
+
+it causes no issues, is just not wanted. the items that are not allowed to put as attachment wont fit in, but even my allowed attachments get this frame... any suggestions?",,
+167370568893464576,0x346e3730,09/16/2019 2:35 PM,PlayerIdentity bug has been assigned :eyesshaking:,,"❓ (2),❔ (1)"
+148370724900306944,jacob_mango,09/16/2019 2:46 PM,https://feedback.bistudio.com/T144773,,
+148370724900306944,jacob_mango,09/16/2019 2:46 PM,that one,,
+180757017432948736,tennesseetimmy,09/16/2019 2:59 PM,reading that gave me anxiety,,
+239201186933112833,da0ne_,09/16/2019 3:14 PM,yea...Grim's explanation is not the best :PepeLaugh:,,
+239201186933112833,da0ne_,09/16/2019 3:15 PM,now i tag him for no reason @Happy :PepeLaugh:,,
+230061386888118273,.thurston,09/16/2019 3:22 PM,https://github.com/Thurston00/DayZSAEnfScript/commit/e6a463989b3ed22b7d3f735af67fe4418e1a3a4b - latest stable update.,,👍 (3)
+135355238990348288,djctavia,09/16/2019 3:24 PM,"I like how many ""pls fix"" there is, lmao",,
+456226577798135808,Deleted User,09/16/2019 3:35 PM,"Does anyone have a template function for enforce that uses parameters? I need it to return an integrer and input is a date ( yyyy , mm , dd )
+At the moment I don't even understand how you'd add a function to dayz.",,
+135355238990348288,djctavia,09/16/2019 3:38 PM,https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax#Functions,,👍 (2)
+356744388447043584,s4mt3k,09/16/2019 3:44 PM,for what is that #define _ARMA_???,,
+135355238990348288,djctavia,09/16/2019 3:45 PM,Can't you guess the conext of `#define ARMA` from where you've seen the code S4M ?,,
+356744388447043584,s4mt3k,09/16/2019 3:48 PM,I would not ask of i could😭,,
+135355238990348288,djctavia,09/16/2019 3:48 PM,"Send screenshot of code you've seen, not at home rn .-.",,
+356744388447043584,s4mt3k,09/16/2019 3:49 PM,"Me neither, will do later 😅🤪",,
+230061386888118273,.thurston,09/16/2019 3:49 PM,``#define ARMA`` is what Mikeros tools output,,
+230061386888118273,.thurston,09/16/2019 3:49 PM,When it derapifies a config.bin,,
+230061386888118273,.thurston,09/16/2019 3:50 PM,It does nothing in DayZ,,
+230061386888118273,.thurston,09/16/2019 3:50 PM,I'm not entirely sure what it even does in Arma.,,
+135355238990348288,djctavia,09/16/2019 3:50 PM,🤷,,
+356744388447043584,s4mt3k,09/16/2019 3:51 PM,Aaaah oki 🥰 thank you 🙂,,
+456226577798135808,Deleted User,09/16/2019 3:55 PM,ok my issue was really stupid I had written ```-1``` instead of ```- 1```.. not sure why that'd be an issue,,
+356744388447043584,s4mt3k,09/16/2019 4:31 PM,"Yeah. Sometimes you search for a error a couple hours, only to notice you Don’t hit save 😂 that means you tried to compile the old errors 😂👍🏻",,
+249968206624718850,sogwick,09/16/2019 6:40 PM,"Can you adjust inventory access radius of objects? Or can you make an object to be ""opened"" to access inventory?",,
+167370568893464576,0x346e3730,09/16/2019 7:34 PM,just noticed they fixed openurl,,
+167370568893464576,0x346e3730,09/16/2019 7:34 PM,it now uses default browser and not ie,,
+561680015578759196,wrdg,09/16/2019 7:36 PM,Thank god,,
+180757017432948736,tennesseetimmy,09/16/2019 9:27 PM,"> ToLower()
+\* Returns int \*
+Thanks bohemia 😹",,😂 (2)
+180757017432948736,tennesseetimmy,09/16/2019 9:27 PM,"I wanted the length to my string, that's why I used ToLower 🙃",,
+235718406492520448,niirozz,09/16/2019 9:28 PM,ToLower() modify directly the string,,
+235718406492520448,niirozz,09/16/2019 9:28 PM,doesn't return the lowered string,,
+180757017432948736,tennesseetimmy,09/16/2019 9:28 PM,"Yeh, I was hoping it was gonna return nothing",,
+180757017432948736,tennesseetimmy,09/16/2019 9:29 PM,or the string itself,,
+180757017432948736,tennesseetimmy,09/16/2019 9:29 PM,That would work too,,
+574906786021244949,thebustermods,09/16/2019 9:39 PM,"Hi, i want to write my mod multilingual. I see that i have to add a file named stringtable.csv . But how can i use the content from file in my mod?",,
+167370568893464576,0x346e3730,09/16/2019 10:00 PM,#your_string_id,,
+561680015578759196,wrdg,09/16/2019 11:50 PM,"Yeah ToLower wasn't exactly what I was expecting, I've used it a few times and it still bothers me",,
+158294510080753665,gravitywolf,09/17/2019 12:38 AM,"wym, it needs to return an int :PepeBraindead: 😂",,
+107560637399306240,cooltrain,09/17/2019 1:31 AM,Why not just return the lowered string? Thats what c# does anyway,,
+561680015578759196,wrdg,09/17/2019 1:36 AM,See that would be too smart,,
+356744388447043584,s4mt3k,09/17/2019 1:52 AM,"```override string GetText()
+    {
+        return ""Repair #TARGET# With Toolkit"";
+    }```
+
+is there any chance to get the Displayname of the target?! Its within a action. because its all kindof() but can have a diffrent meaning",,
+356744388447043584,s4mt3k,09/17/2019 1:52 AM,"I hope i explained that well =/ Sorry, im not Native English",,
+107560637399306240,cooltrain,09/17/2019 2:02 AM,GetDisplayName()?,,
+356744388447043584,s4mt3k,09/17/2019 2:44 AM,"Actually yes. but i need to get it in the string. And i am inside a action. So that seems tricky, but should be possible. i just need to know how ^^
+
+
+Other thing im curious about, is: is there a way to Update the models rvmat ingame? Lets say i have a item in my hands and i set their health back to the maximum, but the rvmat wont update until i do a little damage to it.",,
+356744388447043584,s4mt3k,09/17/2019 2:59 AM,Ok i got it,,
+356744388447043584,s4mt3k,09/17/2019 2:59 AM,just create a own string and get the actiondata of it 😄 voila 😉,,
+356744388447043584,s4mt3k,09/17/2019 3:01 AM,"Thats how you can get the item you are looking at, and show their displayname, type or whatever you want in the string you set as a ""description"" for your action 😄",,
+107560637399306240,cooltrain,09/17/2019 4:15 AM,"```action_data.m_Target```
+yes then just do whatever you want",,
+356744388447043584,s4mt3k,09/17/2019 4:42 AM,"The problem here is, you need to define a new actiondata, because the string is ""outside"" of it.
+
+```C
+string GetTargetName()
+    {
+        ActionData action_data;
+        EntityAI trgt_Name = EntityAI.Cast(action_data.m_Target.GetObject());
+
+        return trgt_Name.GetType();
+    }
+
+    override string GetText()
+    {
+        return ""The Name Of The TargetItem is: "" + GetTargetName();
+    }```",,
+356744388447043584,s4mt3k,09/17/2019 4:43 AM,You Welcome 😗,,
+107560637399306240,cooltrain,09/17/2019 4:50 AM,"Could also do
+```    string GetTargetName()
+    {
+        ActionData action_data;
+           return action_data.m_Target.GetObject().GetDisplayName();
+    }
+```",,
+107560637399306240,cooltrain,09/17/2019 4:50 AM,but its whatever works for you,,
+356744388447043584,s4mt3k,09/17/2019 4:53 AM,"I casted it to an entity, just in case.",,
+356744388447043584,s4mt3k,09/17/2019 5:13 AM,"Lol Okay, nevermind, my example above is giving nullpointer on the clientside #facepalm #IthoughtImGoodInCoding 🤣",,
+561680015578759196,wrdg,09/17/2019 5:41 AM,Or do it within the action condition 🙄,,
+356744388447043584,s4mt3k,09/17/2019 5:54 AM,Do you have an example? 🥺,,
+105574798691680256,totallynotgrim,09/17/2019 6:04 AM,What are you doing? :MONKERS:,,
+105574798691680256,totallynotgrim,09/17/2019 6:04 AM,``ActionData action_data;`` -> ``action_data.whatever`` is NULL pointer to instance,,
+356744388447043584,s4mt3k,09/17/2019 6:18 AM,Yeah i know. But works anyway 🤷🏼‍♂️,,
+158294510080753665,gravitywolf,09/17/2019 6:21 AM,...... :eyesshaking:,,
+105574798691680256,totallynotgrim,09/17/2019 6:35 AM,That should never work,,
+105574798691680256,totallynotgrim,09/17/2019 6:35 AM,Literally never,,
+158294510080753665,gravitywolf,09/17/2019 6:39 AM,^,,
+135355238990348288,djctavia,09/17/2019 8:56 AM,"How the fuck does it work, your in the damn scope of function with new variable ! BURN THIS SCRIPT, BURN IT OR I'M GONNA BURN BI INSTEAD :oog: :oog: :oog:",,eyesshaking (1)
+356744388447043584,s4mt3k,09/17/2019 4:22 PM,It works 😂🤷🏼‍♂️ idk why. It shows me the proper name in the action trigger description. 😂 the nullpointer is only on the clientside btw. 🤷🏼‍♂️,,
+239201186933112833,da0ne_,09/17/2019 4:25 PM,dont do that,,
+239201186933112833,da0ne_,09/17/2019 4:25 PM,you will fill the logs of the client with trash,,
+239201186933112833,da0ne_,09/17/2019 4:25 PM,:angerysquare:,,
+239201186933112833,da0ne_,09/17/2019 4:25 PM,"i recently cleared my logs from DayZ client, so much trash from playing on community servers. like 3 GB worth of text :WeirdChamp:",,
+180757017432948736,tennesseetimmy,09/17/2019 5:16 PM,Anyone know how to add ammo to internal magazines or the chamber via script?,,
+135355238990348288,djctavia,09/17/2019 5:25 PM,"Why printing logs when just ""playing"" Mark ? :succ:",,
+239201186933112833,da0ne_,09/17/2019 5:25 PM,wat,,
+239201186933112833,da0ne_,09/17/2019 5:26 PM,"some nerds add ""logging"" to their mods. FOR CLIENT SIDE :angerysquare:",,
+239201186933112833,da0ne_,09/17/2019 5:26 PM,:PagTooth: prints shit on the tick sometimes,,
+135355238990348288,djctavia,09/17/2019 5:37 PM,PRINT PRINT PRINT PRINT PRINT PRIRRIRORKRJ,,
+135355238990348288,djctavia,09/17/2019 5:38 PM,I prefer a while print,,
+180757017432948736,tennesseetimmy,09/17/2019 5:59 PM,I just add a custom tag in front of the print so I can find in files and quiuckly replace with `//`,,
+140963464825798656,realrobbhimself,09/17/2019 6:42 PM,"wtf is wrong with this?
+```29843:    4    The markup in the document following the root element must be well-formed.
+```
+```
+<type name=""AmmoBox_57x28_30rnd"">
+        <nominal>30</nominal>
+        <lifetime>7200</lifetime>
+        <restock>1800</restock>
+        <min>10</min>
+        <quantmin>-1</quantmin>
+        <quantmax>-1</quantmax>
+        <cost>100</cost>
+        <flags count_in_cargo=""1"" count_in_hoarder=""0"" count_in_map=""1"" count_in_player=""1"" crafted=""0"" deloot=""0""/>
+        <category name=""weapons""/>
+        <usage name=""Military""/>
+</type>
+
+```",,
+140963464825798656,realrobbhimself,09/17/2019 6:43 PM,"line 29843 is ```<type name=""AmmoBox_57x28_30rnd"">```",,
+180757017432948736,tennesseetimmy,09/17/2019 7:13 PM,Why can't I use `PushCartridgeToInternalMagazine`,,
+180757017432948736,tennesseetimmy,09/17/2019 7:13 PM,I'm calling this on the server when the gun is created,,
+180757017432948736,tennesseetimmy,09/17/2019 7:14 PM,"When a client picks the gun up and reloads, the game crashes on the client",,
+180757017432948736,tennesseetimmy,09/17/2019 7:14 PM,Is there a way to spawn internal ammo into a gun?,,
+158294510080753665,gravitywolf,09/17/2019 8:06 PM,"Reloading takes client, and server side functions to reload guns.",,"❓ (1),❔ (1)"
+180757017432948736,tennesseetimmy,09/17/2019 8:09 PM,Why can',,
+180757017432948736,tennesseetimmy,09/17/2019 8:09 PM,Why can't there be like a function I run or a variable I change,,
+251796151760715777,remoz_,09/17/2019 8:35 PM,"@DaOne(Mark) I've tried also with ""PlaceOnSurface"" (for the problem to spawn an item on the surface even if that aren't terrain, but a building like concrete, etc...) but the result it's almost the same as the ""cY = GetGame().SurfaceY(cX,cZ);"" function 😦 Just to make you know this, I think I can get by anyway... Thanks man",,
+207328818203983872,notabanana,09/17/2019 9:18 PM,@TennesseeTimmy do you not run a client mod? Just run it on client,,
+180757017432948736,tennesseetimmy,09/17/2019 9:20 PM,I have a client mod,,
+180757017432948736,tennesseetimmy,09/17/2019 9:21 PM,What do you mean by that?,,
+180757017432948736,tennesseetimmy,09/17/2019 9:21 PM,`Just run it on client`,,
+180757017432948736,tennesseetimmy,09/17/2019 9:21 PM,I saw this same thing in the search,,
+180757017432948736,tennesseetimmy,09/17/2019 9:21 PM,Run what?,,
+207328818203983872,notabanana,09/17/2019 9:34 PM,"Mobile so can't look it up, but you can look at how com does it",,
+180757017432948736,tennesseetimmy,09/17/2019 10:21 PM,OK thanks,,
+178875470115373056,definitely_not_philipp,09/17/2019 10:22 PM,Is it possible to check if a class has been defined or a mod is loaded?,,
+180757017432948736,tennesseetimmy,09/17/2019 10:24 PM,"@philipp 
+```c
+    static void LoadMods()
+    {
+        m_Mods = new array<ref ModStructure>;
+        
+        int mod_count = GetGame().ConfigGetChildrenCount( ""CfgMods"" );
+        
+        for( int i = 2; i < mod_count; i++ )
+        {
+            string mod_name;
+            GetGame().ConfigGetChildName( ""CfgMods"", i, mod_name );
+            m_Mods.Insert( new ModStructure( i, ""CfgMods "" + mod_name ) );
+        }
+    }
+```",,
+180757017432948736,tennesseetimmy,09/17/2019 10:24 PM,from `class ModLoader`,,
+180757017432948736,tennesseetimmy,09/17/2019 10:26 PM,"@Not A Banana The COM has a  line
+```c
+
+    oPlayer.GetDayZPlayerInventory().PostWeaponEvent( new WeaponEventAttachMagazine( oPlayer, oMag ) );
+```
+However, I want to add ammo into a weapon that has not spawned on a player",,
+207328818203983872,notabanana,09/17/2019 10:27 PM,hmmm not sure if you can do that,,
+180757017432948736,tennesseetimmy,09/17/2019 10:27 PM,"I got the ammo in there, just it crashed as soon as a player tried to chamber from the internal mag",,
+207328818203983872,notabanana,09/17/2019 10:27 PM,"I dont think even in vanilla, weapons that spawn with mags dont have bullet chambered",,
+207328818203983872,notabanana,09/17/2019 10:27 PM,you gotta hit r when you pikc them up dont you?,,
+180757017432948736,tennesseetimmy,09/17/2019 10:27 PM,Seeee see,,
+180757017432948736,tennesseetimmy,09/17/2019 10:28 PM,But if you chamber a gun and drop it,,
+180757017432948736,tennesseetimmy,09/17/2019 10:28 PM,restart a server,,
+180757017432948736,tennesseetimmy,09/17/2019 10:28 PM,It is still chambered,,
+180757017432948736,tennesseetimmy,09/17/2019 10:28 PM,So the functionality is there,,
+105574798691680256,totallynotgrim,09/17/2019 10:29 PM,Not necessarily exposed to the script,,
+180757017432948736,tennesseetimmy,09/17/2019 10:31 PM,I assume that the issue is somewhere with the weapon FSM,,
+178875470115373056,definitely_not_philipp,09/17/2019 10:32 PM,"Okay, I kinda misphrased my question. 
+
+To get around doing a seperate version for a specific dependency, I want to mod a class of a mod only if the mod class exists. I don't think its possible but just want to make sure i dont overlook something",,
+105574798691680256,totallynotgrim,09/17/2019 10:56 PM,Noup,,
+105574798691680256,totallynotgrim,09/17/2019 10:56 PM,Cant mod a class of a maybe present mod,,
+105574798691680256,totallynotgrim,09/17/2019 10:57 PM,If that class is defined by that mod that is,,
+105574798691680256,totallynotgrim,09/17/2019 10:57 PM,If its some general class maybe?,,
+105574798691680256,totallynotgrim,09/17/2019 10:57 PM,Depends,,
+230061386888118273,.thurston,09/17/2019 10:57 PM,"@philipp no real way to do that, but what you could do, is ask the mod author if they can put ``#DEFINE something_else`` and then you can just do ```cpp
+#IFDEF something_else
+    //RUN CODE
+#ENDIF```",,
+178875470115373056,definitely_not_philipp,09/17/2019 10:59 PM,Thanks. Gonna annoy some people to include a define tag then,,
+105574798691680256,totallynotgrim,09/17/2019 10:59 PM,That also wont really work @thurston,,
+105574798691680256,totallynotgrim,09/17/2019 10:59 PM,As it depends on a mod load order,,
+105574798691680256,totallynotgrim,09/17/2019 10:59 PM,And you cant really guarantee a mod load order without required_addons,,
+230061386888118273,.thurston,09/17/2019 10:59 PM,"Yeah, that mod will have to always be behind the other mod",,
+207328818203983872,notabanana,09/17/2019 10:59 PM,After,,
+230061386888118273,.thurston,09/17/2019 10:59 PM,"Yeah, corrected",,
+230061386888118273,.thurston,09/17/2019 11:00 PM,You can just do requiredAddons,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:00 PM,"Its a server side mod, I tested it a couple of times and they are always loaded after the ""normal"" mods",,
+230061386888118273,.thurston,09/17/2019 11:00 PM,to force it,,
+230061386888118273,.thurston,09/17/2019 11:00 PM,"actually, no",,
+230061386888118273,.thurston,09/17/2019 11:00 PM,that forces it to be loaded before,,
+207328818203983872,notabanana,09/17/2019 11:00 PM,He doesn't want to require it that's the issue,,
+230061386888118273,.thurston,09/17/2019 11:00 PM,If its for your usage only,,
+230061386888118273,.thurston,09/17/2019 11:00 PM,"Then, that'll work for you",,
+105574798691680256,totallynotgrim,09/17/2019 11:00 PM,You cant requiredAddons,,
+105574798691680256,totallynotgrim,09/17/2019 11:00 PM,As then mod is required,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,I know,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,I corrected myself,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,I'm tired ok :ablobrage:,,
+105574798691680256,totallynotgrim,09/17/2019 11:01 PM,I dont read what you say anywyas,,
+105574798691680256,totallynotgrim,09/17/2019 11:01 PM,:FeelsGladMan:,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:01 PM,^^,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,@Happy,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,🙂,,
+105574798691680256,totallynotgrim,09/17/2019 11:01 PM,Stop it,,
+105574798691680256,totallynotgrim,09/17/2019 11:01 PM,:angryJ:,,
+207328818203983872,notabanana,09/17/2019 11:01 PM,@thurston don't ping @Happy,,
+230061386888118273,.thurston,09/17/2019 11:01 PM,:pepelaughers:,,
+207328818203983872,notabanana,09/17/2019 11:01 PM,@Happy doesn't like to be pinged,,
+105574798691680256,totallynotgrim,09/17/2019 11:02 PM,Both of you are going to suffer,,
+105574798691680256,totallynotgrim,09/17/2019 11:02 PM,:FeelsGladMan:,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:02 PM,@philipp This is big brain time,,
+105574798691680256,totallynotgrim,09/17/2019 11:02 PM,So yea basically there is 0 support for optional mods,,
+230061386888118273,.thurston,09/17/2019 11:02 PM,404 big brain not found 😄,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:02 PM,"Thurston, can you add a #define whatever to expansion? :3",,
+230061386888118273,.thurston,09/17/2019 11:03 PM,Sure,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,Thats a horrible idea,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,Stop doing stupid crap,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,STOP IT,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,:angryJ:,,
+230061386888118273,.thurston,09/17/2019 11:03 PM,I'll name it ``#DEFINE DZ_Expansion_Loaded``,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:03 PM,`#define JM_COT_LOADED`,,
+230061386888118273,.thurston,09/17/2019 11:03 PM,Yup,,
+230061386888118273,.thurston,09/17/2019 11:03 PM,That's what Jacob does/has,,
+230061386888118273,.thurston,09/17/2019 11:03 PM,we use it in Expansion,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,Im fairly sure you are the cause of all the fucking param1 static crap mismatch,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,STOP DOING STUPID SHIT,,
+105574798691680256,totallynotgrim,09/17/2019 11:03 PM,:angryJ:,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,Why is it stupid?!,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,Tell me Grim,,
+105574798691680256,totallynotgrim,09/17/2019 11:04 PM,Because you cant guarantee a mod load order,,
+105574798691680256,totallynotgrim,09/17/2019 11:04 PM,Without requiredAddons,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,We can at Expansion,,
+105574798691680256,totallynotgrim,09/17/2019 11:04 PM,No you cant,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,We use requiredAddons for COT,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,In Expansion,,
+105574798691680256,totallynotgrim,09/17/2019 11:04 PM,ok yes,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,COT has to be loaded BEFORE expansion,,
+105574798691680256,totallynotgrim,09/17/2019 11:04 PM,But some fuck will do thos,,
+230061386888118273,.thurston,09/17/2019 11:04 PM,Not my problem 🙂,,
+105574798691680256,totallynotgrim,09/17/2019 11:05 PM,...,,
+230061386888118273,.thurston,09/17/2019 11:05 PM,If they don't know how it works,,
+230061386888118273,.thurston,09/17/2019 11:05 PM,Then not my fault,,
+105574798691680256,totallynotgrim,09/17/2019 11:05 PM,Hello?,,
+230061386888118273,.thurston,09/17/2019 11:05 PM,We just add in support,,
+105574798691680256,totallynotgrim,09/17/2019 11:05 PM,Did you see this discord,,
+105574798691680256,totallynotgrim,09/17/2019 11:05 PM,Like 4 people know how things work,,
+230061386888118273,.thurston,09/17/2019 11:05 PM,Eh...,,
+230061386888118273,.thurston,09/17/2019 11:06 PM,"It's not really my problem if someone creates a mod of our mod (DayZ Expansion Standalone when?), uses the ``#IFDEF`` tag and fucks it up",,
+230061386888118273,.thurston,09/17/2019 11:06 PM,"They can ask for help with it, and we will offer help",,
+105574798691680256,totallynotgrim,09/17/2019 11:06 PM,Not to mention you can get into circular dependency territory,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,-mod=@MyMod;@DayzExp,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,There i broke it,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,:FeelsGladMan:,,
+230061386888118273,.thurston,09/17/2019 11:07 PM,"not my fault, nor problem",,
+230061386888118273,.thurston,09/17/2019 11:07 PM,They just add DayZExp as a required addon,,
+230061386888118273,.thurston,09/17/2019 11:07 PM,and boom,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,Good luck with that,,
+230061386888118273,.thurston,09/17/2019 11:07 PM,fixed,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,It will become your problem just wait,,
+105574798691680256,totallynotgrim,09/17/2019 11:07 PM,:pepeLaugh:,,
+230061386888118273,.thurston,09/17/2019 11:07 PM,Not if i leave :5Head:,,
+230061386888118273,.thurston,09/17/2019 11:08 PM,Big brain plays!,,
+105574798691680256,totallynotgrim,09/17/2019 11:08 PM,"@thurston ""My server wont start you fix""",,
+230061386888118273,.thurston,09/17/2019 11:08 PM,> Ignored,,
+105574798691680256,totallynotgrim,09/17/2019 11:08 PM,He doesnt know :pepeLaugh:,,
+230061386888118273,.thurston,09/17/2019 11:08 PM,"Not even lying, I ignore half of those ""fix ur server"" messages because I have a special role in a Discord.",,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,Man shit mod,,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,Not even working,,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,:FeelsGladMan:,,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,No support,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,¯\_(ツ)_/¯,,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,Shit mod,,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,:REEEGif:,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:09 PM,"You know what would be a power move? Remove role seperation from the admin role, so that BI staff is on top of the users list",,
+230061386888118273,.thurston,09/17/2019 11:09 PM,No support because people give vague shit,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,``fix mod``,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,WHAT,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,THE,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,FUCK,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,IS,,
+230061386888118273,.thurston,09/17/2019 11:09 PM,BROKEN,,
+207328818203983872,notabanana,09/17/2019 11:09 PM,"""ignored"" 
+then they go and tell their players ""Yeah its a problem with expansion, its buggy as fuck""",,
+105574798691680256,totallynotgrim,09/17/2019 11:09 PM,That is your life when releasing a mod public,,
+105574798691680256,totallynotgrim,09/17/2019 11:10 PM,Have fun with it,,
+230061386888118273,.thurston,09/17/2019 11:10 PM,It's my life right now,,
+207328818203983872,notabanana,09/17/2019 11:10 PM,"""Please update your mods sir""",,
+207328818203983872,notabanana,09/17/2019 11:10 PM,w-why?,,
+105574798691680256,totallynotgrim,09/17/2019 11:10 PM,"""Hey grim can you fix that dupe""
+""What dupe?""
+""One with flags""
+""k""",,
+230061386888118273,.thurston,09/17/2019 11:11 PM,"""hi grim can u fix mod""",,
+230061386888118273,.thurston,09/17/2019 11:11 PM,"""What's broken?""",,
+230061386888118273,.thurston,09/17/2019 11:11 PM,"""it dusnt wrk""",,
+230061386888118273,.thurston,09/17/2019 11:11 PM,"""What doesn't?""",,
+230061386888118273,.thurston,09/17/2019 11:11 PM,> No reply,,
+105574798691680256,totallynotgrim,09/17/2019 11:11 PM,That is your life from the second you release a public mod,,
+230061386888118273,.thurston,09/17/2019 11:11 PM,I know,,
+105574798691680256,totallynotgrim,09/17/2019 11:11 PM,It gets better,,
+230061386888118273,.thurston,09/17/2019 11:11 PM,That's what they said about marriage,,
+230061386888118273,.thurston,09/17/2019 11:11 PM,Never again,,
+105574798691680256,totallynotgrim,09/17/2019 11:11 PM,"""Hey i cant start server: random error""",,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,"""Is it stock?""",,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,"""Yes""",,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,"""Send me the RPT""",,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,"""ADDON KLJJCFSKLAJDLK AD LOADED NO """,,
+230061386888118273,.thurston,09/17/2019 11:12 PM,"""Hey i cant start server im getting cant compile xbox module""",,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,I cant wait for circular #define dependencies,,
+105574798691680256,totallynotgrim,09/17/2019 11:12 PM,:pepeLaugh:,,
+230061386888118273,.thurston,09/17/2019 11:13 PM,I doubt people will even use it,,
+230061386888118273,.thurston,09/17/2019 11:13 PM,Barely anyone knows that it exists,,
+178875470115373056,definitely_not_philipp,09/17/2019 11:13 PM,<--- *sad face*,,
+230061386888118273,.thurston,09/17/2019 11:13 PM,*many people,,
+356744388447043584,s4mt3k,09/17/2019 11:47 PM,"is there a way to store a item in a array INCLUSIVE their health state/level) so when i delete a damage pack of ammo out of a backpack, spawn a new backpack and put the damage pack of ammo  back into the new backpack.?!?!",,
+105574798691680256,totallynotgrim,09/17/2019 11:49 PM,Wild idea,,
+105574798691680256,totallynotgrim,09/17/2019 11:49 PM,Instead of,,
+105574798691680256,totallynotgrim,09/17/2019 11:49 PM,Save->Delete->Create,,
+105574798691680256,totallynotgrim,09/17/2019 11:49 PM,Why not just Move the item?,,
+105574798691680256,totallynotgrim,09/17/2019 11:49 PM,:GWsetmyxPeepoWeird:,,
+356744388447043584,s4mt3k,09/17/2019 11:50 PM,"because i need to get all items of a inventory of a backpack, delete the backpack, spawn a new one, and put the items back in. with all their states, fill levels etc.",,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,How about you read what i said again,,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,Move the items out of the backpack,,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,Spawn a new one,,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,You see where this is going,,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,Or spawn a new one -> move into new -> delete old?,,
+105574798691680256,totallynotgrim,09/17/2019 11:51 PM,Profit?,,
+207328818203983872,notabanana,09/17/2019 11:52 PM,"Cleaner and makes more sense for items with fill, health, attachments, etc",,
+105574798691680256,totallynotgrim,09/17/2019 11:52 PM,Storing like a state of a backpack is a nightmare,,
+105574798691680256,totallynotgrim,09/17/2019 11:52 PM,Especially it can have guns in it with attachments,,
+207328818203983872,notabanana,09/17/2019 11:52 PM,Also isnt there a function to turn an item into another item so stuff like items inside it are saved?,,
+105574798691680256,totallynotgrim,09/17/2019 11:53 PM,Not sure if that works with containers,,
+356744388447043584,s4mt3k,09/17/2019 11:53 PM,You mean that lambda?!,,
+105574798691680256,totallynotgrim,09/17/2019 11:53 PM,What?,,
+356744388447043584,s4mt3k,09/17/2019 11:53 PM,1sec,,
+356744388447043584,s4mt3k,09/17/2019 11:56 PM,`TurnItemIntoItemLambda`,,
+105574798691680256,totallynotgrim,09/17/2019 11:56 PM,No idea what that is or what you are on about,,
+356744388447043584,s4mt3k,09/17/2019 11:57 PM,"Its actually a receipe. i think i just misunderstood what Not A banana meant ¯\_(ツ)_/¯
+its hard sometimes to understand what you guys mean.",,
+356744388447043584,s4mt3k,09/17/2019 11:58 PM,im german ^^,,
+207328818203983872,notabanana,09/17/2019 11:58 PM,"Yeah that wont work, I misremembered, I thought i saw something like that for crafting the improvised bags and it would transfer items over, but that was ages ago and im mistaken",,
+356744388447043584,s4mt3k,09/17/2019 11:58 PM,ah ok ^^,,
+207328818203983872,notabanana,09/17/2019 11:58 PM,"Just do like he said, create new container, move contents, delete old",,
+356744388447043584,s4mt3k,09/17/2019 11:59 PM,"the thing is, just for better animation, to replace that in place... thats why i asked for a storing ""outside of the world""",,
+207328818203983872,notabanana,09/17/2019 11:59 PM,"Dont recreate the items, that's not good idea, unless you want to manually set the health, fill, attachments, etc on each item which even then is stupidly more complex",,
+356744388447043584,s4mt3k,09/17/2019 11:59 PM,agree,,
+207328818203983872,notabanana,09/17/2019 11:59 PM,It will happen so fast nobody will notice,,
+207328818203983872,notabanana,09/17/2019 11:59 PM,"Just create the new item nearby, move items, move it to hands or w/e.",,
+356744388447043584,s4mt3k,09/17/2019 11:59 PM,ok. i give it a try. Whats the function for moving items? move();?,,
+105574798691680256,totallynotgrim,09/18/2019 12:00 AM,Figure out how game does it,,🔞 (1)
+207328818203983872,notabanana,09/18/2019 12:00 AM,"Or what even are you doing, just make it require the bag be empty when you craft the new one",,
+356744388447043584,s4mt3k,09/18/2019 12:00 AM,yeah,,
+207328818203983872,notabanana,09/18/2019 12:00 AM,Thats how the improvised bag works,,
+105574798691680256,totallynotgrim,09/18/2019 12:00 AM,Also keep in mind you will need to call lower level inventory functions,,
+356744388447043584,s4mt3k,09/18/2019 12:00 AM,Good hint. will look after it,,
+105574798691680256,totallynotgrim,09/18/2019 12:00 AM,So if you fuck up expect duping or crashes,,
+105574798691680256,totallynotgrim,09/18/2019 12:00 AM,:FeelsGladMan:,,
+105574798691680256,totallynotgrim,09/18/2019 12:00 AM,No pressure,,
+207328818203983872,notabanana,09/18/2019 12:00 AM,😄,,
+356744388447043584,s4mt3k,09/18/2019 12:00 AM,😄,,
+105574798691680256,totallynotgrim,09/18/2019 12:01 AM,Just dig down the maze of function calls and figure out what actually does the move,,
+356744388447043584,s4mt3k,09/18/2019 12:01 AM,Is there also a function for lower level inventorys? or do i have to wwrite my own,,
+105574798691680256,totallynotgrim,09/18/2019 12:01 AM,:angryJ:,,
+356744388447043584,s4mt3k,09/18/2019 12:01 AM,oh common...,,
+180757017432948736,tennesseetimmy,09/18/2019 12:01 AM,"What is a lower level inventory?
+Like pants?",,😂 (1)
+105574798691680256,totallynotgrim,09/18/2019 12:02 AM,CTLR - SHIFT - F,,
+207328818203983872,notabanana,09/18/2019 12:02 AM,Nobody here knows @S4MT3Kツ,,
+356744388447043584,s4mt3k,09/18/2019 12:02 AM,Lower level inventorys are like protector cases in backpack,,
+105574798691680256,totallynotgrim,09/18/2019 12:02 AM,:failfish:,,
+207328818203983872,notabanana,09/18/2019 12:02 AM,You'll have to work backwords yourself.,,
+356744388447043584,s4mt3k,09/18/2019 12:03 AM,Understood,,
+158294510080753665,gravitywolf,09/18/2019 12:19 AM,@S4MT3Kツ Cargo,,
+107560637399306240,cooltrain,09/18/2019 12:19 AM,I can hear the sound of Grim hitting his head into his desk,,
+158294510080753665,gravitywolf,09/18/2019 12:19 AM,Or GameInventory,,
+180029119638011904,lbmaster,09/18/2019 12:34 AM,"I saw the Bugreport in the PlayerIdentity Problem https://feedback.bistudio.com/T144773 and for those, who are interested in a solution to the Problem: see my comment down there",,
+105574798691680256,totallynotgrim,09/18/2019 12:36 AM,Yea i noticed that as well,,
+105574798691680256,totallynotgrim,09/18/2019 12:36 AM,But that is not really solving the underlying issue,,
+105574798691680256,totallynotgrim,09/18/2019 12:37 AM,And it only happens if you use 2 different identities,,
+180029119638011904,lbmaster,09/18/2019 12:37 AM,"Yes, but at least it's a temporary fix and the hint should help finding the issue",,
+105574798691680256,totallynotgrim,09/18/2019 12:38 AM,Try it with 2 identities,,
+105574798691680256,totallynotgrim,09/18/2019 12:38 AM,As that will break smt else randomly,,
+105574798691680256,totallynotgrim,09/18/2019 12:38 AM,Even when you save it,,
+180029119638011904,lbmaster,09/18/2019 12:38 AM,"Maybe you have to use two, but I think it was enough with the code I posted",,
+105574798691680256,totallynotgrim,09/18/2019 12:40 AM,I mean if PlayerIdentity is randomly stomping some values we can have random crashes,,
+180029119638011904,lbmaster,09/18/2019 12:40 AM,"`Man GetPlayerByPlainId(string playerId) {
+    MissionServer mission = MissionServer.Cast(GetGame().GetMission());
+    if (!mission)
+        return NULL;
+    ref array<Man> players = mission.m_Players;
+    for (int i = 0; i < players.Count(); i++) {
+        if (players.Count() > i) {
+            Man pb = players.Get(i);
+            if (pb && pb.GetIdentity() && pb.GetIdentity().GetPlainId() == playerId) {
+                return pb;
+            }
+        }
+    }
+    return NULL;
+}
+` this should cause the issue right ?",,
+105574798691680256,totallynotgrim,09/18/2019 12:41 AM,No,,
+105574798691680256,totallynotgrim,09/18/2019 12:41 AM,Not for me,,
+180029119638011904,lbmaster,09/18/2019 12:41 AM,? what then =,,
+105574798691680256,totallynotgrim,09/18/2019 12:41 AM,Only if you have 2 identities in same scope,,
+180029119638011904,lbmaster,09/18/2019 12:42 AM,"I downgrade my Steam Test Mod to a version, I definitly had the issue and then send you the code",,
+239201186933112833,da0ne_,09/18/2019 12:44 AM,"@Remoz you can take a look at the code for the Hologram for item placing. Some maths happens there to sort that issue. If you notice or used the hologram b4, you can place things of top of things.",,👍 (1)
+239201186933112833,da0ne_,09/18/2019 12:45 AM,It’s using some bbox magic to find surface of another object relative to the surface of your object.,,👍 (1)
+180029119638011904,lbmaster,09/18/2019 12:48 AM,"@Happy 
+```C
+modded class DayZGame {
+    
+    string m_steamid;
+    
+    override void OnRPC(PlayerIdentity sender, Object target, int rpc_type, ParamsReadContext ctx) {
+        super.OnRPC(sender, target, rpc_type, ctx);
+        if (rpc_type == 975856413) {
+            if (GetGame().IsClient()) {
+                Param1<string> params2;
+                if (ctx.Read(params2)) {
+                    m_steamid = params2.param1;
+                    Print(""Received Steam ID: "" + m_steamid);
+                }
+            } else {
+                GetGame().RPCSingleParam(NULL, 975856413, new Param1<string>(sender.GetPlainId()), true, sender);
+            }
+        }
+    }
+    
+    string GetSteamId() {
+        if (!m_steamid || m_steamid.Length() != 17) {
+            m_steamid = ""NULL"";
+            Param1<string> params = new Param1<string>("""");
+            GetGame().RPCSingleParam(NULL, 975856413, params, true);
+        }
+        return m_steamid;
+    }
+}``` This was the Code messed Up everything for me. Maybe there are other ways, but my way is pretty much the same I posted on the Feedback Tracker",,
+105574798691680256,totallynotgrim,09/18/2019 12:48 AM,Please use code tags,,
+207328818203983872,notabanana,09/18/2019 12:48 AM,"3 `, not 1",,
+180029119638011904,lbmaster,09/18/2019 12:48 AM,here you go,,
+105574798691680256,totallynotgrim,09/18/2019 12:48 AM,That never caused issue for me,,
+105574798691680256,totallynotgrim,09/18/2019 12:48 AM,And i do it constantly,,
+180029119638011904,lbmaster,09/18/2019 12:49 AM,interesting. Maybe somthing different with the `new Param1<string>(sender.GetPlainId())`,,
+180029119638011904,lbmaster,09/18/2019 12:49 AM,did you use Params ?,,
+561680015578759196,wrdg,09/18/2019 12:52 AM,The identity issue is probably some engine level race condition,,
+105574798691680256,totallynotgrim,09/18/2019 12:53 AM,I bet you its hardcoded stack value for Identity or something like that,,
+105574798691680256,totallynotgrim,09/18/2019 12:53 AM,So as soon you have 2 of them you are gone,,
+180029119638011904,lbmaster,09/18/2019 12:54 AM,I would go with Wardog and say it's a engine level issue. something like using `return index++` instead of `return ++index`,,
+180029119638011904,lbmaster,09/18/2019 12:55 AM,"and then you get back the correct element, but some counter did no increase and with saving the element in a variable the error is ""gone"", because the counter got the right value again",,
+561680015578759196,wrdg,09/18/2019 12:56 AM,"Honestly it being a hardcoded stack value would make sense, but I would assume it would be much more of an issue if it was.",,
+105574798691680256,totallynotgrim,09/18/2019 12:56 AM,Not really as Identity is not used twice in 1 scope ever,,
+105574798691680256,totallynotgrim,09/18/2019 12:57 AM,At least not in base game,,
+105574798691680256,totallynotgrim,09/18/2019 12:57 AM,I checked,,
+561680015578759196,wrdg,09/18/2019 12:59 AM,"I think it's been an issue before, but not as frequent or well noticed. Because there's been an ongoing conflict with getting in/out of vehicles and ending up across the map in someone else's car",,
+105574798691680256,totallynotgrim,09/18/2019 12:59 AM,Could be,,
+105574798691680256,totallynotgrim,09/18/2019 12:59 AM,I wonder if its PlayerIdentity specific issue or all :Managed classes issue,,
+105574798691680256,totallynotgrim,09/18/2019 1:00 AM,That took me good 15 hours to track down,,
+180029119638011904,lbmaster,09/18/2019 1:01 AM,"same. Maybe not 15 hours, but very long too",,
+105574798691680256,totallynotgrim,09/18/2019 1:01 AM,I should have smacked a memory write breakpoint at the start,,
+105574798691680256,totallynotgrim,09/18/2019 1:01 AM,And see when it gets stomped,,
+180029119638011904,lbmaster,09/18/2019 1:02 AM,I think all Managed classes might be too many. for example Param is Managed too,,
+105574798691680256,totallynotgrim,09/18/2019 1:02 AM,Param is a template as well,,
+105574798691680256,totallynotgrim,09/18/2019 1:03 AM,So Param1<string> is not the same as Param1<int>,,
+180029119638011904,lbmaster,09/18/2019 1:03 AM,true,,
+180029119638011904,lbmaster,09/18/2019 1:04 AM,what about Widgets ? Managed class too and I'm sure I used multiple in one scope,,
+105574798691680256,totallynotgrim,09/18/2019 1:04 AM,:hmm:,,
+105574798691680256,totallynotgrim,09/18/2019 1:05 AM,Dont think i ever Widget:GetText() twice in 1 scope,,
+105574798691680256,totallynotgrim,09/18/2019 1:05 AM,:hmm:,,
+180029119638011904,lbmaster,09/18/2019 1:05 AM,maybe in combination with `native owned` keywords of the Function called,,
+180029119638011904,lbmaster,09/18/2019 1:05 AM,only a few ones in Widget class and GetPlainId is one,,
+105574798691680256,totallynotgrim,09/18/2019 1:07 AM,Who knows,,
+105574798691680256,totallynotgrim,09/18/2019 1:07 AM,But them fixing that might fix random other issues,,
+180029119638011904,lbmaster,09/18/2019 1:07 AM,I'm not ^^ Just guessing,,
+105574798691680256,totallynotgrim,09/18/2019 1:07 AM,So im quite proud of that find,,
+105574798691680256,totallynotgrim,09/18/2019 1:07 AM,:FeelsGladMan:,,
+180029119638011904,lbmaster,09/18/2019 1:08 AM,Jup. Hope that too. No servercrashes anymore xD,,
+239201186933112833,da0ne_,09/18/2019 2:02 AM,You can’t get steam64 ID from client side PlayerIdentity btw,,
+239201186933112833,da0ne_,09/18/2019 2:02 AM,Will always return “” nothing :Dean:,,
+105574798691680256,totallynotgrim,09/18/2019 2:03 AM,Dumbass,,
+105574798691680256,totallynotgrim,09/18/2019 2:03 AM,:FeelsOKAYMan:,,
+239201186933112833,da0ne_,09/18/2019 2:03 AM,:angerysquare:,,
+239201186933112833,da0ne_,09/18/2019 2:03 AM,I did not say it’s impossible,,
+105574798691680256,totallynotgrim,09/18/2019 2:31 AM,This is all serverside code :FeelsOKAYMan:,,
+105574798691680256,totallynotgrim,09/18/2019 2:31 AM,PlayerIdentity gets corrupted on the server and things explode,,
+107560637399306240,cooltrain,09/18/2019 3:26 AM,"Only way forward now - Enfusion 2, new engine lets go :OmegaPog:",,
+561680015578759196,wrdg,09/18/2019 3:28 AM,Unfusion :OmegaPog:,,
+148370724900306944,jacob_mango,09/18/2019 4:07 AM,🅱fusion,,
+135355238990348288,djctavia,09/18/2019 8:08 AM,🇩 esilusion,,
+135355238990348288,djctavia,09/18/2019 8:09 AM,"Mot compte triple, scrabble :pikaPI:",,
+214427063665295362,aeryes,09/18/2019 8:24 AM,Does anyone know how to spawn gear inside of a spawned container. Basically I want to have spawned gear inside of a created wooden crate.,,
+214427063665295362,aeryes,09/18/2019 8:24 AM,"I know how to spawn objects, I just dont know how to place stuff in the spawned object.",,
+214427063665295362,aeryes,09/18/2019 8:25 AM,"Please @ me if you respond. Thank you.,",,
+427419739787362304,Funkdoc#1677,09/18/2019 9:42 AM,@Aeryes get wooden crate and do it like this...,,
+427419739787362304,Funkdoc#1677,09/18/2019 9:43 AM,"`woodencrate.GetInventory().CreateInInventory(""Ammo_308Win"");`
+make sure that crate sticks to class containerbase",,
+427419739787362304,Funkdoc#1677,09/18/2019 9:44 AM,🇨 onfusion script,,
+427419739787362304,Funkdoc#1677,09/18/2019 10:04 AM,"@Happy / @Jacob_Mango 
+if i create a npc player character with playeridentity = Null on the server, am i basically able to play around with items in the InventoryLocation.. like take gun to hands?
+tried to write a new FSM for gun switching to hands... player moves hands to shouldered gun but the gun doesnt go in hands.",,
+575954046054301696,lucianpin,09/18/2019 10:46 AM,"Does anyone know, is there a limit on how many global variables we can have? Or are you aware of any negative effect?",,
+427419739787362304,Funkdoc#1677,09/18/2019 10:53 AM,i dont think there is a limitation from the compiler.. may i ask why? how many do u need?,,
+427419739787362304,Funkdoc#1677,09/18/2019 10:57 AM,but i think there is a physical problem... out of memory at runtime (?),,
+207328818203983872,notabanana,09/18/2019 11:08 AM,Just createininventory a gun @Funkdoc,,
+207328818203983872,notabanana,09/18/2019 11:08 AM,Nothing complex needed,,
+427419739787362304,Funkdoc#1677,09/18/2019 11:10 AM,"well i did create gun as attachment already, so i want this object goes straight into hands when triggered",,
+106435033203482624,kerkkoh,09/18/2019 11:11 AM,Has anyone figured out a way to do this:,,
+106435033203482624,kerkkoh,09/18/2019 11:11 AM,"```cpp
+class NewArray<Class T> : array<T> {}
+```
+
+As this method here isn't working, it doesn't recognize the T with array<T>",,
+207328818203983872,notabanana,09/18/2019 11:11 AM,@Funkdoc it should go to hands by default,,
+207328818203983872,notabanana,09/18/2019 11:12 AM,"Just MyGuy.GetInventory.CreateInInventory(""AKM"") and he will have AKM in hands",,
+207328818203983872,notabanana,09/18/2019 11:12 AM,Just run that *before* you give them clothes/bag so it doesnt go to bag,,
+427419739787362304,Funkdoc#1677,09/18/2019 11:13 AM,yes i know.. but i want the B*T takes it to hands on a trigger,,
+561680015578759196,wrdg,09/18/2019 11:13 AM,@Kerkkoh are you trying to create a new type defined array?,,
+106435033203482624,kerkkoh,09/18/2019 11:14 AM,Essentially I'm trying to extend the existing array data structure to add in a new method.,,
+207328818203983872,notabanana,09/18/2019 11:15 AM,"Oh I misunderstood what you meant, you're actually trying to make a bot",,
+207328818203983872,notabanana,09/18/2019 11:15 AM,I thought you just wanted a player model with a gun lol,,
+427419739787362304,Funkdoc#1677,09/18/2019 11:15 AM,"sorry i dont spelled the word bot out, thought its secret here 🙂",,
+427419739787362304,Funkdoc#1677,09/18/2019 11:43 AM,"@Not A Banana what works is when i give the created player my identity, server puts his gun in my hands (tested)... so its basically working, thats why i thought it could be the playeridentity wich is NULL in the other case",,
+214427063665295362,aeryes,09/18/2019 6:11 PM,@Funkdoc  Thank you very much !!!,,
+180757017432948736,tennesseetimmy,09/18/2019 7:49 PM,Can I use modded class to override the destructor of a class?,,
+91680680676720640,roomservice,09/18/2019 9:21 PM,"How would I go about spawning mags in guns and having them actually work? Tried `m_player.GetDayZPlayerInventory().PostWeaponEvent( new WeaponEventAttachMagazine( m_player, localAmmo ) );` but that didn't seem to work.",,
+91680680676720640,roomservice,09/18/2019 9:22 PM,"Do I actually have to then call that event manually? The game should handle it from there, no?",,
+107560637399306240,cooltrain,09/18/2019 10:02 PM,I've not tried it but everyone says you need to do it both from the client + server,,
+427419739787362304,Funkdoc#1677,09/18/2019 10:20 PM,yep... remember trying alot of things getting a mag in a spawned weapon only on server... no chance,,
+180029119638011904,lbmaster,09/18/2019 11:01 PM,"@TennesseeTimmy you can't override the destructor of a class. By adding the descructor in the modded class, you will expand the old one, but not override it. But if it's enough for you, you can give it a try",,
+180757017432948736,tennesseetimmy,09/18/2019 11:10 PM,thanks @LBmaster,,
+180757017432948736,tennesseetimmy,09/18/2019 11:10 PM,Null pointer in original class,,
+180757017432948736,tennesseetimmy,09/18/2019 11:10 PM,tryina fix 'em,,
+180029119638011904,lbmaster,09/18/2019 11:12 PM,"very unlikely you can fix it. Your Modded destructer is called after the original one and you can't stop it from executing. Maybe contact the creator of the Mod, if it's a Mod. Or find a way to create the object and hope it works somehow. How does the original destructor look like ?",,
+251796151760715777,remoz_,09/18/2019 11:25 PM,"Ok, i'm a noob 😦 Are two days that i mess with a JSON read, elaboration and write... the read and write itself are working good, the problems begins when i make a array.Get(index) of the array that compose my JSON object 😦 Seems that this .Get empties the array on the main Object... I am used with Java and C#.net, but here i think it's something different that i don't know, any help please?
+
+Main JSON Object -> https://pastebin.com/cE44VtSu
+My test function -> https://pastebin.com/GJyAHrvZ
+And my JSON data on the file after the test function -> https://pastebin.com/pffBGJfV
+
+If i comment out the ""for"" loop, the written file as identical to the read file, with all data at their place 
+
+Many thanks for any help 🙂",,
+251796151760715777,remoz_,09/18/2019 11:27 PM,"(i've tried also defining main variables in SpawnerTest with ""ref"")",,
+180029119638011904,lbmaster,09/18/2019 11:31 PM,use `array<ref SpawnObject> objectList`,,👍 (2)
+251796151760715777,remoz_,09/18/2019 11:55 PM,"I will try it now, thanks",,
+251796151760715777,remoz_,09/19/2019 12:03 AM,"Seems to works! Then i must use always ref when work with a dynamic array? And if i want define a new local array that contain a ""copy"" of the JSON original array?",,
+180029119638011904,lbmaster,09/19/2019 12:14 AM,Ref is still something new for me too. I come from the Java fraction too and still did not fully understand the magic of ref ^^,,
+239201186933112833,da0ne_,09/19/2019 2:45 AM,"ref keyword marks your object to not get “lost” by hitting end of scope. I would explain it better if I know behind the scene of how it works. But what matters is when to use it. 
+
+Using it within the scope of a method does not do anything.
+
+The time you should be using it is when you will use that object in conjunction with external classes. Keeping its memory reference. 
+
+@Happy or @GravityWolf could explain it better :Dean:",,
+105574798691680256,totallynotgrim,09/19/2019 3:13 AM,:Peepono:,,
+404492347418607616,legioarg,09/19/2019 7:26 AM,https://forums.dayz.com/topic/246387-bat-automatic-mod-update-automatic-storage-backup-log-clean-logs-date-and-time/,,👎🏻 (1)
+135355238990348288,djctavia,09/19/2019 8:57 AM,"The key ""ref"" act like some vars in C# (theoricly) it's destroy when the address is lost
+
+E.g: You declare a ref TStringArray inside a function and it's returned, enfusion count it as used, like ""I have 1 use"", it goes inside the new functon use the variable. If at the end of this scope it's not saved inside a class used somewhere, the count reach 0 and at the end of scope, the variable is destroyed",,
+135355238990348288,djctavia,09/19/2019 9:02 AM,"Pretty sure that use something like:
+```C
+typedef struct tmpMemory
+{
+    int count;
+    tmpMemory *next;
+} t_tmpMemory;
+```",,
+214427063665295362,aeryes,09/19/2019 9:07 AM,Does anyone know how to stop zombies from jumping over fences?,,
+214427063665295362,aeryes,09/19/2019 9:13 AM,Please @ me if you have an answer thank you.,,
+244839642640154625,bluepiru,09/19/2019 9:15 AM,"hey, i´m new in DayZ modding i tryed to implement some new crafting recipes but it still dont work and i have no idea what i´m doin wrong -https://steamcommunity.com/sharedfiles/filedetails/?id=1864957443 this is my mod, can anyone help me?",,
+214427063665295362,aeryes,09/19/2019 9:16 AM,Did you register your crafting recipes?,,
+214427063665295362,aeryes,09/19/2019 9:16 AM,@BluePiru,,
+244839642640154625,bluepiru,09/19/2019 9:17 AM,yep there is a modded recipes list with my new one,,
+214427063665295362,aeryes,09/19/2019 9:18 AM,So you have this modded class in your mod:,,
+214427063665295362,aeryes,09/19/2019 9:18 AM,`modded class PluginRecipesManager `,,
+244839642640154625,bluepiru,09/19/2019 9:20 AM,jep,,
+214427063665295362,aeryes,09/19/2019 9:20 AM,Can you send me an example of one of your recipes,,
+214427063665295362,aeryes,09/19/2019 9:20 AM,Ill look over it for you.,,
+561680015578759196,wrdg,09/19/2019 6:42 PM,@Deleted User you have to modify existing parts of the game in order to get an entry point,,
+561680015578759196,wrdg,09/19/2019 6:43 PM,"Are you wanting to do a UI calender or a chat command, your idea isn't descriptive to acquire any help",,
+456226577798135808,Deleted User,09/19/2019 6:44 PM,"I want something like: GetWeekday( yyyy , mm , dd );",,
+456226577798135808,Deleted User,09/19/2019 6:44 PM,"```c
+GetWeekday ( int Year , int Month , int Day )
+{
+    static int Year;
+    static int Month;
+    static int Day;
+
+    if ( Month <= 2 ) 
+    {
+        Year = Year - 1;
+        Month = Month + 12;
+    }
+
+    int Year2Digits = Year % 100;
+    int Century2Digits = ( Year - Year2Digits ) / 100;
+    
+    int Weekday = ( Day + ( Math.Floor ( ( 2.6 * ( Month + 1 ) ) ) + Year2Digits + ( Math.Floor ( ( 0.25 * Year2Digits ) ) + ( Math.Floor ( ( 0.25 * Century2Digits ) + ( 5 * Century2Digits ) ) ) % 7;
+    /*
+    int Weekday = 
+    ( 
+        Day + 
+        ( Math.Floor ( ( 2.6 * ( Month + 1 ) ) ) + 
+        Year2Digits + 
+        ( Math.Floor ( ( 0.25 * Year2Digits ) ) + 
+        ( Math.Floor ( ( 0.25 * Century2Digits ) + 
+        ( 5 * Century2Digits ) ) 
+    ) % 7;
+    */
+    return Weekday;
+}
+```",,
+456226577798135808,Deleted User,09/19/2019 6:47 PM,"idk how to add this to dayz. I want to simply add a way to put in for instance '2019 , 09 , 19' and return 4",,
+456226577798135808,Deleted User,09/19/2019 6:48 PM,this way you can check if saturday then whatever etc,,
+107560637399306240,cooltrain,09/19/2019 7:05 PM,"What Wardog said, what do you want to do with it?",,
+107560637399306240,cooltrain,09/19/2019 7:06 PM,Depending on what you want to do will change where you start,,
+180757017432948736,tennesseetimmy,09/19/2019 7:12 PM,probably scheduled raid times :OmegaPog:,,
+456226577798135808,Deleted User,09/19/2019 7:12 PM,yeap,,
+456226577798135808,Deleted User,09/19/2019 7:12 PM,that and specific day messages. Something to use in-case you'd ever need to know which day it is.,,
+456226577798135808,Deleted User,09/19/2019 7:12 PM,doesn't hurt to have more functions,,
+180757017432948736,tennesseetimmy,09/19/2019 7:13 PM,"If you wait long enough I'm doing the same thing, but I have so much to-do right now, it probably won't be done until ~2 weeks",,
+456226577798135808,Deleted User,09/19/2019 7:13 PM,I have it done pretty much if you want to collab.,,
+456226577798135808,Deleted User,09/19/2019 7:16 PM,my want is to use it exactly as versatile as you'd use GetHourMinuteSecondUTC(),,
+456226577798135808,Deleted User,09/19/2019 7:17 PM,is there no way to add a global function?,,
+180757017432948736,tennesseetimmy,09/19/2019 7:19 PM,https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax,,
+180757017432948736,tennesseetimmy,09/19/2019 7:19 PM,static,,
+180757017432948736,tennesseetimmy,09/19/2019 7:20 PM,https://i.imgur.com/8UCxidP.png,,
+456226577798135808,Deleted User,09/19/2019 7:28 PM,I don't get it..,,
+456226577798135808,Deleted User,09/19/2019 7:29 PM,I appreciate the help but I don't see how writing static somewhere would add a new function to the game.,,
+239201186933112833,da0ne_,09/19/2019 7:34 PM,@Deleted User what sort of experience u got with scripting/coding. Just curious you don’t have to answer 😃,,
+456226577798135808,Deleted User,09/19/2019 7:38 PM,"Very limited as you can tell. My knowledge is very sporadic. I've done a bit but my experience is through games, and friends who does it for work.",,
+561680015578759196,wrdg,09/19/2019 7:45 PM,"Guess you can edit the action conditions for the raid actions to check against the raid times, would be the smoothest way of forcing players to only raid on certain days",,
+180029119638011904,lbmaster,09/19/2019 8:02 PM,What was the Prefix for the players Documents/DayZ folder ? not $profile ^^,,
+180029119638011904,lbmaster,09/19/2019 8:03 PM,was it $saves or something similar ?,,
+180029119638011904,lbmaster,09/19/2019 8:07 PM,nevermind. $saves is correct,,👍🏽 (1)
+214427063665295362,aeryes,09/19/2019 8:18 PM,Is it possible to link your server to a website for stat tracking and spawning items?,,
+561680015578759196,wrdg,09/19/2019 8:21 PM,Yeah with cURL which just came to be in 1.05 :succ:,,
+214427063665295362,aeryes,09/19/2019 9:41 PM,Any links?,,
+214427063665295362,aeryes,09/19/2019 9:41 PM,@Wardog,,
+214427063665295362,aeryes,09/19/2019 9:44 PM,Also does anybody know how to stop zombies from jumping over fences. I got some help yday and was told to edit values in the world config but no luck.,,
+427419739787362304,Funkdoc#1677,09/19/2019 9:45 PM,`\scripts\3_Game\CURLCore.c` for example,,
+214427063665295362,aeryes,09/19/2019 9:46 PM,How would that class be used to speak to the site. I have 0 exp in web stuff.,,
+561680015578759196,wrdg,09/19/2019 9:46 PM,"Look for curlcore in the dayz files, I think Jacob did an example, might have to ask him if he released it somewhere",,
+561680015578759196,wrdg,09/19/2019 9:47 PM,"Ah, so you'd create a backend for a site to digest information that you'd feed from the DayZ server",,
+427419739787362304,Funkdoc#1677,09/19/2019 9:47 PM,didnt engage it yet.. but best thing will be to also host a webserver local for testing,,
+214427063665295362,aeryes,09/19/2019 9:47 PM,Okay. Ill see if I can get a touch of jacob for that example.,,
+180757017432948736,tennesseetimmy,09/19/2019 9:47 PM,Wow,,
+180757017432948736,tennesseetimmy,09/19/2019 9:47 PM,I just googled curl and,,
+180757017432948736,tennesseetimmy,09/19/2019 9:48 PM,Wow,,
+214427063665295362,aeryes,09/19/2019 9:48 PM,Im sorry for bombarding you guys with questions but any ideas on the zombie fence jumping?,,
+180757017432948736,tennesseetimmy,09/19/2019 9:48 PM,The doors that this blows wide open,,
+561680015578759196,wrdg,09/19/2019 9:49 PM,Nope it was Thurston  @Aeryes,,
+214427063665295362,aeryes,09/19/2019 9:49 PM,Oh okay.,,
+561680015578759196,wrdg,09/19/2019 9:49 PM,He posted this a while back https://thurston.pw/i/i19ig.png,,
+561680015578759196,wrdg,09/19/2019 9:50 PM,Simple implementation with keypress events,,
+214427063665295362,aeryes,09/19/2019 9:51 PM,Mmmm so if I wanted to allow people to spawn in items from the site what would be my firt steps.,,
+144973944271798272,mandibull,09/19/2019 10:19 PM,Not exactly what you would think because curl will let you send stuff to the web. Not receive.,,
+144973944271798272,mandibull,09/19/2019 10:20 PM,(it’s an http client not an http server),,
+144973944271798272,mandibull,09/19/2019 10:21 PM,This means that you will need your game server to ask every n-seconds to your backend if there’s items to spawn (polling technique),,
+214427063665295362,aeryes,09/19/2019 10:31 PM,So kind of like a stack of sorts?,,
+230061386888118273,.thurston,09/19/2019 10:31 PM,The only way you can retrieve information from a webserver is via a GET request,,
+214427063665295362,aeryes,09/19/2019 10:32 PM,What would I need to do to send and receive?,,
+230061386888118273,.thurston,09/19/2019 10:32 PM,GET to retrieve data,,
+230061386888118273,.thurston,09/19/2019 10:32 PM,POST to send data,,
+230061386888118273,.thurston,09/19/2019 10:32 PM,"On the website, you'd need to store the information somewhere (probably a db?), then put a button in game to send a GET request",,
+230061386888118273,.thurston,09/19/2019 10:33 PM,"Just filtering through stuff would be annoying, unless you delete the entries once they've been used.",,
+214427063665295362,aeryes,09/19/2019 10:37 PM,Can I do that with CURL. The post and get requests ?,,
+214427063665295362,aeryes,09/19/2019 10:38 PM,I'd like to make something on the site where someone hits the spawn button on the site and it spawns the item in  game.,,
+230061386888118273,.thurston,09/19/2019 10:44 PM,"Yeah, you can do POST and GET with cURL.",,
+230061386888118273,.thurston,09/19/2019 10:44 PM,"And, there is no current way to send a POST request to the game (i think)",,
+427419739787362304,Funkdoc#1677,09/19/2019 11:34 PM,"so ""click and spawn"" action will not workl like that ?",,
+214427063665295362,aeryes,09/19/2019 11:35 PM,@thurston  I know a server that has the functionality that I described.,,
+214427063665295362,aeryes,09/19/2019 11:35 PM,How would you do that then?,,
+214427063665295362,aeryes,09/19/2019 11:35 PM,Spawning the item ingame.,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:35 PM,u can set bools and use GET periodically,,
+214427063665295362,aeryes,09/19/2019 11:36 PM,Are there any examples?,,
+214427063665295362,aeryes,09/19/2019 11:36 PM,Because I know nothing about web based stuff,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:37 PM,ther emight be some guys around here... but curl is a brand new API in dayz script,,
+214427063665295362,aeryes,09/19/2019 11:38 PM,I know one server does it with HTTP requests so it must be possible.,,
+214427063665295362,aeryes,09/19/2019 11:38 PM,If I wanted to set bools and get periodically like you described how would the server send any info if it cant receive ?,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:41 PM,no ithink Thurston means that the webserver cant post on demand to the game...,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:41 PM,so clicking a button cant trigger something in dayz,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:42 PM,u have do make a button which sets a bool or... in a db and then curl the webserver db,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:43 PM,but as is said didnt touch it,,
+214427063665295362,aeryes,09/19/2019 11:43 PM,Okay. Itd be so nice if there were samples for this.,,
+214427063665295362,aeryes,09/19/2019 11:43 PM,I get what your saying now.,,
+214427063665295362,aeryes,09/19/2019 11:43 PM,I just have no idea where to start with setting up a web app or db for this.,,
+214427063665295362,aeryes,09/19/2019 11:44 PM,You wouldnt have any good resources for learning how to do what Ive described by any chance?,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:45 PM,"well u should have basic skills in HTML and databases like mysql and how to run a webserver on a local or remote machine
+..and of course study the curl API",,
+272741024110215169,frenog,09/19/2019 11:46 PM,"Hey is there anyone out there who can help me with my House?
+So i´ve done a House its a simple one i made it craftable and it will spawn on you but i want to add some Inventory/Cargo to it without losing HouseNoDestruct.
+Also i don´t want that players can pick up the House. 
+1 Time i had it working as a Barrel but then my door wasn´t working. And people could pick it up.",,
+272741024110215169,frenog,09/19/2019 11:46 PM,"Someone told me that crafted ""placed"" things can´t be picked up thats why i made it craftable.",,
+214427063665295362,aeryes,09/19/2019 11:47 PM,@Funkdoc  I have never touched any of that yet. I know basic HTML but not the rest of what you mentioned.,,
+214427063665295362,aeryes,09/19/2019 11:48 PM,"@Frenog  There a function for picking up stuff, ill get it for you hold on.",,
+214427063665295362,aeryes,09/19/2019 11:49 PM,"```
+    override bool CanPutIntoHands(EntityAI parent)
+    {
+
+        return false;
+
+    }
+```",,
+214427063665295362,aeryes,09/19/2019 11:49 PM,That should stop players from picking up the object into their hands.,,
+272741024110215169,frenog,09/19/2019 11:51 PM,@Aeryes  Thanks a lot for the quick response! So i just simple add this in any script i want?,,
+214427063665295362,aeryes,09/19/2019 11:52 PM,No,,
+230061386888118273,.thurston,09/19/2019 11:52 PM,@Aeryes what are you wondering?,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:52 PM,@Aeryes windows has an implemented webserver service... u can begin here to configure and write your own webpages,,
+230061386888118273,.thurston,09/19/2019 11:52 PM,"I've written a full API, and am using cURL from in game to grab information from it.",,
+214427063665295362,aeryes,09/19/2019 11:52 PM,"@Frenog  You need to add this to your house script, if you PM me I can help you further.",,
+251796151760715777,remoz_,09/19/2019 11:52 PM,"There are some way to have the absolute time since epoch, or unix time? Like seconds from 1970-01-01 (i.e. now is 1568929921 seconds) 🙂 Thanks!",,
+214427063665295362,aeryes,09/19/2019 11:53 PM,"@thurston  I am trying to figure out where I can go to learn the skills needed to setup a simple web app on the site, that allows players to hit spawn and the item spawns in game.",,
+214427063665295362,aeryes,09/19/2019 11:53 PM,@Funkdoc  Ill look into that. Our site is hosted through invision.,,
+214427063665295362,aeryes,09/19/2019 11:53 PM,So ill need to find something that works with them.,,
+427419739787362304,Funkdoc#1677,09/19/2019 11:57 PM,@Remoz may i ask why? are u triyng to determine the weekday..,,
+230061386888118273,.thurston,09/19/2019 11:58 PM,"@Aeryes there is no real ""learn the skills"" to creating an API (at least, not one I know of), my API is built on Symfony (<https://symfony.com/doc/current/setup.html>), and it's written in PHP.",,
+214427063665295362,aeryes,09/20/2019 12:04 AM,So if I made an api how would I link it to the site.,,
+251796151760715777,remoz_,09/20/2019 12:06 AM,"@Funkdoc nope, i need a reference time against a file that i read from outside.. to plan an event in a specific time of the realworld... then i thought: i put 1568929921 into the file, the server read and compares with actual timestamp and decide if the event must start or not... 🙂",,
+214427063665295362,aeryes,09/20/2019 12:07 AM,"@Remoz  There is a way to do this, but I am not at my main pc right now",,👍 (1)
+427419739787362304,Funkdoc#1677,09/20/2019 12:07 AM,oh a scheduler,,
+251796151760715777,remoz_,09/20/2019 12:07 AM,yep 🙂 something like it,,
+251796151760715777,remoz_,09/20/2019 12:09 AM,"i've found a lot of timers looking in the script folder, but, all concerning to mission time or game time, not realworld server time",,
+214427063665295362,aeryes,09/20/2019 12:10 AM,If I remember Ill send you some code when I get home @Remoz,,
+251796151760715777,remoz_,09/20/2019 12:10 AM,many many thanks Bro 🙂,,
+214427063665295362,aeryes,09/20/2019 12:12 AM,Np,,
+214427063665295362,aeryes,09/20/2019 12:12 AM,If I forget send me a msg tomorrow,,
+427419739787362304,Funkdoc#1677,09/20/2019 12:14 AM,"@Remoz  use `proto void GetYearMonthDayUTC(out int year, out int month, out int day);`
+and `proto void GetHourMinuteSecondUTC(out int hour, out int minute, out int second);`",,
+251796151760715777,remoz_,09/20/2019 12:17 AM,"yep, already tried with that, but when i was converting in seconds for absolute time, i was stopped cause there are every month different days, and bissextile years 😄",https://cdn.discordapp.com/attachments/492295576470290433/624368384439746579/unknown.png,
+427419739787362304,Funkdoc#1677,09/20/2019 12:18 AM,you should use the ..UTC variant of it,,
+427419739787362304,Funkdoc#1677,09/20/2019 12:18 AM,to get system time from server,,
+251796151760715777,remoz_,09/20/2019 12:25 AM,"yeah, but how i can compare with a scheduled time?",,
+427419739787362304,Funkdoc#1677,09/20/2019 12:28 AM,"just use the same time format as integer (year, month, day, hour, min, sec) and compare int with ..UTCtime.year >= SchedulerTime.year   ..and so on",,
+251796151760715777,remoz_,09/20/2019 12:32 AM,"eh, nope, laready tried that... i.e. doesn't work when year is >=, month is >= day is >= and hour is <... The absolute time is greater, but the hour is less then the IF return false instead of true",,
+427419739787362304,Funkdoc#1677,09/20/2019 12:34 AM,show code..,,
+251796151760715777,remoz_,09/20/2019 12:39 AM,"my wrong code:
+
+    ```if (actYear >= year && actMonth >= month && actDay >= day && actHour >= hour && actMinute >= minute && actSecond >= second)
+    {
+        return true;
+    } else {
+        return false;
+    }```",,
+427419739787362304,Funkdoc#1677,09/20/2019 12:40 AM,this is correct,,
+427419739787362304,Funkdoc#1677,09/20/2019 12:42 AM,try to make if in if conditions and print every step,,
+427419739787362304,Funkdoc#1677,09/20/2019 12:42 AM,"```if (actYear >= year)
+{
+    Print(""year is greater than scheduler year"");
+    if (actMoth >= month)
+    {
+        Print(""month is greater than scheduler month"");
+        if (...)...
+    }
+}```",,
+251796151760715777,remoz_,09/20/2019 12:45 AM,"Yeah, could works, but there aren't nothing of specific to do the same without 6 nested IF statements? 😅",,
+251796151760715777,remoz_,09/20/2019 12:46 AM,(only for trying to optimize),,
+427419739787362304,Funkdoc#1677,09/20/2019 12:46 AM,its just for testing because your posted code should mainly work,,
+251796151760715777,remoz_,09/20/2019 12:46 AM,"Yeah, this Is right",,
+427419739787362304,Funkdoc#1677,09/20/2019 12:47 AM,"thats how i would start debugging
+
+sorry have overseen your logger 🙂 if u read from file it is in string ? @Remoz",,
+214427063665295362,aeryes,09/20/2019 12:58 AM,@thurston  I have php and symfony setup. For what I described earlier should I build a full project or just a new project?,,
+214427063665295362,aeryes,09/20/2019 12:58 AM,Will I want an api or no?,,
+214427063665295362,aeryes,09/20/2019 12:58 AM,So; `symfony new --full`,,
+230061386888118273,.thurston,09/20/2019 12:58 AM,"For my API, it doesn't contain a web interface",,
+230061386888118273,.thurston,09/20/2019 12:59 AM,It's just a url you send a POST/GET request to,,
+230061386888118273,.thurston,09/20/2019 12:59 AM,For instance ``GET -> https://my.url/someinformation``,,
+214427063665295362,aeryes,09/20/2019 12:59 AM,So did you setup your projects using `symfony new projectname`,,
+230061386888118273,.thurston,09/20/2019 12:59 AM,yeah,,
+230061386888118273,.thurston,09/20/2019 12:59 AM,If you want it to contain a web interface,,
+230061386888118273,.thurston,09/20/2019 12:59 AM,"Do full, I believe",,
+230061386888118273,.thurston,09/20/2019 12:59 AM,"I don't know too much about Symfony, send @0x346e3730 a message, he should be able to help you more than me.",,
+214427063665295362,aeryes,09/20/2019 1:00 AM,Cool. Appreciate the help you give. Id like to do it through the website so im guessing a full service.,,
+214427063665295362,aeryes,09/20/2019 1:02 AM,@0x346e3730  Can I speak to you in PM if you have any free time? It will not allow me to PM you unless we are friends.,,
+230061386888118273,.thurston,09/20/2019 1:02 AM,He's currently offline,,
+230061386888118273,.thurston,09/20/2019 1:02 AM,"He's asleep right now, so give him like 8 or so hours",,
+230061386888118273,.thurston,09/20/2019 1:02 AM,And he should be online,,
+561680015578759196,wrdg,09/20/2019 1:08 AM,My API is done with web service in C#,,👍 (1)
+214427063665295362,aeryes,09/20/2019 1:15 AM,I like the looks of symfony. It has good documentation in my opinion.,,
+214427063665295362,aeryes,09/20/2019 1:15 AM,@thurston  Thank you dude,,
+427419739787362304,Funkdoc#1677,09/20/2019 1:55 AM,"@Remoz  sorry for that i have not seen the stupid mistake... if u are checking real time in if conditions  it'll only for certain time to be true, because when the lower time unit is changing from like min 59 to 0 the if condition is switching to false .. same for seconds
+so just use == for year,month,day,hour and minute, and eval the rising edge of the condition with a static SchedulerTaskDone bool... 
+```if ( !SchedulerTaskDone && actYear == year &&...)
+{
+    [do your stuff];
+    SchedulerTaskDone = true;
+}```",,👍 (1)
+356744388447043584,s4mt3k,09/20/2019 3:03 AM,"Hey guys,
+
+GetHealth(); cannot be called on client. 
+
+is there an other way to get the healthpoints of an item to check if the ""actioncondition"" can be true?
+
+i want a item ""triggerable"" only when it has a lower HP than its max health. And no, `GameConstants.STATE_DAMAGED` or kinda of these are not usefull for me. Somebody an idea? I tried to send RPC´s, turned out there were useless in this case. ¯\_(ツ)_/¯ Or maybe im wrong. Any help is highly apreciated",,
+214427063665295362,aeryes,09/20/2019 3:18 AM,Could you call it on the server and then send it to the client?,,
+214427063665295362,aeryes,09/20/2019 3:18 AM,Make an rpc func or something to send it to client,,
+214427063665295362,aeryes,09/20/2019 3:18 AM,I also found a weird way of syncing variables before that worked,,
+214427063665295362,aeryes,09/20/2019 3:18 AM,Its what let me use PPeffects on client and server,,
+214427063665295362,aeryes,09/20/2019 3:19 AM,Awww nvm I didnt read the last part of what you said,,
+214427063665295362,aeryes,09/20/2019 3:20 AM,"Well, what are you try to use the health for?",,
+356744388447043584,s4mt3k,09/20/2019 3:22 AM,"I need to look at a item. and get the health of it.
+
+`GetHealth(""Body"", """");` - HP is: 100;
+
+But GetHealth cant be called on Client.
+
+I tired to rpc it. Worked when i was connected but not afterwards",,
+356744388447043584,s4mt3k,09/20/2019 3:23 AM,Value was 0 when i looked at the item.,,
+214427063665295362,aeryes,09/20/2019 3:23 AM,What do you mean by connected,,
+356744388447043584,s4mt3k,09/20/2019 3:24 AM,I printed it to the clients script.log to see what happens. It printed all the healths of ALL items that were present on the server.,,
+214427063665295362,aeryes,09/20/2019 3:24 AM,Well youll want to call health on the object you want so `object.GetHealth();`,,
+214427063665295362,aeryes,09/20/2019 3:24 AM,I assume ^^^,,
+356744388447043584,s4mt3k,09/20/2019 3:25 AM,yessir 😄,,
+214427063665295362,aeryes,09/20/2019 3:25 AM,So even after calling on a defined object it prints all health of all objects in the game?,,
+356744388447043584,s4mt3k,09/20/2019 3:29 AM,"I rewrote the file `TransferValues.c`
+
+and it prints all existing items into my scriptslog when i join the server, but not when i look at the item afterwards. so it is sending rpc at `init()`i guess and is not callable afterwards ¯\_(ツ)_/¯",,
+239201186933112833,da0ne_,09/20/2019 4:55 AM,nodejs ftw! :peepoOkay:,,
+356744388447043584,s4mt3k,09/20/2019 5:03 AM,what do you mean?,,
+107560637399306240,cooltrain,09/20/2019 5:04 AM,I have to,https://cdn.discordapp.com/attachments/492295576470290433/624440641396408339/tfugj4n3l6ez.png,😂 (2)
+561680015578759196,wrdg,09/20/2019 5:30 AM,Lmao,,
+239201186933112833,da0ne_,09/20/2019 5:40 AM,what do you mean what do you mean,,
+561680015578759196,wrdg,09/20/2019 5:46 AM,nodejs runs on a single thread :thinkgun:,,
+239201186933112833,da0ne_,09/20/2019 5:47 AM,,https://cdn.discordapp.com/attachments/492295576470290433/624451543281958933/unknown.png,
+239201186933112833,da0ne_,09/20/2019 5:47 AM,:feelsGunMan:,,
+239201186933112833,da0ne_,09/20/2019 5:47 AM,"if ya know how to use it, you use it to its full potential :Dabs:",,
+561680015578759196,wrdg,09/20/2019 5:49 AM,It's great for creating APIs but I wouldn't go further than that 😋,,
+239201186933112833,da0ne_,09/20/2019 5:50 AM,:bruh:,,
+561680015578759196,wrdg,09/20/2019 5:51 AM,"Eh I can't be shit talking here, I use C# for just about everything lmao",,
+239201186933112833,da0ne_,09/20/2019 5:51 AM,:hitting_a_yeet: C# is great,,
+561680015578759196,wrdg,09/20/2019 5:52 AM,Especially with .NET Core for multiplatform capabilities. But it's just another framework that people are going to dread. Everyone wants something native,,
+214427063665295362,aeryes,09/20/2019 8:34 AM,Im trying to spawn an object in game and then spawn items inside the spawned object. I have tried the following code but keep getting Null pointers referencing the `this` I use:,,
+214427063665295362,aeryes,09/20/2019 8:35 AM,"```
+            // Spawns loot in the crate.
+            this.GetInventory().CreateInInventory(ItemTier.Item.GetRandomElement());
+
+
+```",,
+214427063665295362,aeryes,09/20/2019 8:36 AM,and here is my object spawner which also appears to not work:,,
+214427063665295362,aeryes,09/20/2019 8:36 AM,"```
+        protected Object geardrop;
+
+        geardrop = GetGame().CreateObject( m_ActiveGeardropSettings.GeardropContainers.GetRandomElement(), Vector( activeLocation.x, 0, activeLocation.y));    
+        geardrop.SetPosition(Vector( activeLocation.x, 0, activeLocation.y));    
+        geardrop.SetOrientation(Vector(0, 0, 0));
+```",,
+214427063665295362,aeryes,09/20/2019 8:37 AM,What am I doing wrong here? I just want an object to be spawned when the function gets called and then within the objects base class I have a function to spawn gear in it that is called in the constructor.,,
+214427063665295362,aeryes,09/20/2019 8:38 AM,Here is my constructor:,,
+214427063665295362,aeryes,09/20/2019 8:38 AM,"```
+    void GearDropContainerBase()
+    {
+        m_ActiveGeardropSettings = GeardropSettings.Load();
+        OnSpawn();
+    }
+```",,
+105574798691680256,totallynotgrim,09/20/2019 8:39 AM,Is GetInventory() null?,,
+214427063665295362,aeryes,09/20/2019 8:39 AM,What do you mean?,,
+105574798691680256,totallynotgrim,09/20/2019 8:40 AM,``this.GetInventory().CreateInInventory(ItemTier.Item.GetRandomElement());``,,
+214427063665295362,aeryes,09/20/2019 8:40 AM,oh lol,,
+105574798691680256,totallynotgrim,09/20/2019 8:40 AM,What is NULL 3 things can be NULL here,,
+214427063665295362,aeryes,09/20/2019 8:40 AM,Yeah this line gets the null pointer,,
+214427063665295362,aeryes,09/20/2019 8:40 AM,`this.GetInventory().CreateInInventory(LootTier.Loot.GetRandomElement());`,,
+105574798691680256,totallynotgrim,09/20/2019 8:40 AM,Ok witch one is NULL,,
+105574798691680256,totallynotgrim,09/20/2019 8:40 AM,:angryJ:,,
+214427063665295362,aeryes,09/20/2019 8:41 AM,"```
+Stack trace:
+inf/infected/scripts/4_World/plugins\pluginbase\geardropevent.c:28
+inf/infected/scripts/4_World/plugins\pluginbase\geardropevent.c:9
+$CurrentDir:mpmissions\dayzOffline.chernarusplus\init.c:15
+SCRIPT       : [INF GEARDROP CRATE] Spawning loot in the crate
+SCRIPT    (E): NULL pointer to instance
+Class:      'GearDropContainerBase'
+Entity id:0
+
+Function: 'OnSpawn'
+```",,
+105574798691680256,totallynotgrim,09/20/2019 8:41 AM,That doesn't help me,,
+214427063665295362,aeryes,09/20/2019 8:41 AM,Thats all I know,,
+105574798691680256,totallynotgrim,09/20/2019 8:41 AM,:FeelsOKAYMan:,,
+214427063665295362,aeryes,09/20/2019 8:41 AM,I dont know which one specifically.,,
+105574798691680256,totallynotgrim,09/20/2019 8:41 AM,Find out?,,
+214427063665295362,aeryes,09/20/2019 8:41 AM,How?,,
+105574798691680256,totallynotgrim,09/20/2019 8:42 AM,"```
+Print(this)
+Print(this.GetInventory())
+```",,
+105574798691680256,totallynotgrim,09/20/2019 8:42 AM,Bla bla bla?,,
+214427063665295362,aeryes,09/20/2019 8:42 AM,Okay give me a moment,,
+214427063665295362,aeryes,09/20/2019 8:44 AM,`this.GetInventory());`,,
+214427063665295362,aeryes,09/20/2019 8:44 AM,Is NULL,,
+214427063665295362,aeryes,09/20/2019 8:44 AM,@Happy,,
+214427063665295362,aeryes,09/20/2019 8:45 AM,"```
+SCRIPT       : Class this =  GearDropContainerBase<d9c51cc0>
+SCRIPT       : NULL
+SCRIPT       : Morphine
+```",,
+214427063665295362,aeryes,09/20/2019 8:45 AM,This is the order I printed them in:,,
+214427063665295362,aeryes,09/20/2019 8:46 AM,this,,
+105574798691680256,totallynotgrim,09/20/2019 8:46 AM,How to you define your GearDropContainer?,,
+214427063665295362,aeryes,09/20/2019 8:46 AM,getinv,,
+214427063665295362,aeryes,09/20/2019 8:46 AM,gear array,,
+105574798691680256,totallynotgrim,09/20/2019 8:46 AM,...,,
+105574798691680256,totallynotgrim,09/20/2019 8:46 AM,class GearDropContainerBase : <what>,,
+214427063665295362,aeryes,09/20/2019 8:47 AM,I wasnt answering your question there lol. You just typed faster than me.,,
+214427063665295362,aeryes,09/20/2019 8:47 AM,`class GearDropContainerBase extends Container_Base`,,
+105574798691680256,totallynotgrim,09/20/2019 8:47 AM,Try calling CreateAndInitInventory in constructor,,
+105574798691680256,totallynotgrim,09/20/2019 8:47 AM,:hmm:,,
+214427063665295362,aeryes,09/20/2019 8:47 AM,`CreateAndInitInventory();`,,
+214427063665295362,aeryes,09/20/2019 8:48 AM,lIKE THIS?,,
+105574798691680256,totallynotgrim,09/20/2019 8:48 AM,Yes,,
+214427063665295362,aeryes,09/20/2019 8:48 AM,Sorry caps,,
+214427063665295362,aeryes,09/20/2019 8:50 AM,"Just testing, give me a moment",,
+214427063665295362,aeryes,09/20/2019 8:55 AM,@Happy  Okay so I am not getting any null pointers now but the crate is not spawning in the game at the set coords.,,
+105574798691680256,totallynotgrim,09/20/2019 8:55 AM,:peepoShrug:,,
+214427063665295362,aeryes,09/20/2019 8:56 AM,"```
+        protected Object drop;
+
+        drop = GetGame().CreateObject( m_ActiveAirdropSettings.AirdropContainers.GetRandomElement(), Vector( activeLocation.x, 0, activeLocation.y));    
+        drop.SetPosition(Vector( activeLocation.x, 0, activeLocation.y));    
+        drop.SetOrientation(Vector(0, 0, 0));
+```",,
+214427063665295362,aeryes,09/20/2019 8:56 AM,Thats my crate spawning code.,,
+214427063665295362,aeryes,09/20/2019 9:22 AM,@Happy  it says its spawning loot but the crates are still empty lmao,,
+105574798691680256,totallynotgrim,09/20/2019 9:27 AM,:hmm:,,
+105574798691680256,totallynotgrim,09/20/2019 9:27 AM,Config issue my gues,,
+214427063665295362,aeryes,09/20/2019 9:27 AM,How so?,,
+214427063665295362,aeryes,09/20/2019 9:28 AM,My two issues are the crate not spawning in without me manually doing it from zomberry tools and when I spawn it manually the logs say loot spawned but nothing is in the crates.,,
+105574798691680256,totallynotgrim,09/20/2019 9:29 AM,Print the returns of CreateInInventory,,
+214427063665295362,aeryes,09/20/2019 9:33 AM,`Print(CreateInInventory(GearTier.Loot.GetRandomElement()));`,,
+214427063665295362,aeryes,09/20/2019 9:33 AM,@Happy,,
+214427063665295362,aeryes,09/20/2019 9:33 AM,Like that?,,
+214427063665295362,aeryes,09/20/2019 9:34 AM,`Print(this.GetInventory().CreateInInventory(LootTier.Loot.GetRandomElement()));`,,
+214427063665295362,aeryes,09/20/2019 9:34 AM,Or that,,
+214427063665295362,aeryes,09/20/2019 9:35 AM,I get this:,,
+214427063665295362,aeryes,09/20/2019 9:35 AM,"```
+SCRIPT       : M4_Suppressor<53e4a440>
+SCRIPT       : AKM_Base<5402ee50>
+SCRIPT       : AK_Bayonet<53e4e360>
+SCRIPT       : AmmoBox_762x39_20Rnd<53e471c0>
+SCRIPT       : AK_WoodBttstck<53e4bd80>
+SCRIPT       : AK_FoldingBttstck<53e4dd10>
+SCRIPT       : M68Optic<51966b70>
+SCRIPT       : AmmoBox_762x54_20Rnd<53e4f650>
+SCRIPT       : AK_PlasticHndgrd<53e4aa90>
+SCRIPT       : M18SmokeGrenade_Red<5402f5a0>
+SCRIPT       : M4A1_Base<54096100>
+SCRIPT       : M4A1_Base<54090dd0>
+SCRIPT       : M18SmokeGrenade_Yellow<54028f40>
+SCRIPT       : Mag_AKM_30Rnd<541f1c50>
+SCRIPT       : AK_WoodHndgrd<53e484b0>
+SCRIPT       : AK_WoodBttstck<53e53bc0>
+SCRIPT       : ACOGOptic<5196af90>
+SCRIPT       : AK_WoodHndgrd<53e51c30>
+SCRIPT       : M4A1_Base<54096890>
+SCRIPT       : NULL
+```",,
+214427063665295362,aeryes,09/20/2019 9:37 AM,`for(int i = 0; i < m_ActiveGeardropSettings.Items; i++) `,,
+105574798691680256,totallynotgrim,09/20/2019 9:37 AM,Can you even put things in that box?,,
+105574798691680256,totallynotgrim,09/20/2019 9:37 AM,Manually?,,
+214427063665295362,aeryes,09/20/2019 9:37 AM,Items is an int of value 20. On the 20th iteration it gives null,,
+214427063665295362,aeryes,09/20/2019 9:37 AM,Ill test,,
+214427063665295362,aeryes,09/20/2019 9:39 AM,yes,,
+214427063665295362,aeryes,09/20/2019 9:39 AM,I can put stuff in them,,
+214427063665295362,aeryes,09/20/2019 9:39 AM,@Happy,,
+105574798691680256,totallynotgrim,09/20/2019 9:45 AM,:weird:,,
+214427063665295362,aeryes,09/20/2019 9:45 AM,Im lost on how to fix this,,
+214427063665295362,aeryes,09/20/2019 9:45 AM,Spent 3 and half hours so far.,,
+214427063665295362,aeryes,09/20/2019 9:46 AM,:monkaSuicide:,,
+214427063665295362,aeryes,09/20/2019 10:50 AM,Does anyone here know how to make a timer do only 1 iteration.,,
+239201186933112833,da0ne_,09/20/2019 11:06 AM,Make a Boolean?,,
+135355238990348288,djctavia,09/20/2019 11:47 AM,Depending on what your using your timer 🤷,,
+135355238990348288,djctavia,09/20/2019 11:49 AM,"```C
+ref Timer myTimer;
+
+myTimer = new Timer();
+myTimer.Run(Time, this, ""FunctionName"", NULL, Repeat);
+```",,
+135355238990348288,djctavia,09/20/2019 11:50 AM,"But your timer stay in memory, so if do an only TRUE ONLY ONCE, you can even delete the timer at the end of your function called",,
+105574798691680256,totallynotgrim,09/20/2019 12:07 PM,People are using timers for wrong things,,👌 (1)
+105574798691680256,totallynotgrim,09/20/2019 12:07 PM,:sadhonk:,,
+135355238990348288,djctavia,09/20/2019 12:15 PM,"People are using things wrongly, edit it, and you make it perfect",,
+135355238990348288,djctavia,09/20/2019 12:16 PM,"Also, this is one of many solution lmao",,
+135355238990348288,djctavia,09/20/2019 12:17 PM,"Not on my PC, but I wouldn't go for it, I would use a Callqueue or something like 🤷",,👌 (1)
+239201186933112833,da0ne_,09/20/2019 3:24 PM,"dw, Grim is the type of nerd that criticize you for doing something that he might think its wrong. But his criticism is not always constructive.
+:clownpepe:",,ClownWalk (3)
+427419739787362304,Funkdoc#1677,09/20/2019 3:24 PM,lol,,
+239201186933112833,da0ne_,09/20/2019 3:25 PM,i also agree with his stance :PepeLaugh: sometime*,,
+427419739787362304,Funkdoc#1677,09/20/2019 3:26 PM,and i proof every post of him 😂,,PepeLaugh (1)
+180029119638011904,lbmaster,09/20/2019 4:11 PM,"I created and wanted to make it possible to place it somethere in the World using a Hologram. I set the Actions with ```C
+override void SetActions()
+{
+    super.SetActions();
+    AddAction(ActionTogglePlaceObject);
+    AddAction(ActionDeployObject);
+}```
+This works fine and I can place the object, but once it was placed, I can't pick it up anymore or see it in my Inventory. Even after I restart the Server",,
+180029119638011904,lbmaster,09/20/2019 4:12 PM,The Item extends the ItemBase class,,
+214427063665295362,aeryes,09/20/2019 5:44 PM,@DjCtavia  my issue is that my timer never gets to fully finish its sequence before my class calls its deconstructor,,
+214427063665295362,aeryes,09/20/2019 5:44 PM,I use MyTime.Stop(); to stop it.,,
+135355238990348288,djctavia,09/20/2019 5:45 PM,Uh how is destroyed your class ? Your timer call a method for that ?,,
+135355238990348288,djctavia,09/20/2019 5:45 PM,It stop alone if you have repeat set on false,,
+214427063665295362,aeryes,09/20/2019 5:47 PM,"I'm open to better ideas though. So like above if you guys know better solutions please share. My goal is to spawn an item on the map, spawn loot inside that item and then remove it after the event is over. So I have 2 timers as of now. One for the main events in the event choose class, then one in each event that gets called to start a wait period before cleaning up map objects.",,
+135355238990348288,djctavia,09/20/2019 5:47 PM,"Also, you should call the queue of SYSTEM or GAMEPLAY for that, a bit safer if you want to destruct own class",,
+214427063665295362,aeryes,09/20/2019 5:48 PM,"Any chance I could PM you some code. I spent 4 hours on this last night and @Happy  did help so much, so I thank him for that but I still camt figure out where my logic is going off.",,
+214427063665295362,aeryes,09/20/2019 5:48 PM,@DjCtavia,,
+135355238990348288,djctavia,09/20/2019 5:49 PM,"You can, but gonna be hard for me to give a good answer in bus without game files 😂",,
+214427063665295362,aeryes,09/20/2019 5:49 PM,I'm in no rush so respond any time you are home and have spare time.,,
+214427063665295362,aeryes,09/20/2019 5:49 PM,I just really appreciate the help.,,
+135355238990348288,djctavia,09/20/2019 5:50 PM,"Take you some time too, you probably need some, I assume you've spent crazy amount of time on it ^^",,
+214427063665295362,aeryes,09/20/2019 5:51 PM,"Yes hahah I have, but when your modding for an server that tends to happen. The weekends are my ""modding time"" so I'm okay with it.",,
+214427063665295362,aeryes,09/20/2019 5:52 PM,I'm soooooo close to having it done lol,,
+135355238990348288,djctavia,09/20/2019 5:52 PM,x) fully understandable !,,
+272741024110215169,frenog,09/20/2019 6:21 PM,"Someone has experience with the Codelock Mod and Fences? Rn my Door is working as a ""Fence"" i can Attach the Codelock from the Codelock mod but i can´t set password
+Also i can drag the Codelock away from the Attachments. I want that the door work the same as a Fence Gate with Codelock Mod.
+Thanks in advance ❤",,
+356744388447043584,s4mt3k,09/20/2019 11:52 PM,"Is it possible to let a action run even when the item is not in the hands anymore?
+
+I looked into ActionRePackTent.c and copied everything, but my action is aborted immidiately. when i play around with the booleans, i can place the item in my hands on the ground, but the action is aborted aswell... Any suggestions?",,
+180029119638011904,lbmaster,09/21/2019 12:42 AM,"had the same problems today and setting ```
+        m_ConditionItem = new CCINone;``` did the trick. But be aware that Nullpointer Exceptions can occour, if you miss some checks",,
+164811188398587904,dragutux,09/21/2019 5:11 AM,hi,,
+164811188398587904,dragutux,09/21/2019 5:11 AM,anyone could tell me whats the key binding for numpadplus ?,,
+164811188398587904,dragutux,09/21/2019 5:13 AM,"(trying to change the offline thing a bit as its using
+```log
+autoRun        .AddBinding( ""kX"" );
+```
+and that mess with the switching between single shot and full auto ^^",,
+239201186933112833,da0ne_,09/21/2019 5:41 AM,Check the enum KeyCode @dragutux,,
+164811188398587904,dragutux,09/21/2019 5:47 AM,where do i find them is the question of course 🙂 ?,,
+239201186933112833,da0ne_,09/21/2019 5:48 AM,Scripts,,
+239201186933112833,da0ne_,09/21/2019 5:49 AM,PBO,,
+561680015578759196,wrdg,09/21/2019 5:52 AM,Is there an attribute to prevent serialization?,,
+164811188398587904,dragutux,09/21/2019 5:54 AM,https://github.com/BraXi/DayZ-SA-Scripts/blob/10d85021fc02dd9a1cc57c0110820143344ad9fe/dayz-stable/constants.h,,
+164811188398587904,dragutux,09/21/2019 5:55 AM,found answer thx,,
+164811188398587904,dragutux,09/21/2019 6:44 AM,ah that has no persistency,,
+164811188398587904,dragutux,09/21/2019 6:44 AM,(dayz offline tools),,
+164811188398587904,dragutux,09/21/2019 6:44 AM,or maybe items persistency,,
+214427063665295362,aeryes,09/21/2019 9:11 AM,"If anybody here needs to learn how to stop zombies from jumping objects PM me, I just figured it out.",,
+239201186933112833,da0ne_,09/21/2019 9:19 AM,You finally found that one if statement? :PepeLaugh:,,
+561680015578759196,wrdg,09/21/2019 9:21 AM,He's been asking around for a while now. Guess he finally spent some dedicated time into looking for the logic himself.,,
+427419739787362304,Funkdoc#1677,09/21/2019 11:12 AM,@Aeryes are they actually computing a new mesh path then?,,
+214427063665295362,aeryes,09/21/2019 11:24 AM,Do you guys have to be such asses?,,
+214427063665295362,aeryes,09/21/2019 11:25 AM,@Funkdoc  Yes navmesh,,
+214427063665295362,aeryes,09/21/2019 11:25 AM,@Wardog  I spent hours everyday looking through the scripts.,,
+214427063665295362,aeryes,09/21/2019 11:26 AM,Thats not even a joke.,,
+214427063665295362,aeryes,09/21/2019 11:26 AM,Sometimes its like reading with a blindfold on.,,
+561680015578759196,wrdg,09/21/2019 11:35 AM,"I wasn't trying to be an ass here, I was just stating the obvious. Not everyone here has the time to sit down and help every person that wants information to be spoon fed to them. I've been busy moving, sorry I couldn't be considerate and stop to help out. You solved the problem on your own, not everyone here is going to be helping you through hurdles. There's been times where I sat for hours on actually figuring out why my logic isn't sound. It's a hardship of programming, and if you're going to lash out to people that aren't even being hostile at you, then you're not going to settle well here.",,
+214427063665295362,aeryes,09/21/2019 11:37 AM,That was hostile. What you said is literally the definition of hostility lol. If you cant help someone on then you can least let them know your busy and not ghost them if they took the time to message you in the first place. Its not hard to be nice. This place is for seeking help is it not? All I seen from those two comments was something that would make people not want to come here to find help.,,
+214427063665295362,aeryes,09/21/2019 11:37 AM,But you do you. Night.,,
+214427063665295362,aeryes,09/21/2019 11:38 AM,And im not saying you ghost. Im talking in general.,,👍 (1)
+561680015578759196,wrdg,09/21/2019 11:38 AM,I did let you know.,,
+561680015578759196,wrdg,09/21/2019 11:38 AM,,https://cdn.discordapp.com/attachments/492295576470290433/624902254410989568/Screenshot_20190921-043809.png,"👍🏽 (1),😂 (1)"
+214427063665295362,aeryes,09/21/2019 11:38 AM,^^^,,
+214427063665295362,aeryes,09/21/2019 11:38 AM,I wasnt literally talking to you.,,
+214427063665295362,aeryes,09/21/2019 11:38 AM,Nice.,,
+214427063665295362,aeryes,09/21/2019 11:39 AM,Now thats being an ass.,,
+214427063665295362,aeryes,09/21/2019 11:39 AM,It was figurative speech.,,
+214427063665295362,aeryes,09/21/2019 11:39 AM,Consider yourself blocked.,,
+239201186933112833,da0ne_,09/21/2019 12:26 PM,:omegaROLL:,,
+427419739787362304,Funkdoc#1677,09/21/2019 12:27 PM,:succ:,,
+239201186933112833,da0ne_,09/21/2019 12:27 PM,Omg he blocked me :Pepe_Cringe:,,
+239201186933112833,da0ne_,09/21/2019 12:27 PM,:PagTooth:,,
+105574798691680256,totallynotgrim,09/21/2019 5:20 PM,"``map<string,int>`` default ``Get(""INVALID"")`` returns 0",,
+105574798691680256,totallynotgrim,09/21/2019 5:20 PM,:angryJ:,,
+105574798691680256,totallynotgrim,09/21/2019 5:20 PM,Why is it 0 not -1,,
+105574798691680256,totallynotgrim,09/21/2019 5:20 PM,:angryJ:,,
+180029119638011904,lbmaster,09/21/2019 8:47 PM,"Maybe Check `mymap.Contains(""INVALID"")` first 😉",,
+239798661528289281,ghost8433,09/21/2019 10:48 PM,"Stupid question.
+How do I draw something onto the screen / HUD",,
+456226577798135808,Deleted User,09/21/2019 11:14 PM,create or edit layout (.layout) file/widget,,
+239798661528289281,ghost8433,09/21/2019 11:16 PM,i have an existing layout file already,,
+456226577798135808,Deleted User,09/21/2019 11:16 PM,then edit it using workbench,,
+456226577798135808,Deleted User,09/21/2019 11:17 PM,or what exactly preventing you from drawing something on screen,,
+239798661528289281,ghost8433,09/21/2019 11:17 PM,Well my modding knowledge doesn't go any further then adding crafting recipes and google is no help,,
+180757017432948736,tennesseetimmy,09/22/2019 12:46 AM,uhh,,
+180757017432948736,tennesseetimmy,09/22/2019 12:46 AM,https://i.imgur.com/a2ZBJqe.png,,
+180757017432948736,tennesseetimmy,09/22/2019 12:47 AM,Anyone know the difference between GetDamage and GetHighestDamage,,
+180757017432948736,tennesseetimmy,09/22/2019 12:47 AM,https://i.imgur.com/LfS8Wb4.png,,
+180757017432948736,tennesseetimmy,09/22/2019 12:48 AM,🤔,,
+100686705241112576,sanguine00,09/22/2019 12:49 AM,damage drop-off maybe?,,
+100686705241112576,sanguine00,09/22/2019 12:50 AM,45acp is a pretty slow bullet so i'm assuming the fall-off would be pretty severe,,
+100686705241112576,sanguine00,09/22/2019 12:51 AM,or maybe it's the dmg value after armor is applied?,,
+180757017432948736,tennesseetimmy,09/22/2019 12:52 AM,"I assume getDamge is the damage multiplied by transfertoglobalcoef multiplied by armorvalues
+But why  is gethighestdamage always the base bullet damage?
+Perhaps they assumed that the GetDamage would normally return a lower number due to armor being in effect, but in case of the head it is not highest",,
+180757017432948736,tennesseetimmy,09/22/2019 12:52 AM,Probably should have been called GetBaseDamage or sth,,
+100686705241112576,sanguine00,09/22/2019 12:52 AM,in your first capture it isn't the base bullet damage,,
+100686705241112576,sanguine00,09/22/2019 12:52 AM,it's half,,
+180757017432948736,tennesseetimmy,09/22/2019 12:53 AM,Hmm,,
+180757017432948736,tennesseetimmy,09/22/2019 12:53 AM,So highestDamage is just the damage multiplied by armor,,
+180757017432948736,tennesseetimmy,09/22/2019 12:53 AM,"Because when I shoot a limb, it is 34",,
+180757017432948736,tennesseetimmy,09/22/2019 12:53 AM,When I shoot torso or head (both vanilla helmet and vest),,
+180757017432948736,tennesseetimmy,09/22/2019 12:53 AM,It shows half,,
+100686705241112576,sanguine00,09/22/2019 12:53 AM,yeah so the limb/hands reduction isn't applied yet,,
+100686705241112576,sanguine00,09/22/2019 12:54 AM,limb is like 33% dmg and hands/feet 10%.  something like that,,
+180757017432948736,tennesseetimmy,09/22/2019 12:54 AM,https://i.imgur.com/2rXihyD.png,,
+180757017432948736,tennesseetimmy,09/22/2019 12:54 AM,👺,,
+100686705241112576,sanguine00,09/22/2019 12:54 AM,😄,,
+180757017432948736,tennesseetimmy,09/22/2019 12:56 AM,"Hey bohemia!
+Is more delicate access to the damagesystem planned?",,
+180757017432948736,tennesseetimmy,09/22/2019 12:56 AM,I must tinker,,
+100686705241112576,sanguine00,09/22/2019 12:56 AM,i'm curious about that 51 number in your first capture.  not aware of a 3x multiplier for head shots.  but maybe that's new,,
+180757017432948736,tennesseetimmy,09/22/2019 12:56 AM,custom @sanguine,,
+180757017432948736,tennesseetimmy,09/22/2019 12:56 AM,😉,,
+100686705241112576,sanguine00,09/22/2019 12:56 AM,oh 😄,,
+180757017432948736,tennesseetimmy,09/22/2019 12:57 AM,I removed the RNG damages like brain,,
+180757017432948736,tennesseetimmy,09/22/2019 12:57 AM,and just increased the base mult a little,,
+180757017432948736,tennesseetimmy,09/22/2019 12:57 AM,So combat would be more consistant,,
+100686705241112576,sanguine00,09/22/2019 12:57 AM,are you messing with damage fall-off at all?,,
+100686705241112576,sanguine00,09/22/2019 12:57 AM,or can we even do that,,
+180757017432948736,tennesseetimmy,09/22/2019 12:57 AM,That's bullet based,,
+180757017432948736,tennesseetimmy,09/22/2019 12:58 AM,https://i.imgur.com/ogtYes9.png,,
+180757017432948736,tennesseetimmy,09/22/2019 1:01 AM,Not much can be done apparently,,
+180757017432948736,tennesseetimmy,09/22/2019 1:02 AM,At least to the damage system,,
+100686705241112576,sanguine00,09/22/2019 1:03 AM,"one thing i discovered in 1.04, is that melee axe hits to the head can arbitrarily register as ""brain"" shots.  and when it does, it registers 0 damage. 😄  unlike projectiles, melee appears to only be able to hit one zone",,
+251796151760715777,remoz_,09/22/2019 1:03 AM,"Hello! 🙂 Little question:
+I read a JSON, elaborate items contained in it, then change status of elaborated items and save updated JSON... if during elaboration i need to remove items (to avoid they will be elaborated more than one time) from an array contained in a complex object nested in the JSON, but want to keep the complete original array for when i write JSON at the end, how can i do it? 
+
+```autoptr ref TStringArray subItemList = so.GetItemsList();```
+
+Cause i must use ""ref"" when ""Get"" the itemList from the main JSON object, but don't want to modify this! I've tried to make a ""copy"" into another array just after ""Get"" from object, and remove items from this last one, but at the end i have emptied the array on original object too... it's possible to make a copy of a ""ref"" array that is unlinked from the original array? Or something similar...?
+
+Thanks in advance!",,
+180757017432948736,tennesseetimmy,09/22/2019 1:05 AM,@sanguine https://i.imgur.com/Pj1rXrT.png,,
+180757017432948736,tennesseetimmy,09/22/2019 1:05 AM,Probably because of this,,

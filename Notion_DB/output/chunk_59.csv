@@ -1,0 +1,1582 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+181864632216977408,arkensor,07/01/2020 7:31 PM,@[SRT] Linker_Split can you please send me the error message please?,,
+214427063665295362,aeryes,07/01/2020 7:46 PM,"Can't compile ""World"" script module!
+
+inf/infected/scripts/4_World/classes\m_hologram.c(3): Overloaded function 'EvaluateCollision' not compatible",,
+214427063665295362,aeryes,07/01/2020 7:46 PM,Any ideas?,,
+238407276514246656,farmingwithsteve,07/01/2020 7:54 PM,"@Aeryes  override void EvaluateCollision(ItemBase action_item = null) instead of override void EvaluateCollision() in hologram or whereever you have it, it should fix the error message",,
+214175043846930432,broman.dev,07/02/2020 10:17 AM,Given an EntityAI how can I check what type of item it is? I need to deploy a hotfix ASAP,,
+214175043846930432,broman.dev,07/02/2020 10:17 AM,"For example, checking if GetEntityInHands() is a ""HandcuffsLocked""",,
+214175043846930432,broman.dev,07/02/2020 10:29 AM,Currently since this is a P2 bug I just have `EntityAI.ToString().Contains(...)` which is a problem for obvious reasons,,
+137658517615149056,helkhiana,07/02/2020 11:02 AM,you do GetType() to get the type of item,,
+281690210750955521,Hazmat#2523,07/02/2020 11:56 AM,Does anyone know what the medieval sword is labed as?,,
+141917748476248064,bugs11,07/02/2020 12:58 PM,``Sword`` @Hazmat,,
+141917748476248064,bugs11,07/02/2020 12:59 PM,P:\DZ\weapons\melee\blade,,
+314761615218049024,PINKgeekPDX#0002,07/02/2020 3:25 PM,"Hey good morning everyone. is anyone available to check out what i am working on for the skin spraycans? please? i cant seem to get this to work at all, perhaps im missing something? i would really appreciate it.",https://cdn.discordapp.com/attachments/492295576470290433/728239813496537088/PSD_Mh6_Pink.zip,
+281690210750955521,Hazmat#2523,07/02/2020 8:50 PM,@BuGs im on ps4 server do you know what its labed as there because i cant find the code but somehow i have it on my server,,
+141917748476248064,bugs11,07/02/2020 8:51 PM,I don't,,
+281690210750955521,Hazmat#2523,07/02/2020 10:19 PM,Thank you though,,
+281690210750955521,Hazmat#2523,07/02/2020 10:20 PM,Do you have code for killfeed on ps4 server by chance?,,
+368717325484032001,aussiecleetus,07/02/2020 11:35 PM,"you can't do a kill feed on ps4, because it requires editing the EeKilledBy method in PlayerBase, which is in 4_World scope. In init.c there is literally no function you can access to edit that, as it is 5_mission scope",,
+368717325484032001,aussiecleetus,07/02/2020 11:41 PM,source: me (maker of killfeed mod on pc) 🙂,,"😆 (1),nou (1)"
+181254147679584257,thesixx,07/03/2020 12:00 AM,Hello guys! I'm studying the DZ mod environment and I've a quick question. The class to set Building time duration to a specific tool is actionbuildpart?,,
+181254147679584257,thesixx,07/03/2020 12:00 AM,I can't find a SetBuildingDuration method 😦,,
+181254147679584257,thesixx,07/03/2020 12:01 AM,Just SetBuildingAnimation ^^,,
+181254147679584257,thesixx,07/03/2020 12:02 AM,"If anyone can help a beginner, thx",,
+368717325484032001,aussiecleetus,07/03/2020 12:05 AM,you'll want to check out `class UATimeSpent`,,
+368717325484032001,aussiecleetus,07/03/2020 12:05 AM,`const float DEFAULT_CONSTRUCT`,,
+368717325484032001,aussiecleetus,07/03/2020 12:06 AM,"that's what sets the time it takes, unless you are using a FieldShovel, which returns a solid 7.0",,
+181254147679584257,thesixx,07/03/2020 12:08 AM,"thx Cleetus. I'm trying to do (another) admin tool, only for study purpose",,
+368717325484032001,aussiecleetus,07/03/2020 12:08 AM,that's all handled in the Callback for the action,,
+368717325484032001,aussiecleetus,07/03/2020 12:08 AM,"```c
+
+class ActionBuildPartCB : ActionContinuousBaseCB
+{
+    override void CreateActionComponent()
+    {
+        float time = SetBuildingDuration(m_ActionData.m_MainItem);
+        m_ActionData.m_ActionComponent = new CAContinuousTime( time );
+    }
+    
+    float SetBuildingDuration( ItemBase item )
+    {
+        switch( item.Type() )
+        {
+            case Pickaxe:
+            case Shovel:
+            case FieldShovel:
+                return 7.0;
+            default:
+                return UATimeSpent.DEFAULT_CONSTRUCT;
+        }
+        return UATimeSpent.DEFAULT_CONSTRUCT;
+    }
+};```",,
+368717325484032001,aussiecleetus,07/03/2020 12:09 AM,"so in the `float SetBuildingDiration(ItemBase item)` part, you could add another case that is for your admin tool, that returns a different time",,
+368717325484032001,aussiecleetus,07/03/2020 12:09 AM,it's a float in seconds,,
+368717325484032001,aussiecleetus,07/03/2020 12:09 AM,so 7.0 refers to 7 seconds exactly,,
+368717325484032001,aussiecleetus,07/03/2020 12:10 AM,"```c
+modded class ActionBuildPartCB
+{
+    override float SetBuildingDuration( ItemBase item )
+    {
+        switch( item.Type() )
+        {
+            case Pickaxe:
+            case Shovel:
+            case FieldShovel:
+                return 7.0;
+            case MyAdminTool:
+                return 1.0;
+            default:
+                return UATimeSpent.DEFAULT_CONSTRUCT;
+        }
+        return UATimeSpent.DEFAULT_CONSTRUCT;
+    }
+}```",,
+368717325484032001,aussiecleetus,07/03/2020 12:10 AM,for example,,
+181254147679584257,thesixx,07/03/2020 12:11 AM,"Wow, thank you very much. It's all I need",,
+368717325484032001,aussiecleetus,07/03/2020 12:12 AM,"or better still:
+```c
+modded class ActionBuildPartCB
+{
+    override float SetBuildingDuration( ItemBase item )
+    {
+        if ( item.Type() == ""MyAdminTool"")
+            return 1.0;
+
+        return super.SetBuildingDuration(item);
+    }
+}```",,
+181254147679584257,thesixx,07/03/2020 12:13 AM,"I think my files are out of date, see the method I sent above",,
+368717325484032001,aussiecleetus,07/03/2020 12:13 AM,"mine might actually be, because I haven't extracted game data for 1.08",,
+368717325484032001,aussiecleetus,07/03/2020 12:13 AM,sec,,
+368717325484032001,aussiecleetus,07/03/2020 12:15 AM,this part takes a few mins to extract,,
+368717325484032001,aussiecleetus,07/03/2020 12:16 AM,"also, when pasting code here make sure to put triple tilde on either side of the code for it to show proper",,
+181254147679584257,thesixx,07/03/2020 12:16 AM,"No problem, you're helping me a lot, thank you so much",,
+368717325484032001,aussiecleetus,07/03/2020 12:17 AM,"no worries man, it's one of those things I do when I can spare the time",,
+181254147679584257,thesixx,07/03/2020 12:18 AM,tilde = ~? Sorry my english is a little bit rusty,,
+368717325484032001,aussiecleetus,07/03/2020 12:18 AM,`,,
+368717325484032001,aussiecleetus,07/03/2020 12:18 AM,three of those in a row on each side almost like quotes,,
+368717325484032001,aussiecleetus,07/03/2020 12:18 AM,"but after the first 3, press enter which will create a new line to start on",,
+181254147679584257,thesixx,07/03/2020 12:18 AM,got it! thx,,
+368717325484032001,aussiecleetus,07/03/2020 12:34 AM,"in the meantime, I recommend doing the same thing while I am, extract your game data to ensure you have the most recent files",,
+181254147679584257,thesixx,07/03/2020 12:34 AM,"So I need to create a modded class actionconstants and override UATimeSpent with a new constant, right?",,
+368717325484032001,aussiecleetus,07/03/2020 12:34 AM,nah you want to override the function that returns the duration in the callback,,
+181254147679584257,thesixx,07/03/2020 12:34 AM,SetCallBackDuration,,
+368717325484032001,aussiecleetus,07/03/2020 12:35 AM,"that way you can still keep vanilla functionality for regular tools, but have a different time for your admin tool",,
+368717325484032001,aussiecleetus,07/03/2020 12:35 AM,yeah on the files I have it's SetBuildingDuration,,
+181254147679584257,thesixx,07/03/2020 12:35 AM,"```  override float SetCallBackDuration( ItemBase item )
+    {
+        if (item.Type() == MyItemMod)
+        {
+            return ....
+        }
+    }
+```",,
+368717325484032001,aussiecleetus,07/03/2020 12:36 AM,"yes, now... there are 2 important things to note",,
+368717325484032001,aussiecleetus,07/03/2020 12:36 AM,"```c
+
+        {
+            return ....
+        }```",,
+368717325484032001,aussiecleetus,07/03/2020 12:36 AM,the brackets around this are redundant,,
+368717325484032001,aussiecleetus,07/03/2020 12:36 AM,because there is only a single line to execute in the if statement,,
+368717325484032001,aussiecleetus,07/03/2020 12:37 AM,and the other thing is you want to do a `return super.SetCallBackDuration(item)` if the item is NOT your item,,
+368717325484032001,aussiecleetus,07/03/2020 12:37 AM,actually there's more than 2,,
+368717325484032001,aussiecleetus,07/03/2020 12:37 AM,"```c
+modded class ActionBuildPartCB
+{
+    override float SetCallBackDuration( ItemBase item )
+    {
+        if ( item.Type() == ""MyAdminTool"")
+            return 1.0;
+
+        return super.SetCallBackDuration(item);
+    }
+}```",,
+368717325484032001,aussiecleetus,07/03/2020 12:38 AM,"so basically, if the ""MyAdminTool"" is found as being the item, it will return 1.0, however if it isn't, it will return the vanilla response",,
+368717325484032001,aussiecleetus,07/03/2020 12:38 AM,the quotes are important here too,,
+181254147679584257,thesixx,07/03/2020 12:38 AM,Maybe I need to return UATimeSpent.BASEBUILDING_CONSTRUCT_FAST or another constant create by me,,
+368717325484032001,aussiecleetus,07/03/2020 12:38 AM,"the difference being that `""MyAdminTool""` is a string of text, where `MyAdminTool` is an actual class type",,
+181254147679584257,thesixx,07/03/2020 12:39 AM,"> so basically, if the ""MyAdminTool"" is found as being the item, it will return 1.0, however if it isn't, it will return the vanilla response
+@Cleetus Understood",,
+368717325484032001,aussiecleetus,07/03/2020 12:39 AM,and item.Type() returns a string,,
+368717325484032001,aussiecleetus,07/03/2020 12:39 AM,so you want to compare a string to a string as a condition,,
+368717325484032001,aussiecleetus,07/03/2020 12:39 AM,otherwise it will error,,
+368717325484032001,aussiecleetus,07/03/2020 12:39 AM,you could set a constant,,
+368717325484032001,aussiecleetus,07/03/2020 12:39 AM,but it really makes no difference,,
+181254147679584257,thesixx,07/03/2020 12:40 AM,"Great explanation, thank you",,
+368717325484032001,aussiecleetus,07/03/2020 12:40 AM,"where it matters more, is if you want to use it in more than 1 location in your code",,
+368717325484032001,aussiecleetus,07/03/2020 12:40 AM,"the reason the vanilla is done as a constant, is to make it easier to mod the overall for a server",,
+181254147679584257,thesixx,07/03/2020 12:40 AM,In my case only in this specific class,,
+368717325484032001,aussiecleetus,07/03/2020 12:41 AM,"if they wanted all building speeds changed, they would mod UATimeSpent and override the constant",,
+368717325484032001,aussiecleetus,07/03/2020 12:41 AM,"yeah exactly, so a constant would be a little overkill",,
+368717325484032001,aussiecleetus,07/03/2020 12:42 AM,"and just so you know, `super.SetCallBackDuration(item)` would quite literally return the result that the vanilla SetCallBackDuration function would give",,
+368717325484032001,aussiecleetus,07/03/2020 12:42 AM,which is why it's the last return in the override,,
+368717325484032001,aussiecleetus,07/03/2020 12:42 AM,"but if you didn't add that, it'd error too",,
+368717325484032001,aussiecleetus,07/03/2020 12:42 AM,"because ""not all paths return""",,
+368717325484032001,aussiecleetus,07/03/2020 12:43 AM,"as the function is a float type, it MUST return a float",,
+181254147679584257,thesixx,07/03/2020 12:43 AM,"Cleetus, you're awesome",,
+181254147679584257,thesixx,07/03/2020 12:43 AM,"I learned many things today, so I'm very excited",,
+368717325484032001,aussiecleetus,07/03/2020 12:44 AM,you'll get a handle on it 🙂 it's not rocket science (yet),,
+368717325484032001,aussiecleetus,07/03/2020 12:45 AM,though I wouldn't be surprised if Expansion ends up with rocket science lol,,
+368717325484032001,aussiecleetus,07/03/2020 12:46 AM,glad to help,,
+368717325484032001,aussiecleetus,07/03/2020 12:46 AM,yeah it turns out they changed the function name for 1.08 which seems odd,,
+368717325484032001,aussiecleetus,07/03/2020 12:46 AM,"```c
+
+    float SetCallbackDuration( ItemBase item )
+    {
+        /*switch( item.Type() )
+        {
+            case Pickaxe:
+            case Shovel:
+            case FieldShovel:
+                return UATimeSpent.BASEBUILDING_CONSTRUCT_MEDIUM;
+            default:
+                return UATimeSpent.BASEBUILDING_CONSTRUCT_FAST;
+        }*/
+        return UATimeSpent.BASEBUILDING_CONSTRUCT_MEDIUM;
+    }```",,
+368717325484032001,aussiecleetus,07/03/2020 12:47 AM,also make sure your capitalization is correct for things,,
+181254147679584257,thesixx,07/03/2020 12:47 AM,"> though I wouldn't be surprised if Expansion ends up with rocket science lol
+@Cleetus Me too, they're doing a beautiful job",,
+368717325484032001,aussiecleetus,07/03/2020 12:47 AM,note no capital B for Callback,,
+368717325484032001,aussiecleetus,07/03/2020 12:47 AM,"```c
+modded class ActionBuildPartCB
+{
+    override float SetCallbackDuration( ItemBase item )
+    {
+        if ( item.Type() == ""MyAdminTool"")
+            return 1.0;
+
+        return super.SetCallbackDuration(item);
+    }
+}```",,
+368717325484032001,aussiecleetus,07/03/2020 12:48 AM,"you would just want to adjust `""MyAdminTool""` to your tool's classname and adjust the time to whatever you want",,
+181254147679584257,thesixx,07/03/2020 12:51 AM,"Thanks Cleetus, you helped me a lot",,
+368717325484032001,aussiecleetus,07/03/2020 12:54 AM,"no worries buddy, go get 'em",,
+368717325484032001,aussiecleetus,07/03/2020 12:54 AM,🙂,,
+241680063072960513,kuli_vt,07/03/2020 1:25 AM,Anyone have anything for my config variables on client AND server?  Is this why everyone puts it in DayZGame?,,
+214427063665295362,aeryes,07/03/2020 7:07 AM,Has anything changed with Hologram.c. My item shadow's no longer appear.,,
+606396016777887785,.the_toastie,07/03/2020 8:56 AM,"Hi all, does anyone know of a script that would allow individual players to respawn with specific items? Maybe something that goes in init.c , for example -look for player name -> if player name = toastie -> spawn that player with an apple. Thanks in advance, sorry if this is a stupid question 😅",,
+396380613973639170,solomoog,07/03/2020 2:20 PM,"There is a torch animation in-game i am trying to use for a custom object, i've got the animations over-written on other files but this one is causing me difficulty.
+> pType.AddItemInHandsProfileIK(""Umbrella_Open"", ""player_main_1h_torch.asi"", pBehavior, ""dz/anims/anm/player/ik/gear/torch.anm"");
+Have i done something wrong? Umbrella_Open is my classname.",,
+396380613973639170,solomoog,07/03/2020 2:27 PM,"Nevermind, i'm an idiot (Check your pathing guys)",,
+368717325484032001,aussiecleetus,07/03/2020 2:28 PM,,https://cdn.discordapp.com/attachments/492295576470290433/728587974836748340/unknown.png,
+368717325484032001,aussiecleetus,07/03/2020 2:28 PM,that changed in 1.08,,
+396380613973639170,solomoog,07/03/2020 2:29 PM,"Yeah got that, thank you",,
+389021593042681862,johnmclane666,07/03/2020 4:04 PM,Is there an easy way to get the IP Adress of the server a script is running on?,,
+105031327861977088,thedimin,07/03/2020 4:04 PM,Wow,,
+105031327861977088,thedimin,07/03/2020 4:04 PM,Uhm should be in playerIdentity ?,,
+105031327861977088,thedimin,07/03/2020 4:06 PM,"Don't think you can get player IP (thank god).
+But you can get the players id !",,
+389021593042681862,johnmclane666,07/03/2020 4:06 PM,"not players IP, the IP of the Server!",,
+105031327861977088,thedimin,07/03/2020 4:06 PM,OHH,,
+389021593042681862,johnmclane666,07/03/2020 4:06 PM,for example if i want to print the current server IP into chat,,
+105031327861977088,thedimin,07/03/2020 4:07 PM,Quick search brings me to OnlineServices class,,
+105031327861977088,thedimin,07/03/2020 4:07 PM,it contains a m_CurrentServerIP,,
+105031327861977088,thedimin,07/03/2020 4:07 PM,,https://cdn.discordapp.com/attachments/492295576470290433/728613000298102784/unknown.png,
+105031327861977088,thedimin,07/03/2020 4:08 PM,InGameMenu.c::SetServerInfo(),,
+389021593042681862,johnmclane666,07/03/2020 4:08 PM,ah ok thx found this near:,https://cdn.discordapp.com/attachments/492295576470290433/728613225523839057/unknown.png,
+561680015578759196,wrdg,07/03/2020 4:08 PM,"> Hi all, does anyone know of a script that would allow individual players to respawn with specific items? Maybe something that goes in init.c , for example -look for player name -> if player name = toastie -> spawn that player with an apple. Thanks in advance, sorry if this is a stupid question 😅
+@The_Toastie https://gist.github.com/wrdg/f4c870f8751e8b185f113a75c36ad7ec",,❤️ (1)
+389021593042681862,johnmclane666,07/03/2020 4:09 PM,"but since its in Serverbrowser does this mean this it handled ""outside"" the game - before ever connecting to a server",,
+389021593042681862,johnmclane666,07/03/2020 4:09 PM,"...is there a way to call this ""GetIP()"" within running (in)game",,
+389021593042681862,johnmclane666,07/03/2020 4:09 PM,?,,
+105031327861977088,thedimin,07/03/2020 4:09 PM,Think serverbrowser runs on the client not the server,,
+105031327861977088,thedimin,07/03/2020 4:10 PM,But im not sure,,
+606396016777887785,.the_toastie,07/03/2020 4:14 PM,Thanks @Wardog this is great 👍,,
+105031327861977088,thedimin,07/03/2020 4:19 PM,"@JohnMcLane  (Benni) If you want to Show the current ip to the local player maybe you can hook into BiosSessionService.c::OnEnterGameplaySession(string session_address, int session_port, EBiosError error)",,
+105031327861977088,thedimin,07/03/2020 4:20 PM,"ANd instead of sending it from server to client, just keep it local ?",,
+561680015578759196,wrdg,07/03/2020 4:21 PM,are you trying to determine the IP from the server?,,
+389021593042681862,johnmclane666,07/03/2020 4:21 PM,yes,,
+389021593042681862,johnmclane666,07/03/2020 4:22 PM,"Do you know if ""BiosSessionService.c::OnEnterGameplaySession"" is called everytime a player enters session, wether he is connecting via DayZLauncher OR DaySALauncher?",,
+105031327861977088,thedimin,07/03/2020 4:23 PM,I think it called on the client when he connects to Any server,,
+105031327861977088,thedimin,07/03/2020 4:23 PM,"But, i haven't tested it",,
+389021593042681862,johnmclane666,07/03/2020 4:23 PM,hmm that sounds like someting i could try,,
+105031327861977088,thedimin,07/03/2020 4:24 PM,"There should be a easier way , wardog maybe finds it for ya",,
+389021593042681862,johnmclane666,07/03/2020 4:24 PM,(just for info a am a veryyyyy bad coder) 😛,,
+389021593042681862,johnmclane666,07/03/2020 4:25 PM,but maybe i could overrwrite this OnEnterGameplaySession and add the stuff into it what i need,,
+105031327861977088,thedimin,07/03/2020 4:25 PM,I think it could be hard to get a reference to the Service,,
+389021593042681862,johnmclane666,07/03/2020 4:25 PM,"since ip is given by the methods ""session_address"" as string",,
+230061386888118273,.thurston,07/03/2020 4:25 PM,"@JohnMcLane  (Benni) you want to get the ip from the server, right?",,
+105031327861977088,thedimin,07/03/2020 4:25 PM,I think Dayz displays the current IP in the pause menu,,
+105031327861977088,thedimin,07/03/2020 4:25 PM,But my server is currently not working so i can't dubble check that,,
+230061386888118273,.thurston,07/03/2020 4:26 PM,"`GetGame().GetHostAddress(ip, port);`",,
+105031327861977088,thedimin,07/03/2020 4:26 PM,find out where they get it from,,
+230061386888118273,.thurston,07/03/2020 4:26 PM,Where ip and port are the strings returned,,
+389021593042681862,johnmclane666,07/03/2020 4:26 PM,ahh thats all??,,
+230061386888118273,.thurston,07/03/2020 4:26 PM,Yup,,
+105031327861977088,thedimin,07/03/2020 4:26 PM,Wow,,
+105031327861977088,thedimin,07/03/2020 4:26 PM,Thanks,,
+389021593042681862,johnmclane666,07/03/2020 4:26 PM,thx sooo much!,,
+230061386888118273,.thurston,07/03/2020 4:26 PM,Not a problem!,,
+105031327861977088,thedimin,07/03/2020 4:27 PM,"i was searching on server , not host 😛",,
+230061386888118273,.thurston,07/03/2020 4:27 PM,"```
+    /**
+  \brief Gets the server address. (from client)
+    */
+    proto bool                GetHostAddress( out string address, out int port );```",,
+561680015578759196,wrdg,07/03/2020 4:27 PM,"damn he beat me to it, literally was going to send it the minute i asked but had to answer a call",,
+561680015578759196,wrdg,07/03/2020 4:28 PM,might have to make a rest request if you're wanting the server to get the IP of itself,,
+368717325484032001,aussiecleetus,07/03/2020 4:57 PM,or request the IP from a random client using an RPC lol,,
+368717325484032001,aussiecleetus,07/03/2020 4:57 PM,won't help if there is nobody online at the time of seeking the IP though,,
+105031327861977088,thedimin,07/03/2020 5:35 PM,Would you need  the IP when nobody is online ?( could get server ip from first client that joined),,
+105031327861977088,thedimin,07/03/2020 8:01 PM,"Wow rip , Can't mod The mission class 😦",,
+107560637399306240,cooltrain,07/03/2020 8:15 PM,Just use MissionBase?,,
+105031327861977088,thedimin,07/03/2020 8:19 PM,"MissionBase is inside 5_Mision, Trying to hook in at SyncEvents.c (3_game)",,
+105031327861977088,thedimin,07/03/2020 8:19 PM,But gonna do it with a event,,
+105031327861977088,thedimin,07/03/2020 8:23 PM,"Maybe beter of saying what im trying to do.
+I want to get a event/ function that Tells me a player got killed (by a other player), with info about weapon /headshot",,
+107560637399306240,cooltrain,07/03/2020 8:27 PM,Oh kill feed stuff,,
+107560637399306240,cooltrain,07/03/2020 8:28 PM,just hook into `EEKilled` and `EEHitBy` within playerbase,,
+105031327861977088,thedimin,07/03/2020 8:30 PM,WOuldn't it be way more logical there is a function to hook into in The mission tho ?,,
+665471546525220875,Zedmag#7576,07/03/2020 8:30 PM,Dimm - this is my mod for punishing players for killing inside a safe zone. You can use some of it to learn from for the kill feed stuff you’re looking for.,,
+665471546525220875,Zedmag#7576,07/03/2020 8:30 PM,https://steamcommunity.com/sharedfiles/filedetails/?id=2131989006,,
+105031327861977088,thedimin,07/03/2020 8:30 PM,"Im have hooked into those before, But its kinda part of a abstraction layer im trying to build",,
+105031327861977088,thedimin,07/03/2020 8:31 PM,Not doing a killfeed btw,,
+665471546525220875,Zedmag#7576,07/03/2020 8:31 PM,Sure. But you’re gathering information based on players killing and hitting other players.,,
+105031327861977088,thedimin,07/03/2020 8:31 PM,"For now i just need Killer killed , weapon. Headshot just part of abstraction",,
+105031327861977088,thedimin,07/03/2020 8:31 PM,Yeah true 😉,,
+105031327861977088,thedimin,07/03/2020 8:31 PM,Making a gunGame mod,,
+665471546525220875,Zedmag#7576,07/03/2020 8:32 PM,Killer is always the object that did  the final blow. You have to GetParent I think to get info I the player holding the ‘killer’,,
+105031327861977088,thedimin,07/03/2020 8:33 PM,Correct,,
+105031327861977088,thedimin,07/03/2020 8:33 PM,Trying to handle that behind the scenes,,
+665471546525220875,Zedmag#7576,07/03/2020 8:33 PM,Feel free to unpack and learn anything you can from mine.,,
+105031327861977088,thedimin,07/03/2020 8:33 PM,"Because more likely then not you need the actualy player , not just the weapon",,
+105031327861977088,thedimin,07/03/2020 8:33 PM,👍,,
+665471546525220875,Zedmag#7576,07/03/2020 8:34 PM,🤙🤟 let me know how it goes.,,
+105031327861977088,thedimin,07/03/2020 8:34 PM,Want his for ease to use in the mission itself 😉,https://cdn.discordapp.com/attachments/492295576470290433/728680081475502150/unknown.png,
+105031327861977088,thedimin,07/03/2020 8:34 PM,Will do 🙂,,
+105031327861977088,thedimin,07/03/2020 8:34 PM,Need a few more days till i got the full gameplay loop working,,
+665471546525220875,Zedmag#7576,07/03/2020 8:35 PM,Oooo wait is that new in 1.08? 🤦‍♂️,,
+105031327861977088,thedimin,07/03/2020 8:35 PM,NO,,
+105031327861977088,thedimin,07/03/2020 8:35 PM,Thats what i want to create,,
+665471546525220875,Zedmag#7576,07/03/2020 8:36 PM,Oh! Haha gotcha,,
+105031327861977088,thedimin,07/03/2020 8:36 PM,Like the project im working on right now is GunGame. But there is a more abstract layer of more types of wargames,,
+105031327861977088,thedimin,07/03/2020 8:36 PM,For instance i got rid of Needing mags in your inventory,,
+665471546525220875,Zedmag#7576,07/03/2020 8:37 PM,I think you would have to define the bases more like KillerBase killer VictimBase victim and so on. Then define the base,,
+105031327861977088,thedimin,07/03/2020 8:37 PM,How do you mean ?,,
+105031327861977088,thedimin,07/03/2020 8:39 PM,"```cs
+void OnPlayerKilledByPlayer(PlayerBase victim,PlayerBase killer, EntityAI KillerBase)
+```
+?",,
+665471546525220875,Zedmag#7576,07/03/2020 8:39 PM,"In EEkilled maybe something like 
+
+PlayerBase KillerBase = PlayerBase.Cast(this.GetParent());",,
+105031327861977088,thedimin,07/03/2020 8:39 PM,Yeah for sure,,
+105031327861977088,thedimin,07/03/2020 8:40 PM,That part im not that worried about 😉,,
+665471546525220875,Zedmag#7576,07/03/2020 8:40 PM,Then KillerBase killer rather than PlayerBase killer,,
+105031327861977088,thedimin,07/03/2020 8:40 PM,But i don't want to deal with it on the abstract layer,,
+105031327861977088,thedimin,07/03/2020 8:40 PM,Hmm,,
+665471546525220875,Zedmag#7576,07/03/2020 8:41 PM,I’m just spit balling. I can’t test anything as immobile and on the road for holiday,,
+105031327861977088,thedimin,07/03/2020 8:41 PM,you mean with a typedef PlayerBase KillerBase ?,,
+665471546525220875,Zedmag#7576,07/03/2020 8:42 PM,Or something.,,
+105031327861977088,thedimin,07/03/2020 8:43 PM,"Get what you mean, but kinda removes clearity",,
+105031327861977088,thedimin,07/03/2020 8:51 PM,@ƃɐɯnɐΛ | פɐɹ | whats folder name of ya mod ?,,
+665471546525220875,Zedmag#7576,07/03/2020 8:53 PM,??,,
+665471546525220875,Zedmag#7576,07/03/2020 8:54 PM,I think it’s PvE_Jail,,
+286577427151454209,_lcky,07/04/2020 12:01 AM,what does it mean by unknown type 'ex_wood_floor_ColorBase' in the 4_World script,,
+292234618667663361,kyhbka,07/04/2020 3:48 AM,class `ex_wood_floor_ColorBase` not exist,,
+226835648567443457,mdc.tf,07/04/2020 3:58 AM,"Guys, am I going mad here, or should
+
+```   ref TStringArray m_AutorunKeys = new TStringArray;
+```
+
+Be available from all functions within that class?",,
+292234618667663361,kyhbka,07/04/2020 4:01 AM,yes,,
+226835648567443457,mdc.tf,07/04/2020 4:01 AM,"Because even after I insert elements into the array in OnInit, the array stays vacant",,
+292234618667663361,kyhbka,07/04/2020 4:01 AM,show screenshot,,
+226835648567443457,mdc.tf,07/04/2020 4:02 AM,Hang on,,
+292234618667663361,kyhbka,07/04/2020 4:03 AM,`Shift + Win + S` to quickly create screenshots,,
+226835648567443457,mdc.tf,07/04/2020 4:03 AM,"Yeah I know, just testing the last build to see if there's any change 😂",,
+226835648567443457,mdc.tf,07/04/2020 4:05 AM,,https://cdn.discordapp.com/attachments/492295576470290433/728793505354219641/unknown.png,
+226835648567443457,mdc.tf,07/04/2020 4:06 AM,"```        Print(""[Autorun] DEBUG is "" + m_AutorunKeys[0]);
+```
+
+Later in the class is basically just spitting out null",,
+292234618667663361,kyhbka,07/04/2020 4:07 AM,"Very strange, try initializing the array in OnInit",,
+202828762310508554,daemonforge,07/04/2020 4:08 AM,"Try adding a ref with the new
+
+```
+ref TStringArray m_AutorunKeys = new ref TStringArray;
+```",,
+226835648567443457,mdc.tf,07/04/2020 4:08 AM,"Pretty sure I tried that earlier when I was using array<string>, but I'll give it a go",,
+226835648567443457,mdc.tf,07/04/2020 4:10 AM,"Also probably worth mentioning, Print() isn't functioning inside OnInit, but I'm running the non-diag client atm so not sure if that's why",,
+226835648567443457,mdc.tf,07/04/2020 4:10 AM,"Yeah, array still empty",,
+226835648567443457,mdc.tf,07/04/2020 4:10 AM,"``SCRIPT       : [Autorun] DEBUG is 
+``",,
+226835648567443457,mdc.tf,07/04/2020 4:11 AM,I did wonder whether OnInit just isn't being executed,,
+226835648567443457,mdc.tf,07/04/2020 4:11 AM,"But considering how this is the last mod loaded, I can't imagine why",,
+292234618667663361,kyhbka,07/04/2020 4:13 AM,So you're not running a real server?,,
+226835648567443457,mdc.tf,07/04/2020 4:14 AM,"I am, local test environment; standard DayZ client with separate server instance",,
+202828762310508554,daemonforge,07/04/2020 4:14 AM,yeah I'd try and do a print in the OnInit do like a Print(m_AutorunKeys.Count());  see if they are all there,,
+292234618667663361,kyhbka,07/04/2020 4:14 AM,you can use func debug for arrays,,
+226835648567443457,mdc.tf,07/04/2020 4:14 AM,"No Print() functions work *whatsoever*, regardless of placement inside OnInit",,
+292234618667663361,kyhbka,07/04/2020 4:14 AM,`m_AutorunKeys.Debug()`,,
+226835648567443457,mdc.tf,07/04/2020 4:18 AM,SCRIPT       : string s =    'Array count: 0',,
+226835648567443457,mdc.tf,07/04/2020 4:18 AM,"Yep, not getting populated",,
+226835648567443457,mdc.tf,07/04/2020 4:18 AM,"Also didn't execute within OnInit, so it looks like something screwy is going on",,
+226835648567443457,mdc.tf,07/04/2020 4:20 AM,How the hell is **anything** working if OnInit isn't getting called? 😂,,
+202828762310508554,daemonforge,07/04/2020 4:21 AM,"Hmmm, if you don't need to manipulate the array you could just do 
+```
+ref TStringArray m_AutorunKeys = {""UAAutorunToggle"", ""UAMoveForward"", ""etc...""};
+```",,
+226835648567443457,mdc.tf,07/04/2020 4:22 AM,"True, although now I'm starting to worry there might be bigger issues at play 😂",,
+665471546525220875,Zedmag#7576,07/04/2020 4:22 AM,Try super at the top.,,
+226835648567443457,mdc.tf,07/04/2020 4:22 AM,"Just switched it around, we'll see how that goes",,
+665471546525220875,Zedmag#7576,07/04/2020 4:22 AM,🤷‍♂️,,
+202828762310508554,daemonforge,07/04/2020 4:22 AM,Have seen werider things lol,,
+665471546525220875,Zedmag#7576,07/04/2020 4:22 AM,Right? Lol,,
+226835648567443457,mdc.tf,07/04/2020 4:23 AM,Same effect 🤦‍♂️,,
+226835648567443457,mdc.tf,07/04/2020 4:23 AM,"Most frustrating thing right now is that I can't figure out when **I'M** being an idiot, and when it's 1.08",,
+665471546525220875,Zedmag#7576,07/04/2020 4:23 AM,Where is your Array.Debug() line then?,,
+226835648567443457,mdc.tf,07/04/2020 4:24 AM,"Got two atm, one at the end of OnInit, and one in AutorunShouldStart",,
+226835648567443457,mdc.tf,07/04/2020 4:24 AM,Only one is getting executed,,
+226835648567443457,mdc.tf,07/04/2020 4:24 AM,I'm assuming the one in AutorunShouldStart,,
+665471546525220875,Zedmag#7576,07/04/2020 4:26 AM,Hmmmmm. I heard some funky things are happening with modding MissionGamePlay...  maybe try in MissionBase? I haven’t tested yet on 108 since I’m on the road,,
+226835648567443457,mdc.tf,07/04/2020 4:27 AM,"This kinda makes sense actually, since the .OnInit function that's getting called from the Kinship object is empty, hence why I hadn't noticed OnInit wasn't working",,
+226835648567443457,mdc.tf,07/04/2020 4:27 AM,"The main stuff in that is called from the constructor, and that's initialized from OnMissionStart",,
+226835648567443457,mdc.tf,07/04/2020 4:27 AM,Lemme try moving this shit to OMS,,
+202828762310508554,daemonforge,07/04/2020 4:28 AM,Yeah was just going to say try moving the inserts some where else,,
+202828762310508554,daemonforge,07/04/2020 4:28 AM,Like in the getKinship,,
+665471546525220875,Zedmag#7576,07/04/2020 4:28 AM,One of my mods uses OnUpdate since it called AFTER everything else. But you have to put a callback bool in it to prevent it from calling more than once.,,
+226835648567443457,mdc.tf,07/04/2020 4:28 AM,"Yeah, I'm using OnUpdate for the input checking (this is basically a modification of Scharna's)",,
+226835648567443457,mdc.tf,07/04/2020 4:30 AM,Aaaaaaand it works,,
+226835648567443457,mdc.tf,07/04/2020 4:30 AM,Fuck you 1.08,,
+226835648567443457,mdc.tf,07/04/2020 4:30 AM,Like seriously 🤦‍♂️,,
+226835648567443457,mdc.tf,07/04/2020 4:31 AM,"Thanks guys, been trying every combination of declarations and placements for the past 3 hours, gotta love brainstorming with other scripters 😂",,
+665471546525220875,Zedmag#7576,07/04/2020 4:35 AM,What was the res? OnUpdate or MissionBase?,,
+226835648567443457,mdc.tf,07/04/2020 4:51 AM,"Neither, OnMissionStart",,
+226835648567443457,mdc.tf,07/04/2020 4:52 AM,Actually gets executed apparently 😂,,
+665471546525220875,Zedmag#7576,07/04/2020 5:00 AM,Well hmmmmm,,
+368717325484032001,aussiecleetus,07/04/2020 5:06 AM,"@TheDimin you could always create a function in Mission base then use something like:
+```c
+override void EEKilledBy(etc)
+{
+    bool killerIsPlayer = false;
+    PlayerBaser playerKiller;
+    ItemBase itemKiller;
+    if (Class CastTo(itemKiller, killer))
+    {
+        if (Class.CastTo(playerKiller, itemKiller.GetParent())
+           killerIsPlayer = true;
+    }
+
+    if (!killerIsPlayer && Class.CastTo(playerKiller, killer)
+        killerIsPlayer = true;
+
+    if (killerIsPlayer)
+        GetGame().GetMission().MyNewFunction(playerKiller);
+
+    super.EEKilledBy(etc);
+}
+```
+This would send the PlayerBase of the killer to your mission function",,
+368717325484032001,aussiecleetus,07/04/2020 5:10 AM,There is some pseudo code and was written from my phone so may have typos,,
+292234618667663361,kyhbka,07/04/2020 5:14 AM,don't forget to add a suicide check,,
+286577427151454209,_lcky,07/04/2020 9:23 AM,"Hey scripters!
+
+I am building my very own base building mod(I understand theres no point, but I wanna learn) and I have modelled everything, and add inventory for the model in config.cpp, but my main question, is how do I add the inventory ui that has the Nails, Planks, Logs etc",,
+292234618667663361,kyhbka,07/04/2020 9:27 AM,Look at the config of the vanilla fence,,
+286577427151454209,_lcky,07/04/2020 9:32 AM,"oh okay, thanks man",,
+286577427151454209,_lcky,07/04/2020 9:35 AM,is the vanilla fence under structures in DZ folder,,
+286577427151454209,_lcky,07/04/2020 10:03 AM,"Hey again, I fixed this issue last night, and somehow when I come on this morning, this shit broking again, im hella confused lol. Its the Unknown Type ""woodFloor_ColorBase"", my class in the Geometry named properties tab states that class name, configs left the same as last night. help pls lol
+
+If needed, I can supply the config.cpp and my world script",,
+105031327861977088,thedimin,07/04/2020 1:14 PM,@Cleetus I found I really neat solution yesterday ! Maybe I will share it in a bit,,
+105031327861977088,thedimin,07/04/2020 1:17 PM,Haven't tested it yet as I don't have a buddy that can test it with me atm,,
+241680063072960513,kuli_vt,07/04/2020 1:20 PM,"Can anyone help?  I am still having config file issues.  I have moved my config to be read in MissionServer, and have getters for DayZGame and the config.  The server gets these values just fine but I cannot access them from a client side action, I get a Stack Trace even just by calling GetDayZGame.GetConfig",,
+105031327861977088,thedimin,07/04/2020 1:38 PM,What type of config ? where is it located ?,,
+105031327861977088,thedimin,07/04/2020 1:40 PM,IT could be that the file location is only avaialable on the server. If thats teh case maybe you have to replicate it to the client yourself.,,
+105031327861977088,thedimin,07/04/2020 1:40 PM,Would be my gues for now,,
+241680063072960513,kuli_vt,07/04/2020 2:00 PM,"So its a pretty typical JSON file loader...file resides on server and is read in, the problem is getting the config information from a client side function doesnt work at all",,
+241680063072960513,kuli_vt,07/04/2020 2:01 PM,So there are variables in the file that pertain to client configs and I was really hoping to avoid having to sync these,,
+241680063072960513,kuli_vt,07/04/2020 2:02 PM,I was even trying to read them from the server config in client constructors when an item (a player ie PlayerBase) is spawned and that doesnt work either...,,
+241680063072960513,kuli_vt,07/04/2020 2:03 PM,it's driving me nuts because these should be falling off a log simple,,
+105031327861977088,thedimin,07/04/2020 2:04 PM,Check the logs,,
+105031327861977088,thedimin,07/04/2020 2:04 PM,I was running into issues with json aswel,,
+241680063072960513,kuli_vt,07/04/2020 2:04 PM,StackTrace 😦,,
+105031327861977088,thedimin,07/04/2020 2:04 PM,Not workbench logs,,
+105031327861977088,thedimin,07/04/2020 2:04 PM,I am not sure where client sided logs are saved (player profile ?),,
+241680063072960513,kuli_vt,07/04/2020 2:04 PM,"speaking of which, is anyone having issues with Workbench, as of last night I can no longer launch mine ""Game is not installed"" which I think is a tools version  mismatch?",,
+105031327861977088,thedimin,07/04/2020 2:05 PM,Launch dayz,,
+105031327861977088,thedimin,07/04/2020 2:05 PM,Like launch it normal,,
+105031327861977088,thedimin,07/04/2020 2:05 PM,think that fixed it for me,,
+105031327861977088,thedimin,07/04/2020 2:05 PM,"> Like launch it normal
+@TheDimin trough steam",,
+241680063072960513,kuli_vt,07/04/2020 2:05 PM,"Hmm, I tried all that",,
+105031327861977088,thedimin,07/04/2020 2:05 PM,Maybe extract game data again,,
+241680063072960513,kuli_vt,07/04/2020 2:05 PM,I even have DayZ running,,
+241680063072960513,kuli_vt,07/04/2020 2:05 PM,"k, I can try that",,
+241680063072960513,kuli_vt,07/04/2020 2:06 PM,"I was so proud of myself, workbench is not easy to set up",,
+105031327861977088,thedimin,07/04/2020 2:06 PM,I agree with you on that,,
+105031327861977088,thedimin,07/04/2020 2:06 PM,Hopefully they will simplify it for the next arma game,,
+105031327861977088,thedimin,07/04/2020 2:06 PM,Coming from unity / unreal. This is way to complex to get started with,,
+292234618667663361,kyhbka,07/04/2020 2:07 PM,show me the code snippet,,
+241680063072960513,kuli_vt,07/04/2020 2:07 PM,"```Class:      'SurvivorBase'
+Entity id:2936604
+
+Function: 'AddValueToJointValue'
+Stack trace:
+CannabisPlus/scripts/4_world/entities/manbase/PlayerBase.c:44
+CannabisPlus/scripts/4_world/classes/useractionscomponent/actions/continuous/medical/actionsmokejointself.c:97
+scripts/4_World/classes\useractionscomponent\actions\actioncontinuousbase.c:212
+scripts/4_World/classes\useractionscomponent\actioncomponents\cacontinuousbase.c:12
+scripts/4_World/classes\useractionscomponent\actioncomponents\cacontinuousrepeat.c:47
+scripts/4_World/classes\useractionscomponent\animatedactionbase.c:60
+scripts/4_World/classes\useractionscomponent\animatedactionbase.c:339
+scripts/4_World/classes\useractionscomponent\actions\actioncontinuousbase.c:28```",,
+241680063072960513,kuli_vt,07/04/2020 2:08 PM,DayZGame.c,,
+105031327861977088,thedimin,07/04/2020 2:08 PM,can you show function context ?,,
+241680063072960513,kuli_vt,07/04/2020 2:08 PM,"```modded class DayZGame {
+    protected ref CannabisPlusConfig CPConfig;
+
+    ref CannabisPlusConfig GetCannabisPlusConfig() {
+        return CPConfig;
+    }
+
+    void SetCannabisPlusConfig(ref CannabisPlusConfig config) {
+        CPConfig = config;
+    }
+}```",,
+292234618667663361,kyhbka,07/04/2020 2:08 PM,not an error but a code,,
+105031327861977088,thedimin,07/04/2020 2:08 PM,issue is happening at playerbase.c:44,,
+292234618667663361,kyhbka,07/04/2020 2:08 PM,show me how you read the config,,
+241680063072960513,kuli_vt,07/04/2020 2:08 PM,"right, thats the  client side function",,
+241680063072960513,kuli_vt,07/04/2020 2:08 PM,"```modded class MissionServer
+{
+    private string CONFIG_FILE =  ""$profile:CannabisPlus.json"";
+    ref CannabisPlusConfig _config;
+    
+    private int modVersion = 100;
+
+    void MissionServer()
+    {
+        if ( GetGame().IsServer() ){
+            _config = new CannabisPlusConfig();
+            string fileName;
+            FileAttr fileAttr;
+            FindFileHandle configFile = FindFile(CONFIG_FILE, fileName, fileAttr, 0);
+            if(!configFile){
+                JsonFileLoader<CannabisPlusConfig>.JsonSaveFile(CONFIG_FILE, _config);
+                Print(""Create new CannabisPlus Config File"");
+            }else{
+                if(_config.configVersion == modVersion) {
+                    JsonFileLoader<CannabisPlusConfig>.JsonLoadFile(CONFIG_FILE, _config);
+                    Print(""Load CannabisPlus Config File"");
+                } else {                    
+                    DeleteFile(""$profile:CannabisPlus_old.json"");
+                    CopyFile(CONFIG_FILE, ""$profile:CannabisPlus_old.json"");
+                    DeleteFile(CONFIG_FILE);
+                    JsonFileLoader<CannabisPlusConfig>.JsonSaveFile(CONFIG_FILE, _config);
+                    JsonFileLoader<CannabisPlusConfig>.JsonLoadFile(CONFIG_FILE, _config);
+        
+                    Print(""Copy old CannabisPlus Config File"");
+                }
+            }
+            _config.Validate();
+        }    
+    }
+}```",,
+241680063072960513,kuli_vt,07/04/2020 2:08 PM,Mission.c,,
+241680063072960513,kuli_vt,07/04/2020 2:09 PM,And here is where the error is:,,
+241680063072960513,kuli_vt,07/04/2020 2:09 PM,PlayerBase.c,,
+241680063072960513,kuli_vt,07/04/2020 2:09 PM,"```void AddValueToJointValue(int value) {    
+        if (GetDayZGame().GetCannabisPlusConfig()) {    
+            if(GetDayZGame().GetCannabisPlusConfig().GetJointSmokingEffect() == 1) {
+                //Print(""CannabisPlus: AddValueToJointValue"");
+                m_jointValue += value;```",,
+241680063072960513,kuli_vt,07/04/2020 2:09 PM,that second line,,
+292234618667663361,kyhbka,07/04/2020 2:09 PM,mission server for the server,,
+241680063072960513,kuli_vt,07/04/2020 2:09 PM,Do I need to load it on missionclient too?  is this a brain fart,,
+105031327861977088,thedimin,07/04/2020 2:10 PM,No client loads a client sided mission stuff,,
+105031327861977088,thedimin,07/04/2020 2:10 PM,Atleast i think they do,,
+241680063072960513,kuli_vt,07/04/2020 2:11 PM,"so, server side everything works",,
+105031327861977088,thedimin,07/04/2020 2:11 PM,Client has MissionGameplay i think,,
+292234618667663361,kyhbka,07/04/2020 2:11 PM,"`if ( GetGame().IsServer()`
+- hmm, why is it interesting that your clients don't see the config🤔",,
+292234618667663361,kyhbka,07/04/2020 2:11 PM,It looks like you copied most of this code from somewhere,,
+241680063072960513,kuli_vt,07/04/2020 2:12 PM,shouldnt missionserver look for if its on server side or does it not matter>,,
+105031327861977088,thedimin,07/04/2020 2:12 PM,Why don't you replicate it ?,,
+241680063072960513,kuli_vt,07/04/2020 2:12 PM,pretty much all the mods I researched do this same thing,,
+241680063072960513,kuli_vt,07/04/2020 2:13 PM,ie if ( GetGame().IsServer() ){,,
+105031327861977088,thedimin,07/04/2020 2:13 PM,Yeah seems logical,,
+105031327861977088,thedimin,07/04/2020 2:13 PM,File is part of server profile,,
+105031327861977088,thedimin,07/04/2020 2:13 PM,not the clients profile,,
+292234618667663361,kyhbka,07/04/2020 2:13 PM,Why would you create a client-side file and write something to it if you can store it directly,,
+241680063072960513,kuli_vt,07/04/2020 2:14 PM,I don't write anything to it,,
+292234618667663361,kyhbka,07/04/2020 2:15 PM,"```                  if(_config.configVersion == modVersion) {
+                    JsonFileLoader<CannabisPlusConfig>.JsonLoadFile(CONFIG_FILE, _config);```
+You also try to compare the mod version even before you read it from the file",,
+241680063072960513,kuli_vt,07/04/2020 2:15 PM,that is so server hosts dont always have to remember to delete their old JSONs,,
+241680063072960513,kuli_vt,07/04/2020 2:15 PM,"although I didnt write, and dont like that code",,
+241680063072960513,kuli_vt,07/04/2020 2:16 PM,"so if the config changes, it will create a new one for you and print a message accordingly",,
+105031327861977088,thedimin,07/04/2020 2:16 PM,no ? he first creates a new _config,,
+105031327861977088,thedimin,07/04/2020 2:16 PM,line after the server check,,
+241680063072960513,kuli_vt,07/04/2020 2:16 PM,"if it doesnt exist, its created",,
+292234618667663361,kyhbka,07/04/2020 2:16 PM,So the version is stored at the script level somewhere in the code?\,,
+241680063072960513,kuli_vt,07/04/2020 2:17 PM,"it it exists and doesnt match, its copied and overwritten",,
+241680063072960513,kuli_vt,07/04/2020 2:17 PM,"it it matches, it loads",,
+241680063072960513,kuli_vt,07/04/2020 2:17 PM,anywho,,
+241680063072960513,kuli_vt,07/04/2020 2:17 PM,like i said this all works server side jsut fine,,
+292234618667663361,kyhbka,07/04/2020 2:17 PM,can you show your CannabisPlusConfig class,,
+241680063072960513,kuli_vt,07/04/2020 2:18 PM,"```class CannabisPlusConfig
+{```",,
+241680063072960513,kuli_vt,07/04/2020 2:18 PM,TONS of variables,,
+241680063072960513,kuli_vt,07/04/2020 2:18 PM,```void CannabisPlusConfig() {```,,
+241680063072960513,kuli_vt,07/04/2020 2:18 PM,TONS of defaults,,
+241680063072960513,kuli_vt,07/04/2020 2:19 PM,"```void Validate() {        
+        if (jointEffectRed > 1.0 || jointEffectGreen > 1.0 || jointEffectBlue > 1.0) {
+            Print(""[CannabisPlusConfig] Joint Effect r,g,b values must be <= 1.0"");
+            jointEffectRed = 1.0;
+            jointEffectGreen = 1.0;
+            jointEffectBlue = 1.0;
+        }
+    };
+    
+    int GetJointSmokingEffect() {
+        return activateJointSmokingEffect;
+    }
+    
+    int GetJointCyclesToActivate() {
+        return jointCyclesToActivateEffect
+    }
+    
+    int GetJointEffectTime() {
+        return smokingJointEffectDuration
+    }```",,
+292234618667663361,kyhbka,07/04/2020 2:19 PM,show line with configVersion,,
+105031327861977088,thedimin,07/04/2020 2:19 PM,YOu wan't server owners to be able to change config correct ?,,
+241680063072960513,kuli_vt,07/04/2020 2:19 PM,"```void CannabisPlusConfig() {
+        
+        configVersion                = 100;    ```",,
+292234618667663361,kyhbka,07/04/2020 2:19 PM,okay,,
+241680063072960513,kuli_vt,07/04/2020 2:19 PM,"yes, this class gets created before MissionServer runs",,
+241680063072960513,kuli_vt,07/04/2020 2:19 PM,so the defaults in the class will all get overwritten by the JSON loader,,
+105031327861977088,thedimin,07/04/2020 2:19 PM,Is t here a reason the client needs to know about all these variables ?,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,yes,,
+292234618667663361,kyhbka,07/04/2020 2:20 PM,you need to send configs to all players who will join the server,,
+105031327861977088,thedimin,07/04/2020 2:20 PM,Are you sure ?,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,yes,,
+105031327861977088,thedimin,07/04/2020 2:20 PM,Im not sure the type of config stuff you saving,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,I dont want to spoil it but we are working on palyer effects based on smoking,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,sickness,,
+105031327861977088,thedimin,07/04/2020 2:20 PM,Ah,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,addiction,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,cameras 😉,,
+105031327861977088,thedimin,07/04/2020 2:20 PM,Idk about camera,,
+241680063072960513,kuli_vt,07/04/2020 2:20 PM,those are ALL client side and effect the player,,
+105031327861977088,thedimin,07/04/2020 2:20 PM,But addication ect should be server authoritive ?,,
+292234618667663361,kyhbka,07/04/2020 2:21 PM,Very similar to how RoomService code is written ),,
+241680063072960513,kuli_vt,07/04/2020 2:21 PM,"yes, I worked with RoomService a lot on a custom raiding mod",,
+105031327861977088,thedimin,07/04/2020 2:22 PM,@Kuli_VT So you basiclly trying to create new player modifiers right ?,,
+105031327861977088,thedimin,07/04/2020 2:22 PM,Those are created on the server,,
+241680063072960513,kuli_vt,07/04/2020 2:22 PM,Although I also looked at BreachingCharge and others and they all do the same thing with JSON configs,,
+105031327861977088,thedimin,07/04/2020 2:22 PM,All those run on the server,,
+105031327861977088,thedimin,07/04/2020 2:23 PM,"Effects have to be played on the client, and those have to be send with a rpc",,
+241680063072960513,kuli_vt,07/04/2020 2:23 PM,the only reason you need server side is if other clients need to see it,,
+105031327861977088,thedimin,07/04/2020 2:23 PM,Then those rpc could contain duration,,
+241680063072960513,kuli_vt,07/04/2020 2:23 PM,"no they dont, player camera is local to player only",,
+241680063072960513,kuli_vt,07/04/2020 2:23 PM,you dont see my NVG effect,,
+105031327861977088,thedimin,07/04/2020 2:23 PM,Okay yeah camera could be,,
+241680063072960513,kuli_vt,07/04/2020 2:23 PM,same with shaking,,
+105031327861977088,thedimin,07/04/2020 2:23 PM,Yeah effects are played local for sure,,
+241680063072960513,kuli_vt,07/04/2020 2:23 PM,imagine you are addicted to cigs and you need to smoke them or you shake a little more 😉,,
+241680063072960513,kuli_vt,07/04/2020 2:24 PM,I agree though,,
+241680063072960513,kuli_vt,07/04/2020 2:24 PM,the AMT of the addiction needs to be saved,,
+241680063072960513,kuli_vt,07/04/2020 2:24 PM,so you have it when you load back in,,
+105031327861977088,thedimin,07/04/2020 2:24 PM,Thing is you wan't some of them still server authoritive ?,,
+241680063072960513,kuli_vt,07/04/2020 2:24 PM,but I am not even that far yet 🙂,,
+105031327861977088,thedimin,07/04/2020 2:24 PM,Unless they have no sereus effects,,
+241680063072960513,kuli_vt,07/04/2020 2:24 PM,"so, in this particular case, an effect is triggered by an amount of intake",,
+241680063072960513,kuli_vt,07/04/2020 2:25 PM,that is ALL client side,,
+241680063072960513,kuli_vt,07/04/2020 2:25 PM,I wanted those amts to be variabel,,
+241680063072960513,kuli_vt,07/04/2020 2:25 PM,hence where I am stuck,,
+105031327861977088,thedimin,07/04/2020 2:25 PM,Okay,,
+292234618667663361,kyhbka,07/04/2020 2:25 PM,"I will write to you again, you need to send this config to all players who join, otherwise they will not learn information from the server",,
+105031327861977088,thedimin,07/04/2020 2:25 PM,And those variables cause you to get sick ?,,
+105031327861977088,thedimin,07/04/2020 2:25 PM,shake ect,,
+105031327861977088,thedimin,07/04/2020 2:25 PM,It sounds like something you want to run on the server,,
+241680063072960513,kuli_vt,07/04/2020 2:25 PM,eventually yes,,
+241680063072960513,kuli_vt,07/04/2020 2:26 PM,"remember, this is all very very infancy",,
+105031327861977088,thedimin,07/04/2020 2:26 PM,You generaly speaking don't want to give players control,,
+241680063072960513,kuli_vt,07/04/2020 2:26 PM,right now I just want to be able to change whther the effects are on or off,,
+241680063072960513,kuli_vt,07/04/2020 2:26 PM,"no, I want to give server owners a way to disable it",,
+241680063072960513,kuli_vt,07/04/2020 2:26 PM,in case they dont like it,,
+105031327861977088,thedimin,07/04/2020 2:26 PM,if its calculated on the players machine he is able to hack it without server authority,,
+105031327861977088,thedimin,07/04/2020 2:27 PM,I get what you saying,,
+105031327861977088,thedimin,07/04/2020 2:27 PM,IF you wa n't to do that,,
+105031327861977088,thedimin,07/04/2020 2:27 PM,You have to do what kactet said,,
+241680063072960513,kuli_vt,07/04/2020 2:27 PM,Кастет Thank you (I cant find your username to tag you) I will keep looking,,
+105031327861977088,thedimin,07/04/2020 2:27 PM,YOu will have to replicate those variables yourself,,
+105031327861977088,thedimin,07/04/2020 2:27 PM,There are context objects you can s ave varibles to,,
+241680063072960513,kuli_vt,07/04/2020 2:28 PM,"ok, I again want to keep this simple for now",,
+241680063072960513,kuli_vt,07/04/2020 2:28 PM,just enable the effect or no,,
+105031327861977088,thedimin,07/04/2020 2:29 PM,Doing things between server and client is not easy,,
+241680063072960513,kuli_vt,07/04/2020 2:29 PM,tell me about it,,
+105031327861977088,thedimin,07/04/2020 2:29 PM,unless you can use RegisterNetSyncVariable,,
+241680063072960513,kuli_vt,07/04/2020 2:29 PM,"wait till we get Cannabis V2 out, smoking, particles etc",,
+292234618667663361,kyhbka,07/04/2020 2:29 PM,"@Kuli_VT 
+```
+modded class PlayerBase
+{
+  override void OnConnect()
+  {
+    super.OnConnect();
+    this.RPCSingleParam(packet_id, new Param1<ref CannabisPlusConfig>(GetDayZGame().GetCannabisPlusConfig()), true, this.GetIdentity())
+  }
+}
+```",,
+105031327861977088,thedimin,07/04/2020 2:30 PM,kactet can it just replicate objects like that ?,,
+292234618667663361,kyhbka,07/04/2020 2:30 PM,All you have to do is add the package reception to the client and install it,,
+241680063072960513,kuli_vt,07/04/2020 2:30 PM,"ok, let me chew on that (I am super new to DayZ)",,
+241680063072960513,kuli_vt,07/04/2020 2:31 PM,RPC still confuses the ever loving crap out of me still,,
+292234618667663361,kyhbka,07/04/2020 2:31 PM,He just needs to send its object (an instance of the Config class) to the player's client,,
+105031327861977088,thedimin,07/04/2020 2:31 PM,No worries rpc's are not the easiest topic 😉,,
+241680063072960513,kuli_vt,07/04/2020 2:32 PM,they certainly are not,,
+105031327861977088,thedimin,07/04/2020 2:32 PM,Rpc's is not a topic thats just part of dayz,,
+241680063072960513,kuli_vt,07/04/2020 2:32 PM,"I am sure they become easier, but I have avoided them completely thus far",,
+105031327861977088,thedimin,07/04/2020 2:32 PM,Its a very common term in gamedev,,
+105031327861977088,thedimin,07/04/2020 2:32 PM,Not only gamedev,,
+241680063072960513,kuli_vt,07/04/2020 2:32 PM,anything that needs to sync server/client,,
+241680063072960513,kuli_vt,07/04/2020 2:33 PM,"I get it believe me, lets just say I am an old fart who writes mostly c, not even c++",,
+292234618667663361,kyhbka,07/04/2020 2:33 PM,"> anything that needs to sync server/client
+@Kuli_VT That's what you need an RPC for",,
+105031327861977088,thedimin,07/04/2020 2:33 PM,@Kuli_VT ah yeah im used to c++ / c# 😉,,
+241680063072960513,kuli_vt,07/04/2020 2:33 PM,"and in my area (low level hardware design, firmware etc) you cant even do things like inheritance",,
+105031327861977088,thedimin,07/04/2020 2:33 PM,you still have syncvar,,
+292234618667663361,kyhbka,07/04/2020 2:33 PM,"There is another synchronization method, but it is only suitable for primitive data types, and not for all of them",,
+241680063072960513,kuli_vt,07/04/2020 2:34 PM,NetSync,,
+105031327861977088,thedimin,07/04/2020 2:34 PM,Rpc's are more meant for executing functionality on a remote object /(client /server / real world stuff),,
+105031327861977088,thedimin,07/04/2020 2:34 PM,"ugh yeah netsync , syncvar is unity 🤣",,
+241680063072960513,kuli_vt,07/04/2020 2:34 PM,"right, @Hunterz showed me a bunch of stuff awhile back, its still tough to grasp sometimes",,
+105031327861977088,thedimin,07/04/2020 2:35 PM,"Most important part is, you Tell a remote object that you want to do something with a specific id",,
+241680063072960513,kuli_vt,07/04/2020 2:35 PM,"so in this case, I get an array back with the config in it",,
+105031327861977088,thedimin,07/04/2020 2:35 PM,Yes,,
+105031327861977088,thedimin,07/04/2020 2:36 PM,in this case,,
+105031327861977088,thedimin,07/04/2020 2:36 PM,"you will tell the server , hey send this message with id X ,to client Y , with data Z",,
+105031327861977088,thedimin,07/04/2020 2:36 PM,"Then on the client you see hey I got a message with ID x, and data Z",,
+241680063072960513,kuli_vt,07/04/2020 2:37 PM,is there a timing constraint?  ie as soon as I connect this data should be available?,,
+105031327861977088,thedimin,07/04/2020 2:37 PM,OnPlayerConnect or something like that,,
+105031327861977088,thedimin,07/04/2020 2:37 PM,Not sure what would be the first save location to do data replication,,
+105031327861977088,thedimin,07/04/2020 2:38 PM,Everything i have been doing has been server sided so far,,
+241680063072960513,kuli_vt,07/04/2020 2:38 PM,I can create local variables to store them in,,
+105031327861977088,thedimin,07/04/2020 2:39 PM,I think you should save it in the mission,,
+105031327861977088,thedimin,07/04/2020 2:39 PM,not in DayzGame,,
+241680063072960513,kuli_vt,07/04/2020 2:39 PM,thank you all so much!  Lots of servers use this cannabisplus mod and we are trying to take it to the next level,,
+105031327861977088,thedimin,07/04/2020 2:39 PM,DayzGame lives from the moment you start the game till you close it,,
+241680063072960513,kuli_vt,07/04/2020 2:39 PM,I meant playerbase,,
+241680063072960513,kuli_vt,07/04/2020 2:39 PM,"once that OnConnect RPC fires, I can store the config pieces I need in local variables",,
+105031327861977088,thedimin,07/04/2020 2:40 PM,Yeah  that should work for sure,,
+241680063072960513,kuli_vt,07/04/2020 2:40 PM,"only about 6 variables needed client side, out of the 50 or so in the config",,
+105031327861977088,thedimin,07/04/2020 2:40 PM,"> ```modded class DayZGame {
+>     protected ref CannabisPlusConfig CPConfig;
+> 
+>     ref CannabisPlusConfig GetCannabisPlusConfig() {
+>         return CPConfig;
+>     }
+> 
+>     void SetCannabisPlusConfig(ref CannabisPlusConfig config) {
+>         CPConfig = config;
+>     }
+> }```
+@Kuli_VT Meant this one",,
+105031327861977088,thedimin,07/04/2020 2:40 PM,Don't know if you should save this there,,
+241680063072960513,kuli_vt,07/04/2020 2:40 PM,so originally,,
+241680063072960513,kuli_vt,07/04/2020 2:40 PM,"I was saving everything in our ""base"" class",,
+241680063072960513,kuli_vt,07/04/2020 2:41 PM,"then I was trying to debug client server issues so I started moving it to places other mods have it, ie DayZGame etc",,
+105031327861977088,thedimin,07/04/2020 2:41 PM,Ah,,
+241680063072960513,kuli_vt,07/04/2020 2:41 PM,I figured if I could emulate one I thought was working I'd be all set,,
+105031327861977088,thedimin,07/04/2020 2:41 PM,Whack standard if thats the case 😛,,
+241680063072960513,kuli_vt,07/04/2020 2:42 PM,I still like keeping everything self contained and not spreading out into functions if I dont have to,,
+241680063072960513,kuli_vt,07/04/2020 2:42 PM,"now knowing the RPC is the secret, I can even get rid of MissionServer, DayZZGame etc",,
+241680063072960513,kuli_vt,07/04/2020 2:43 PM,and move everything back to my main class,,
+105031327861977088,thedimin,07/04/2020 2:43 PM,I would recommand the oposite,,
+105031327861977088,thedimin,07/04/2020 2:43 PM,Keeping functions small is super nice,,
+241680063072960513,kuli_vt,07/04/2020 2:43 PM,really?,,
+105031327861977088,thedimin,07/04/2020 2:43 PM,What if somebody wants to mod your functions ?,,
+105031327861977088,thedimin,07/04/2020 2:43 PM,1 sec,,
+241680063072960513,kuli_vt,07/04/2020 2:44 PM,in that case I dont binarize my code LOL,,
+241680063072960513,kuli_vt,07/04/2020 2:44 PM,hehe,,
+241680063072960513,kuli_vt,07/04/2020 2:44 PM,"but I get it, if thats the standard",,
+105031327861977088,thedimin,07/04/2020 2:44 PM,I don't think its the standard,,
+105031327861977088,thedimin,07/04/2020 2:44 PM,I haven't been doing this for that long 😉,,
+105031327861977088,thedimin,07/04/2020 2:44 PM,okay but,,
+241680063072960513,kuli_vt,07/04/2020 2:45 PM,so what is the issue with the config living in DayZGame?,,
+241680063072960513,kuli_vt,07/04/2020 2:45 PM,"I mean, it has to live somewhere to be accessible",,
+105031327861977088,thedimin,07/04/2020 2:45 PM,"This is part of dayzGame itself (Playerbase.c)
+```cs
+void OnCommandHandlerTick(float delta_time, int pCurrentCommandID)
+    {
+        if( !IsAlive() )
+        {
+            if ( !m_DeathSyncSent && m_KillerData )
+            {
+                SyncEvents.SendEntityKilled(this, m_KillerData.m_Killer, m_KillerData.m_MurderWeapon, m_KillerData.m_KillerHiTheBrain);
+                //Print(""Sending Death Sync, yay! Headshot by killer = "" + m_KillerData.m_KillerHiTheBrain);
+                //Print(""And was he killed by headshot in general? = "" + m_KilledByHeadshot);
+                m_DeathSyncSent = true;
+            }
+            return;
+        }
+        if( m_DebugMonitorValues )
+            m_DebugMonitorValues.OnScheduledTick(delta_time);
+        if( GetSymptomManager() )
+            GetSymptomManager().OnTick(delta_time, pCurrentCommandID, m_MovementState);//needs to stay in command handler tick as it's playing animations
+        //if( GetBleedingManagerServer() ) GetBleedingManagerServer().OnTick(delta_time);
+        
+        DayZPlayerInstanceType instType = GetInstanceType();        
+        if( instType == DayZPlayerInstanceType.INSTANCETYPE_CLIENT || instType == DayZPlayerInstanceType.INSTANCETYPE_REMOTE )
+        { 
+            if( GetPlayerSoundEventHandler() )
+                GetPlayerSoundEventHandler().OnTick(delta_time);
+
+            //! is not equal to
+            if( instType != DayZPlayerInstanceType.INSTANCETYPE_REMOTE ) 
+            {
+                #ifdef DEVELOPER
+                if( m_WeaponDebug )
+                {
+                    m_WeaponDebug.OnCommandHandlerUpdate();
+                }
+                #endif
+            }
+
+        }
+        
+        //ProcessLiftWeapon();
+        //ProcessOpticsPreload();
+    }
+```",,
+105031327861977088,thedimin,07/04/2020 2:45 PM,Oh yikes thats way to big,,
+105031327861977088,thedimin,07/04/2020 2:46 PM,In this big functions there is 1 part im very intrested in,,
+105031327861977088,thedimin,07/04/2020 2:46 PM,I want to call a other functions After SendEntityKilled,,
+105031327861977088,thedimin,07/04/2020 2:46 PM,I can't ovveride that function as its static,,
+105031327861977088,thedimin,07/04/2020 2:46 PM,"So this is what i had to do 
+```cs
+    override void OnCommandHandlerTick(float delta_time, int pCurrentCommandID)
+    {
+        //Copied death condition from base class ! instead of calling that other funtion we call our sync event
+        if( !IsAlive() )
+        {
+            if ( !m_DeathSyncSent && m_KillerData )
+            {
+                SyncEvents.EventOnPlayerKilledByPlayer.Invoke(this,m_KillerData.m_Killer, m_KillerData.m_MurderWeapon, m_KillerData.m_KillerHiTheBrain);
+            }
+        }
+
+        super.OnCommandHandlerTick(delta_time, pCurrentCommandID);
+    }
+```",,
+105031327861977088,thedimin,07/04/2020 2:47 PM,Now i create some pain formyself cuz what if they change when this is triggerd ? ect,,
+241680063072960513,kuli_vt,07/04/2020 2:47 PM,"yeah, I get that",,
+105031327861977088,thedimin,07/04/2020 2:47 PM,so if they would have split this check into a seperate function that returns true or false i would have been chilling,,
+241680063072960513,kuli_vt,07/04/2020 2:48 PM,"I got bit by many changes in 1.08, they changed the whole weapon sway, hold breathe mechanic",,
+105031327861977088,thedimin,07/04/2020 2:48 PM,but i assume those are things that started throwing errors ?,,
+241680063072960513,kuli_vt,07/04/2020 2:48 PM,"not sure if you've played, I really really really dont like the new mechanic, but it is much more realistic",,
+241680063072960513,kuli_vt,07/04/2020 2:48 PM,you start wheezing LOL,,
+105031327861977088,thedimin,07/04/2020 2:48 PM,In this case i would be more scared of them adding a extra check in the if statement that i wouldn't check for,,
+105031327861977088,thedimin,07/04/2020 2:48 PM,Honnestly,,
+105031327861977088,thedimin,07/04/2020 2:49 PM,I played dayz for 20 hours,,
+105031327861977088,thedimin,07/04/2020 2:49 PM,Way to hardcore for me,,
+241680063072960513,kuli_vt,07/04/2020 2:49 PM,"yeah, in many cases I had to re-add entire chunks and update",,
+105031327861977088,thedimin,07/04/2020 2:49 PM,"I did like expansion, but i suck at gunplay",,
+241680063072960513,kuli_vt,07/04/2020 2:49 PM,I am almost to 4k hrs in SA,,
+105031327861977088,thedimin,07/04/2020 2:49 PM,so i work on convertion mod that will remove survival and will be combat focused,,
+105031327861977088,thedimin,07/04/2020 2:49 PM,Wow nerd,,
+241680063072960513,kuli_vt,07/04/2020 2:49 PM,nice,,
+105031327861977088,thedimin,07/04/2020 2:49 PM,i got 2k hours in arma 3,,
+241680063072960513,kuli_vt,07/04/2020 2:49 PM,lol,,
+105031327861977088,thedimin,07/04/2020 2:50 PM,"also like 400 in arma2, only played dayz there",,
+105031327861977088,thedimin,07/04/2020 2:50 PM,"But yeah you don't haveto , but trying to split it up for other players is a nice thing to do",,
+241680063072960513,kuli_vt,07/04/2020 2:50 PM,"@Кастет
+#3542 thank you!",,
+241680063072960513,kuli_vt,07/04/2020 2:51 PM,those special characters screw up my paste lol,,
+105031327861977088,thedimin,07/04/2020 2:51 PM,I am more suprised you managed to @ him,,
+241680063072960513,kuli_vt,07/04/2020 2:51 PM,Discord figured it out for me kinda,,
+105031327861977088,thedimin,07/04/2020 2:51 PM,Ah luckey you,,
+105031327861977088,thedimin,07/04/2020 2:52 PM,They should allow @ #usernumber,,
+241680063072960513,kuli_vt,07/04/2020 2:52 PM,I need to get workbench fixed so I can try this RPC stuff,,
+241680063072960513,kuli_vt,07/04/2020 2:53 PM,it seems way more powerful than NetSync,,
+105031327861977088,thedimin,07/04/2020 2:53 PM,It for sure is,,
+241680063072960513,kuli_vt,07/04/2020 2:53 PM,I like that its ID specific,,
+105031327861977088,thedimin,07/04/2020 2:53 PM,I think if you put id at -1 its replicated to all if its the server,,
+241680063072960513,kuli_vt,07/04/2020 2:53 PM,"again, using CodeLock and others as guides I can see how its useful for things like saving keycodes, pins etc",,
+105031327861977088,thedimin,07/04/2020 2:54 PM,never seen there code 😉,,
+105031327861977088,thedimin,07/04/2020 2:54 PM,"But its great for events that have to be triggerd from client to server and other way around.
+not just replicating data",,
+105031327861977088,thedimin,07/04/2020 2:54 PM,"For instance you have a shop ui , then tell the server you try to buy that item with a rpc",,
+241680063072960513,kuli_vt,07/04/2020 2:55 PM,yes,,
+241680063072960513,kuli_vt,07/04/2020 2:55 PM,I looked extensively into the trader mod too (did a lot of stuff with safezones),,
+241680063072960513,kuli_vt,07/04/2020 2:55 PM,my stuff is such small potatoes,,
+241680063072960513,kuli_vt,07/04/2020 2:56 PM,compared to this giant mods,,
+105031327861977088,thedimin,07/04/2020 2:56 PM,SHouldn't worry about that stuff. Some people work on  it since day 1,,
+105031327861977088,thedimin,07/04/2020 2:56 PM,Or have been doing 3d stuff since arma 3,,
+241680063072960513,kuli_vt,07/04/2020 2:56 PM,"even my work with CodeLock was around allowing different configs based on weapons, and different levels of strength, vs just one config for everything",,
+241680063072960513,kuli_vt,07/04/2020 2:57 PM,so if you had a really expensive lock it would take WAY longer to hack through,,
+241680063072960513,kuli_vt,07/04/2020 2:57 PM,stuff like that,,
+241680063072960513,kuli_vt,07/04/2020 2:57 PM,thats why his config is the most familiar to me,,
+241680063072960513,kuli_vt,07/04/2020 2:58 PM,now to solve workbench problems....again,,
+105031327861977088,thedimin,07/04/2020 2:59 PM,🤣,,
+241680063072960513,kuli_vt,07/04/2020 2:59 PM,"yeah, and as a low level firmware guy, debugging is kind of key, I see why everything takes so long to fix LOL",,
+241680063072960513,kuli_vt,07/04/2020 3:00 PM,we even have to look at memory maps and not allow compilers to define anything,,
+241680063072960513,kuli_vt,07/04/2020 3:00 PM,we can spend $100k just on a debugger,,
+241680063072960513,kuli_vt,07/04/2020 3:01 PM,have to write REALLY REALLY REALLY good code so people can write $hit code to run on it 😉,,
+241680063072960513,kuli_vt,07/04/2020 3:02 PM,"my analogy is Google Chrome, back when DRAM prices were sky high they actually tried to be good about mem management, now that DRAM is cheap, Chrome uses like 4GB of memory just to look at the google homepage",,
+105031327861977088,thedimin,07/04/2020 3:05 PM,Yeah i spent 5 weeks reducing cpu usage of a system i wrote,,
+105031327861977088,thedimin,07/04/2020 3:05 PM,And a other 2 weeks to fix some momory leaks,,
+241680063072960513,kuli_vt,07/04/2020 3:06 PM,"so, now that I am looking at the RPC",,
+241680063072960513,kuli_vt,07/04/2020 3:06 PM,"does that code handle the request and the receive or do I also need to add the ""send""",,
+105031327861977088,thedimin,07/04/2020 3:08 PM,How do you mean ?,,
+241680063072960513,kuli_vt,07/04/2020 3:08 PM,is there client side AND server side RPCs that need to sync,,
+241680063072960513,kuli_vt,07/04/2020 3:09 PM,"or is it just one request, and the client responds, I would assume I need both",,
+105031327861977088,thedimin,07/04/2020 3:10 PM,You send the Request,,
+105031327861977088,thedimin,07/04/2020 3:10 PM,And then you deal with the response in OnRpc,,
+105031327861977088,thedimin,07/04/2020 3:11 PM,Rpc's do not have return values,,
+105031327861977088,thedimin,07/04/2020 3:11 PM,(if you want to return something from a rpc you will have to do that with an other rpc,,
+241680063072960513,kuli_vt,07/04/2020 3:11 PM,so it looks like I should just write an RPC handler now,,
+105031327861977088,thedimin,07/04/2020 3:11 PM,You can see here kinda what you are dealing with,,
+105031327861977088,thedimin,07/04/2020 3:11 PM,,https://cdn.discordapp.com/attachments/492295576470290433/728961244027027506/unknown.png,
+105031327861977088,thedimin,07/04/2020 3:11 PM,Btw are you running CommunityFramework ?,,
+241680063072960513,kuli_vt,07/04/2020 3:11 PM,esp I plan to handle more things  between client and server,,
+241680063072960513,kuli_vt,07/04/2020 3:11 PM,yes,,
+105031327861977088,thedimin,07/04/2020 3:12 PM,They make it much simpler to do RPc's https://github.com/Jacob-Mango/DayZ-Community-Framework,,
+241680063072960513,kuli_vt,07/04/2020 3:12 PM,"kk, I'll look into that",,
+241680063072960513,kuli_vt,07/04/2020 3:13 PM,absolute WORST case I was going to save them using NetSyncs,,
+105031327861977088,thedimin,07/04/2020 3:36 PM,How do we print something to sidechat ?,,
+105031327861977088,thedimin,07/04/2020 3:36 PM,In vanilla,,
+105031327861977088,thedimin,07/04/2020 3:36 PM,(if we can),,
+105031327861977088,thedimin,07/04/2020 3:37 PM,nvm,,
+558719861463842852,glutenfreevapes,07/04/2020 3:41 PM,sidechat? Found the arma player,,
+105031327861977088,thedimin,07/04/2020 3:41 PM,😉,,
+558719861463842852,glutenfreevapes,07/04/2020 3:41 PM,From client or from server?,,
+105031327861977088,thedimin,07/04/2020 3:41 PM,no,,
+105031327861977088,thedimin,07/04/2020 3:41 PM,trying to send a message from server to all clients,,
+105031327861977088,thedimin,07/04/2020 3:42 PM,Can be done quick and dirty as its a temp thing,,
+558719861463842852,glutenfreevapes,07/04/2020 3:42 PM,"Yes, okay",,
+105031327861977088,thedimin,07/04/2020 3:42 PM,These functions are not very usefull,https://cdn.discordapp.com/attachments/492295576470290433/728968967020085419/unknown.png,
+105031327861977088,thedimin,07/04/2020 3:42 PM,Like description wise,,
+558719861463842852,glutenfreevapes,07/04/2020 3:43 PM,"```c
+
+    void dayx_Test_Debug (string msg) {
+        if (GetGame().IsClient()){
+            dayx_Test_DebugClient(msg);
+            return;
+        }
+
+        msg = ""dayxSrv - Test."" + msg;
+        GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, """", msg, """"));
+        Print(msg);
+
+        //--- Message to all palyers
+        ref array<Man> t_players = new array<Man>;
+        GetGame().GetPlayers(t_players);
+        foreach(auto t_player : t_players) {
+            Param1<string> t_param_msg = new Param1<string>(msg);
+            GetGame().RPCSingleParam(t_player, ERPCs.RPC_USER_ACTION_MESSAGE, t_param_msg, true, t_player.GetIdentity());
+        };
+
+    };
+    void dayx_Test_DebugClient (string f_Message) {
+        
+        // debug
+        string t_Msg = ""dayx - Test."" + f_Message;
+        GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, """", t_Msg, """"));
+        Print(t_Msg);
+    };
+```",,
+105031327861977088,thedimin,07/04/2020 3:44 PM,@GlutenFreeVapes Thanks 🙂,,
+105031327861977088,thedimin,07/04/2020 3:45 PM,@GlutenFreeVapes you a java programmer ? 😛,,
+105031327861977088,thedimin,07/04/2020 3:45 PM,; behind every function damm,,
+558719861463842852,glutenfreevapes,07/04/2020 3:45 PM,"No, started by scripting in arma",,
+105031327861977088,thedimin,07/04/2020 3:45 PM,Ah,,
+105031327861977088,thedimin,07/04/2020 3:45 PM,Gues its standard in sqf aswell ?,,
+241680063072960513,kuli_vt,07/04/2020 3:46 PM,its good form 😉,,
+558719861463842852,glutenfreevapes,07/04/2020 3:46 PM,"Yeah, but I also like it like this 😄",,
+241680063072960513,kuli_vt,07/04/2020 3:46 PM,Compiler complains about every missing one of them,,
+241680063072960513,kuli_vt,07/04/2020 3:46 PM,half of my logs are missing ;,,
+241680063072960513,kuli_vt,07/04/2020 3:46 PM,lol,,
+105031327861977088,thedimin,07/04/2020 3:46 PM,@Kuli_VT i mean those with };,,
+105031327861977088,thedimin,07/04/2020 3:47 PM,not to end a statement,,
+105031327861977088,thedimin,07/04/2020 3:47 PM,"Its fancy how the compiler accepts that.
+Also accepts : and extends for inherentance",,
+558719861463842852,glutenfreevapes,07/04/2020 3:47 PM,"could use `,` in arma instead of `;`",,
+105031327861977088,thedimin,07/04/2020 3:48 PM,Sqf is special tho,,
+558719861463842852,glutenfreevapes,07/04/2020 3:48 PM,sqf is hilarious,,
+105031327861977088,thedimin,07/04/2020 3:48 PM,enforce seems way more similair to c#,,
+105031327861977088,thedimin,07/04/2020 3:48 PM,"I tried sqf , and i hate it",,
+558719861463842852,glutenfreevapes,07/04/2020 3:48 PM,way better,,
+105031327861977088,thedimin,07/04/2020 3:48 PM,C# /enforce for life,,👍 (1)
+241680063072960513,kuli_vt,07/04/2020 3:48 PM,c# also using indentation like python for ifs,,
+241680063072960513,kuli_vt,07/04/2020 3:48 PM,no need for {},,
+105031327861977088,thedimin,07/04/2020 3:49 PM,Yeah,,
+105031327861977088,thedimin,07/04/2020 3:49 PM,Well,,
+105031327861977088,thedimin,07/04/2020 3:49 PM,not completly,,
+241680063072960513,kuli_vt,07/04/2020 3:49 PM,"drives me batshit, because not always",,
+241680063072960513,kuli_vt,07/04/2020 3:49 PM,right,,
+241680063072960513,kuli_vt,07/04/2020 3:49 PM,simple ifs,,
+105031327861977088,thedimin,07/04/2020 3:49 PM,Only works with 1 line,,
+105031327861977088,thedimin,07/04/2020 3:49 PM,but its not indentation based,,
+105031327861977088,thedimin,07/04/2020 3:50 PM,"```cs
+if(true)return;
+```
+is valid",,
+105031327861977088,thedimin,07/04/2020 3:50 PM,never tried it in enforce script tho,,
+241680063072960513,kuli_vt,07/04/2020 3:51 PM,its a weak attempt at ternary,,
+241680063072960513,kuli_vt,07/04/2020 3:51 PM,without the else,,
+105031327861977088,thedimin,07/04/2020 3:51 PM,Idk,,
+105031327861977088,thedimin,07/04/2020 3:51 PM,I love it,,
+105031327861977088,thedimin,07/04/2020 3:51 PM,I been using c# for 3 years done a bunch of magic wit hit,,
+105031327861977088,thedimin,07/04/2020 3:51 PM,mostly use that stuff with if i only need to do 1 statement thing,,
+105031327861977088,thedimin,07/04/2020 3:52 PM,"Tenary is usefull when you also have a else statement, but tbh mostly use it for values and not statements",,
+241680063072960513,kuli_vt,07/04/2020 3:53 PM,"its pretty good,  most companies require much more rigor, semicolons, proper whitespace, indentation, space vs tab then you ever see out there in the opern source world",,
+105031327861977088,thedimin,07/04/2020 3:53 PM,Yeah for sure. Style guides are very important 😉,,
+241680063072960513,kuli_vt,07/04/2020 3:53 PM,"I spent a few decades at IBM, even a HUGE software company like that didnt follow a lot of their own rules",,
+105031327861977088,thedimin,07/04/2020 3:53 PM,OH realy lol,,
+241680063072960513,kuli_vt,07/04/2020 3:53 PM,"yes decades, I'm old 😉",,
+105031327861977088,thedimin,07/04/2020 3:53 PM,Lol,,
+241680063072960513,kuli_vt,07/04/2020 3:54 PM,"like I said, we didnt even have strings let alone classes and inheritance",,
+105031327861977088,thedimin,07/04/2020 3:54 PM,"Company i did my internship at did require me to follow a styleguide from github. but they don't enforce it.
+Just to make it easy for each other",,
+105031327861977088,thedimin,07/04/2020 3:54 PM,Bit shifting ?,,
+241680063072960513,kuli_vt,07/04/2020 3:55 PM,"I'm a firmware guy, bit banging is par for the course",,
+105031327861977088,thedimin,07/04/2020 3:55 PM,Wanna move this to pm as we kinda getting offtopic ? 😛,,
+241680063072960513,kuli_vt,07/04/2020 3:55 PM,"lol, I am still trying to get workbench working",,
+241680063072960513,kuli_vt,07/04/2020 3:55 PM,bastards!,,
+105031327861977088,thedimin,07/04/2020 3:56 PM,Still same error ?,,
+241680063072960513,kuli_vt,07/04/2020 3:56 PM,yes,,
+105031327861977088,thedimin,07/04/2020 3:56 PM,What was it again ?,,
+105031327861977088,thedimin,07/04/2020 3:56 PM,"Version mismatch , something like that",,
+137658517615149056,helkhiana,07/04/2020 4:48 PM,i'm trying to get an instance of the player that opened a UIScriptedMenu. what's the best way to do so?,,
+137658517615149056,helkhiana,07/04/2020 4:48 PM,i want to send an rpc to the player from the UI so i suppose i need to know the identity,,
+292234618667663361,kyhbka,07/04/2020 4:49 PM,The Ui only works on the client,,
+292234618667663361,kyhbka,07/04/2020 4:49 PM,GetGame().GetPlayer() in the class constructor of your menu,,
+137658517615149056,helkhiana,07/04/2020 4:50 PM,thanks,,
+137658517615149056,helkhiana,07/04/2020 4:51 PM,is client player inventory always synced with server? or do i have to do rpcs on server from client to check something in inventory?,,
+292234618667663361,kyhbka,07/04/2020 4:52 PM,It depends on what you want to do,,
+137658517615149056,helkhiana,07/04/2020 4:52 PM,one function to check for availability of item and one function to remove said item from inventory,,
+292234618667663361,kyhbka,07/04/2020 4:53 PM,I think you should throw items out of inventory on the server side,,
+292234618667663361,kyhbka,07/04/2020 4:54 PM,in this case there shouldn't be a problem with out of sync,,
+137658517615149056,helkhiana,07/04/2020 5:04 PM,can i check on client after if the item is still there?,,
+558719861463842852,glutenfreevapes,07/04/2020 6:25 PM,"Sure, why not?",,
+558719861463842852,glutenfreevapes,07/04/2020 6:25 PM,What's the context?,,
+558719861463842852,glutenfreevapes,07/04/2020 6:29 PM,Check on client > transaction pending > RPC to server > do stuff on server > RPC to client > transaction complete > check if item is there?,,
+137658517615149056,helkhiana,07/04/2020 6:56 PM,it's for the crafting menu,,
+137658517615149056,helkhiana,07/04/2020 6:56 PM,i have some instances where the menu thinks i still have items inside the inventory,,
+558719861463842852,glutenfreevapes,07/04/2020 7:07 PM,Do you have a dedicated function for crafting on the server?,,
+558719861463842852,glutenfreevapes,07/04/2020 7:09 PM,"Send an RPC from the server to the client when the crafting is successful
+That RPC will run a function that will check if the menu is open, then update the needed values / items",,
+558719861463842852,glutenfreevapes,07/04/2020 7:09 PM,Something like that?,,
+137658517615149056,helkhiana,07/04/2020 10:53 PM,i have a function in playerbase class which is dedicated to removing the items and spawning the new ones,,
+137658517615149056,helkhiana,07/04/2020 10:53 PM,bigger problem i'm encountering is that the UI will craft the items inside the last player connected to the server,,
+158294510080753665,gravitywolf,07/05/2020 12:38 AM,@Helkhiana we would have to see what you are doing logically to figure that out.,,
+241680063072960513,kuli_vt,07/05/2020 12:46 AM,@Кастет I still cannot get the RPC to send the json config...I am trying to use the CF RPC wrapper,,
+137658517615149056,helkhiana,07/05/2020 1:24 AM,"@GravityWolf there is a lot in there..i can pack it and send if you are willing to take a look.
+it needs heavy refactoring tbh",,
+158294510080753665,gravitywolf,07/05/2020 1:26 AM,I can take a look,,
+158294510080753665,gravitywolf,07/05/2020 1:26 AM,"@Kuli_VT are you sending the json string, or the objects from it?",,
+137658517615149056,helkhiana,07/05/2020 1:27 AM,"logic is basically:
+UI - List recipes -> Select recipe (stone knife) -> check inventory for requirements -> if requirements there set them to true. Click craft -> send rpc to playerbase -> go through items and remove them then create result",,
+241680063072960513,kuli_vt,07/05/2020 1:28 AM,"@GravityWolf I was attempting to send the entire config, which I assume is the entire string..my fall back could be sending individual items from it",,
+241680063072960513,kuli_vt,07/05/2020 1:28 AM,I only need access to like 6 of 50 or more config items,,
+241680063072960513,kuli_vt,07/05/2020 1:30 AM,"I feel like my RPC is working, but my config is NULL",,
+158294510080753665,gravitywolf,07/05/2020 1:31 AM,"Json could be too big, send only what you need in one RPC, don't spam rpcs server performance will tank.",,
+241680063072960513,kuli_vt,07/05/2020 1:31 AM,I was only calling it OnConnect and OnReconnect,,
+241680063072960513,kuli_vt,07/05/2020 1:32 AM,"so, order of operations is game, scripts then mission?",,
+241680063072960513,kuli_vt,07/05/2020 1:32 AM,DayZGame holds my config (like most setups I've seen),,
+241680063072960513,kuli_vt,07/05/2020 1:32 AM,MissionServer loads and sets config,,
+241680063072960513,kuli_vt,07/05/2020 1:32 AM,PlayerBase calls RPC to try and receive config,,
+241680063072960513,kuli_vt,07/05/2020 1:33 AM,do I need a config object for both server and client?  ie one to receive it in PlayerBase?,,
+241680063072960513,kuli_vt,07/05/2020 1:35 AM,I was trying to use the same config by ref,,
+241680063072960513,kuli_vt,07/05/2020 1:42 AM,ugg onconnect and onreconnect are server side functions,,
+241680063072960513,kuli_vt,07/05/2020 1:42 AM,I need this to be client side,,
+105031327861977088,thedimin,07/05/2020 1:44 AM,Why is that a issue ?,,
+241680063072960513,kuli_vt,07/05/2020 1:44 AM,"because the client side doesnt have access to the config, same overarching issue",,
+105031327861977088,thedimin,07/05/2020 1:45 AM,Are you not doing a rpc to the client on connect ?,,
+105031327861977088,thedimin,07/05/2020 1:45 AM,From server to client ?,,
+241680063072960513,kuli_vt,07/05/2020 1:45 AM,"I am, but its all still NULL",,
+105031327861977088,thedimin,07/05/2020 1:45 AM,From what we were working on earlier I think we forgot to pass in the target client,,
+105031327861977088,thedimin,07/05/2020 1:46 AM,I think you have to add player identity as the last param,,
+105031327861977088,thedimin,07/05/2020 1:46 AM,I'm on my phone atm so I can't check it,,
+105031327861977088,thedimin,07/05/2020 1:47 AM,If nobody can help you out I'll be home in 30 min or so,,
+241680063072960513,kuli_vt,07/05/2020 1:47 AM,"no worries, this is all still driving me a bit insane so I'm just commenting it all out for now",,
+241680063072960513,kuli_vt,07/05/2020 1:47 AM,been at it all day,,
+105031327861977088,thedimin,07/05/2020 1:47 AM,Haha,,
+105031327861977088,thedimin,07/05/2020 1:47 AM,Sometimes it be that way,,
+105031327861977088,thedimin,07/05/2020 1:47 AM,Took me a good week to change reload behavior so it won't need mags from your inv,,
+105031327861977088,thedimin,07/05/2020 1:48 AM,"Thing with rpc calls , you are supposed to tell what you are targeting",,
+105031327861977088,thedimin,07/05/2020 1:49 AM,Thing you could check is if the function is called on a client and not the server,,
+241680063072960513,kuli_vt,07/05/2020 1:49 AM,SCRIPT       : Client function called!,,
+241680063072960513,kuli_vt,07/05/2020 1:49 AM,got that part for sure,,
+241680063072960513,kuli_vt,07/05/2020 1:49 AM,"but again, the issue I had before was the config was server side",,
+241680063072960513,kuli_vt,07/05/2020 1:49 AM,our work earlier STILL left the config server side,,
+241680063072960513,kuli_vt,07/05/2020 1:50 AM,I feel like my player needs an object to catch it in,,
+105031327861977088,thedimin,07/05/2020 1:50 AM,I think your check is wrong,,
+105031327861977088,thedimin,07/05/2020 1:50 AM,Getgame.isserver(),,
+241680063072960513,kuli_vt,07/05/2020 1:50 AM,OnConnect is def serv side,,
+105031327861977088,thedimin,07/05/2020 1:50 AM,Yeah ik,,
+105031327861977088,thedimin,07/05/2020 1:51 AM,Check the other one,,
+105031327861977088,thedimin,07/05/2020 1:51 AM,G2g bike ride to home,,
+241680063072960513,kuli_vt,07/05/2020 1:51 AM,"no prob, I think you mean the actual RPC function",,
+241680063072960513,kuli_vt,07/05/2020 1:51 AM,"I mean, it prints in the client log so...",,
+241680063072960513,kuli_vt,07/05/2020 1:51 AM,pretty tell tale sign there,,
+105031327861977088,thedimin,07/05/2020 1:52 AM,Yes the actual rpc function,,
+105031327861977088,thedimin,07/05/2020 1:52 AM,The current type works different I think,,
+241680063072960513,kuli_vt,07/05/2020 1:55 AM,so,,
+241680063072960513,kuli_vt,07/05/2020 1:55 AM,"I added a simple call tothe config on a server side function, not NULL",,
+214427063665295362,aeryes,07/05/2020 1:56 AM,"```modded class Hologram
+{
+    
+    override string ProjectionBasedOnParent()
+    {
+        ItemBase item_in_hands = ItemBase.Cast(m_Player.GetHumanInventory().GetEntityInHands());    
+        
+         // Base Items.
+        if (item_in_hands.IsInherited(WoodenCrateModded))
+            return ""WoodenCrateModded"";
+    }
+}```",,
+214427063665295362,aeryes,07/05/2020 1:56 AM,This is my hologram.c code.,,
+214427063665295362,aeryes,07/05/2020 1:56 AM,I dont invoke `EvaluateCollision()` anywhere yet I still get an error for it,,
+214427063665295362,aeryes,07/05/2020 1:57 AM,"```Can't compile ""World"" script module!
+
+inf/infected/scripts/4_World/classes\m_hologram.c(3): Overloaded function 'EvaluateCollision' not compatible```",,
+137658517615149056,helkhiana,07/05/2020 1:58 AM,can i just mention you're not calling super is bad 😄,,
+137658517615149056,helkhiana,07/05/2020 1:59 AM,are you running other mods?,,
+137658517615149056,helkhiana,07/05/2020 1:59 AM,and where are you testing?,,
+214427063665295362,aeryes,07/05/2020 1:59 AM,I do call it,,
+214427063665295362,aeryes,07/05/2020 1:59 AM,I just cut some code,,
+214427063665295362,aeryes,07/05/2020 1:59 AM,I forgot to add it,,
+214427063665295362,aeryes,07/05/2020 2:00 AM,I didnt want to post the entire 200 lines lol,,
+214427063665295362,aeryes,07/05/2020 2:00 AM,Also I am testing on my local server but the same issue was seen on a test server after 1.08 dropped,,
+137658517615149056,helkhiana,07/05/2020 2:00 AM,any other mods? could be throwing the error from another,,
+137658517615149056,helkhiana,07/05/2020 2:00 AM,also file patching could cause it,,
+137658517615149056,helkhiana,07/05/2020 2:01 AM,if you have bad files,,
+214427063665295362,aeryes,07/05/2020 2:02 AM,No file patching enabled and I just ran the pbo alone and still got that error.,,
+214427063665295362,aeryes,07/05/2020 2:03 AM,lmao,,
+214427063665295362,aeryes,07/05/2020 2:03 AM,found the issue,,
+214427063665295362,aeryes,07/05/2020 2:04 AM,it was another hologram file buried in my pbo from like a year ago,,
+214427063665295362,aeryes,07/05/2020 2:04 AM,Removed it and all is well,,
+137658517615149056,helkhiana,07/05/2020 2:13 AM,Nice,,
+105031327861977088,thedimin,07/05/2020 2:28 AM,@Helkhiana why is it considerd bad to not call super ? is it considerd bad as you can run into issues where other mods code won't be called ?,,
+105031327861977088,thedimin,07/05/2020 2:28 AM,Is it alright when you intent to replace baseclass functionality ?,,
+137658517615149056,helkhiana,07/05/2020 2:28 AM,there are a few cases where it is okay to not call super,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,like if you do intend to override the whole functionality of that function,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,when a function is static,,
+105031327861977088,thedimin,07/05/2020 2:29 AM,can't call super on static 😦,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,well yeah that's why you gotta copy the old code too,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,which sucks,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,no modability on it,,
+105031327861977088,thedimin,07/05/2020 2:29 AM,Yeah thats terrible,,
+137658517615149056,helkhiana,07/05/2020 2:29 AM,but for his case meant that other items that are vanilla would have had issues with the holograms,,
+105031327861977088,thedimin,07/05/2020 2:30 AM,"i ran into that issue , decided doing the injection in the function that calls the static function instead",,
+105031327861977088,thedimin,07/05/2020 2:30 AM,Yeah okay fair,,
+105031327861977088,thedimin,07/05/2020 2:30 AM,Just checking,,
+105031327861977088,thedimin,07/05/2020 2:30 AM,"I gues its fine for my ""total convertion mod "" that should be loaded first either way",,
+137658517615149056,helkhiana,07/05/2020 2:30 AM,if you don't expect others to mod on your mod then its fine,,
+105031327861977088,thedimin,07/05/2020 2:31 AM,Yeah okay cool (they can mod ontop of mine but not the other way around 😉 ),,
+137658517615149056,helkhiana,07/05/2020 2:33 AM,eh its a bit difficult to explain since i'm not 100% sure on how the order affects shit,,
+137658517615149056,helkhiana,07/05/2020 2:33 AM,but basically when expansion released they had ActionDeployObject with function OnExecuteServer(or smth like that) without super,,
+137658517615149056,helkhiana,07/05/2020 2:33 AM,i had super on mine,,
+137658517615149056,helkhiana,07/05/2020 2:33 AM,"no matter the order, theirs kept overriding mine completely",,
+137658517615149056,helkhiana,07/05/2020 2:34 AM,i had my super at the end after i was doing my stuff,,
+137658517615149056,helkhiana,07/05/2020 2:34 AM,the only way was to make my stuff have required addon of expansion scripts,,
+137658517615149056,helkhiana,07/05/2020 2:34 AM,then mine would have worked,,
+137658517615149056,helkhiana,07/05/2020 2:34 AM,this is just from my experience,,
+107560637399306240,cooltrain,07/05/2020 2:39 AM,months back test version of expansion had the same effect on earplugs with OnInit in missiongameplay ^^,,
+137658517615149056,helkhiana,07/05/2020 2:39 AM,super can also be a pain to use,,
+137658517615149056,helkhiana,07/05/2020 2:40 AM,if you want to mod something to change behaviour while maintaining the parent behaviour,,
+107560637399306240,cooltrain,07/05/2020 2:40 AM,very much so ^^,,
+427409131704418325,Braindead#4599,07/05/2020 3:25 AM,can anyone point me in the right direction please?  I am trying to mod the vehicles to stop damaging infected and animals.,,
+105031327861977088,thedimin,07/05/2020 4:01 AM,Is there a way to convert a float to int ?,,
+665471546525220875,Zedmag#7576,07/05/2020 4:04 AM,.ToInt(),,
+665471546525220875,Zedmag#7576,07/05/2020 4:04 AM,I think,,
+105031327861977088,thedimin,07/05/2020 4:07 AM,Yeah i would hope so (gotta try it in a sec),,
+105031327861977088,thedimin,07/05/2020 4:08 AM,but  when you look at the float class there is only a tostring function. I wouldn't be happy about doing tostring().toint,,
+292234618667663361,kyhbka,07/05/2020 4:23 AM,(int)myFloatVar,,
+292234618667663361,kyhbka,07/05/2020 4:24 AM,myFloatVar.ToInt(),,
+105031327861977088,thedimin,07/05/2020 4:49 AM,FOund out it can do auto casting,,
+346366249275490304,recoiluk,07/05/2020 1:02 PM,"Hi, how do you change the waterproofness of custom clothing?",,
+105031327861977088,thedimin,07/05/2020 3:54 PM,@RecoilUK i assume thats a config thing ?,,
+105031327861977088,thedimin,07/05/2020 3:54 PM,Does anyone know how to get rid of the respawn screen ?,,
+105031327861977088,thedimin,07/05/2020 4:25 PM,"Found a way to change the time ect , but there seem to be way to many dependecies for me to f it over like this",,
+105031327861977088,thedimin,07/05/2020 4:26 PM,Rn it seems like i respawn in the death body,,
+665471546525220875,Zedmag#7576,07/05/2020 5:27 PM,The lowest I would set it is 1 sec. server needs time to clean up and ‘unhook’ you.,,
+105031327861977088,thedimin,07/05/2020 6:10 PM,"I tried setting it to 1 sec but even that was causing issues, could be that I'm changing the respawn timer at the wrong spot",,
+105031327861977088,thedimin,07/05/2020 6:11 PM,Also trying to get rid of having to press escape -> respawn,,
+214175043846930432,broman.dev,07/05/2020 6:46 PM,How do I determine if the chat widget is currently open?,,
+214175043846930432,broman.dev,07/05/2020 6:46 PM,In the game module,,
+158294510080753665,gravitywolf,07/05/2020 7:14 PM,IsVisible ?,,
+214175043846930432,broman.dev,07/05/2020 7:34 PM,"@GravityWolf i'd imagine, i just dont know how to get the chat widget object",,
+214175043846930432,broman.dev,07/05/2020 7:51 PM,"Figured it out: ```c
+auto mgr = GetGame().GetUIManager();
+return mgr.IsMenuOpen(MENU_CHAT_INPUT);```",,
+214175043846930432,broman.dev,07/05/2020 7:52 PM,if anybody was curious^,,
+513834825937977364,lugge2,07/05/2020 8:23 PM,"```
+    //! Returns an overcast phenomenon object.
+    proto native Overcast GetOvercast();
+
+    //! Returns a fog phenomenon object.
+    proto native Fog GetFog();
+
+    //! Returns a rain phenomenon object.
+    proto native Rain GetRain();
+```",,
+513834825937977364,lugge2,07/05/2020 8:24 PM,"in the init.c its allways some values like that ```.Set( 0, 0, 1);```",,
+513834825937977364,lugge2,07/05/2020 8:24 PM,"but i cant find any documentation about this values. Can any one give me a hint what number stands for what? like (0 duration, 0 chance, 1 something)",,
+214175043846930432,broman.dev,07/05/2020 8:26 PM,"```c
+    /*!
+        \brief Sets the forecast.
+        \param forecast     Desired forecast value that should be met in given time.
+        \param time         A time of the next change (how long it takes in seconds to interpolate to given value).
+        \param minDuration  A minimal time in seconds the change will last.
+    */
+    proto native void Set( float forecast, float time = 0, float minDuration = 0 );
+
+```
+3_Game/Weather.c Line 33 
+@Lugge",,
+214175043846930432,broman.dev,07/05/2020 8:27 PM,And don't forget to call `MissionWeather(true)` to use your defined weather!,,
+513834825937977364,lugge2,07/05/2020 8:28 PM,ouh thank you. In the original init.c its false. Dose that mean chernarus and livonia use the same weather?,,
+214175043846930432,broman.dev,07/05/2020 8:29 PM,"No, there's also weather definitions in 4_World/Classes/Worlds",,
+513834825937977364,lugge2,07/05/2020 8:29 PM,ah i see thank you 🙂,,
+214175043846930432,broman.dev,07/05/2020 8:29 PM,https://owo.whats-th.is/7dWRZyD.png,,
+214175043846930432,broman.dev,07/05/2020 8:30 PM,No worries,,
+513834825937977364,lugge2,07/05/2020 8:30 PM,ah that looks better to me 🙂,,
+214175043846930432,broman.dev,07/05/2020 8:30 PM,"Idk, the weather is really weird",,
+214175043846930432,broman.dev,07/05/2020 8:31 PM,I've set values that I think are correct and the game sometimes ignored it? :geblobcatshrug:,,
+513834825937977364,lugge2,07/05/2020 8:31 PM,ouh^^,,
+214175043846930432,broman.dev,07/05/2020 8:31 PM,But on the surface level those are the values to change and then the Weather class has weather definitions as well,,
+214175043846930432,broman.dev,07/05/2020 8:31 PM,Good luck,,
+513834825937977364,lugge2,07/05/2020 8:31 PM,dame... thank you,,
+241370201222938626,kegan.eth,07/05/2020 10:14 PM,Any way to get the client's SteamID 64 from the main menu?,,
+241370201222938626,kegan.eth,07/05/2020 10:58 PM,Did DayZ change cURL?,,
+107560637399306240,cooltrain,07/05/2020 11:01 PM,yes its rest now,,
+241370201222938626,kegan.eth,07/05/2020 11:01 PM,lmao,,
+241370201222938626,kegan.eth,07/05/2020 11:01 PM,Thanks I found the new api,,
+107560637399306240,cooltrain,07/05/2020 11:01 PM,^^,,
+241370201222938626,kegan.eth,07/05/2020 11:31 PM,Seriously is it possible to get the SteamID from the main menu?,,
+241370201222938626,kegan.eth,07/05/2020 11:32 PM,"```
+1. GetPlayer() returns null
+2. GetSelectedUser() from BiosUserManager returns null
+3. GetIdentity() from the Character object of the IntroCharacter returns null
+```",,
+241370201222938626,kegan.eth,07/05/2020 11:32 PM,this is after mainmenu Init() is called,,
+241370201222938626,kegan.eth,07/05/2020 11:55 PM,Figured it out,,
+241370201222938626,kegan.eth,07/05/2020 11:55 PM,"`BiosUser p_User = p_UserManager.GetTitleInitiator();`
+this gives a valid BiosUser",,
+241370201222938626,kegan.eth,07/05/2020 11:56 PM,GetUid() returns the SteamID64,,
+558719861463842852,glutenfreevapes,07/05/2020 11:58 PM,👍,,
+561680015578759196,wrdg,07/06/2020 2:06 AM,You had this issue before and solved it once before lmao @Kegan,,
+241370201222938626,kegan.eth,07/06/2020 2:11 AM,🙂,,
+202828762310508554,daemonforge,07/06/2020 8:07 AM,"Not sure if anyone knows, I've been searching like crazy I'm not sure where to begin, I am looking to possibly either pervent removal or prevent the attaching of clothing types on players, essentially for my Heroes and Bandits mod I want to pervent Bandits from removing masks and prevent Heroes from attaching masks, but also still possibly allowing for bandits to swap masks so they can change it if they want??? But let's start with one of those anyone know which classes or functions to start looking at to make this possible? If it is even possible?
+
+Thanks in advance if anyone can help with this",,
+292234618667663361,kyhbka,07/06/2020 8:20 AM,@DaemonForge,https://cdn.discordapp.com/attachments/492295576470290433/729582547905806356/SPOILER_unknown.png,
+561680015578759196,wrdg,07/06/2020 8:24 AM,"nah, it would be more efficient to go though this in `DayZPlayerImplement` or it's children
+`override bool CanReceiveAttachment(EntityAI attachment, int slotId)`",,👍 (1)
+202828762310508554,daemonforge,07/06/2020 8:42 AM,"Thanks so much, not sure how I missed those will give it a try",,
+558719861463842852,glutenfreevapes,07/06/2020 9:13 AM,"Damn, these functions are so good to have",,
+558719861463842852,glutenfreevapes,07/06/2020 9:13 AM,,https://cdn.discordapp.com/attachments/492295576470290433/729595885826080810/unknown.png,
+162788737498087424,meathog,07/06/2020 1:05 PM,Has anyone been able to make clothing health remain persistent even if shot? ie clothes stay permanently pristine,,
+105031327861977088,thedimin,07/06/2020 1:27 PM,I think i did manage to make weapons permanently pristine,,
+105031327861977088,thedimin,07/06/2020 1:28 PM,But kinda forgot how,,
+105031327861977088,thedimin,07/06/2020 1:32 PM,@Justin (Point Man) think you looking for this in ItemBase.c,https://cdn.discordapp.com/attachments/492295576470290433/729661128614871130/unknown.png,
+105031327861977088,thedimin,07/06/2020 1:41 PM,If you want no dammage at all it could be easier to override ItemBase.c::DamageItemAttachments,,
+396380613973639170,solomoog,07/06/2020 2:55 PM,Is there a way to have a recipe run instantly when a item gets to a certain state and not need a user to interact with it?,,
+396380613973639170,solomoog,07/06/2020 2:55 PM,Idk if instantrecipe does this,,
+241680063072960513,kuli_vt,07/06/2020 4:10 PM,"I will ask in here, since a lot of Expansion modders are also in here:",,
+241680063072960513,kuli_vt,07/06/2020 4:11 PM,"I cannot get my camera effect merged with Expansion, I am using PPEffect and for some reason, with expansion NVGs blip on and then off again immediately.  Vanilla NVG code works fine.  There are no changes to DayZPlayerCameraBase, and I only see a few tweaks to SetNVPostprocess.",,
+241680063072960513,kuli_vt,07/06/2020 4:12 PM,I was using UpdateCameraNV which calls SetNVPostprocess based on if a user has done something,,
+241680063072960513,kuli_vt,07/06/2020 4:12 PM,"I save the current state of the NVType, then apply my effect, and when my effect is not active I resend the saved state",,
+241680063072960513,kuli_vt,07/06/2020 4:13 PM,I am basing my assumptions on the Expansion script code on Github that may not be up to date 😦,,
+241680063072960513,kuli_vt,07/06/2020 4:13 PM,"`override void SetNVPostprocess(int NVtype)
+    {        override void SetNVPostprocess(int NVtype)
+    {        override void SetNVPostprocess(int NVtype)
+    {",,
+241680063072960513,kuli_vt,07/06/2020 4:13 PM,...,,
+241680063072960513,kuli_vt,07/06/2020 4:13 PM,"```case MyNVTypes.SMOKEJOINT:
+                PPEffects.SetEVValuePP(3);
+                PPEffects.SetColorizationNV(0.0, 0.0, 0.0);
+                PPEffects.SetColorizationNV(GetDayZGame().GetCannabisPlusConfig().jointEffectRed, GetDayZGame().GetCannabisPlusConfig().jointEffectGreen, GetDayZGame().GetCannabisPlusConfig().jointEffectBlue);
+            break;```",,
+241680063072960513,kuli_vt,07/06/2020 4:14 PM,"```override void UpdateCameraNV(PlayerBase player) {
+        
+        if( !GetGame().IsMultiplayer() || GetGame().IsClient() ) {        
+            if(player.HasConsumedJoint()) {
+                SetNVPostprocess(MyNVTypes.SMOKEJOINT);
+            }
+        }else {
+            SetNVPostprocess(tempNV);
+            super.UpdateCameraNV(player);
+        }
+    }    ```",,
+396380613973639170,solomoog,07/06/2020 4:37 PM,does anyone know where the ammobox deconstruction takes place? it's not in the recipes folder. Would like to view it to see what was done,,
+241680063072960513,kuli_vt,07/06/2020 4:40 PM,"pretty sure its an action, 4, classes, useractioncomponent",,
+241680063072960513,kuli_vt,07/06/2020 4:40 PM,"actions, continuous, actionunpackbox",,
+396380613973639170,solomoog,07/06/2020 4:41 PM,Thank you,,
+665471546525220875,Zedmag#7576,07/06/2020 4:46 PM,"> Is there a way to have a recipe run instantly when a item gets to a certain state and not need a user to interact with it?
+@M oog  
+Look into how the tire goes from damaged to ruined and switches models. It’s called Lambda.",,
+396380613973639170,solomoog,07/06/2020 4:54 PM,"Thank you, is there any good workshop examples of it that i can look into to properly review and learn?",,
+665471546525220875,Zedmag#7576,07/06/2020 6:01 PM,Just search for how the car tire switches from pristine to ruined and switches objects.,,
+181254147679584257,thesixx,07/07/2020 2:33 AM,Hello guys! I'm looking for a method to override the tourist map in game. I edited the karta_co and put some custom marks (like DZ Underground) and I'm using CJ-Immersive Map to unfold map in hands.,,
+181254147679584257,thesixx,07/07/2020 2:33 AM,Anyone has done something like this?,,
+137994686852890624,jadfi,07/07/2020 2:35 AM,@TheSixx https://ptb.discordapp.com/channels/452035973786632194/494154208392511505/671354026948034581,,♥️ (1)
+181254147679584257,thesixx,07/07/2020 2:36 AM,"wow, thats fast. Thx @Jad",,
+148370724900306944,jacob_mango,07/07/2020 10:12 AM,i've tested on https://reqbin.com/ and my json is valid (and sends the webhook) so im just wondering how do you send it using curl?,,
+148370724900306944,jacob_mango,07/07/2020 10:35 AM,"ah had to set the header, figured it",,
+212974020293820416,corvo4,07/08/2020 8:34 AM,"Does anyone know the classname of a dead player?
+I'm trying to work on a crafting recipe, that's dead body + item and I can't for the life of me find the dead players body class name
+I've tried PlayerBase, SurvivorBase and body",,
+207328818203983872,notabanana,07/08/2020 8:34 AM,SurvivorBase should work,,
+207328818203983872,notabanana,07/08/2020 8:35 AM,It's a SurvivorM_Name or SurvivorF_Name,,
+207328818203983872,notabanana,07/08/2020 8:35 AM,But inherits from survivorbase,,
+212974020293820416,corvo4,07/08/2020 8:35 AM,"Hmm, I must have messed something else up, will keep testing, thank you",,
+212974020293820416,corvo4,07/08/2020 8:53 AM,"So I tried some stuff, still didn't work. Changed SurvivorBase to apple to verify the recipe is working and it does. Even works when the apple is ruined, so the survivor being ruined state isn't an issue",,
+212974020293820416,corvo4,07/08/2020 8:53 AM,Thinking maybe dead players don't work in recipes...,,
+212974020293820416,corvo4,07/08/2020 9:29 AM,"Looking into the skinning script, it also uses SurvivorBase... odd",,
+665471546525220875,Zedmag#7576,07/08/2020 9:30 AM,you’re gonna want to do an If statement with !IsAlive(),,
+665471546525220875,Zedmag#7576,07/08/2020 9:31 AM,If ( player && !player.IsAlive()),,
+212974020293820416,corvo4,07/08/2020 9:31 AM,"I'm not too experienced with this at all...
+I was just editing the recipe.c script template...",,
+665471546525220875,Zedmag#7576,07/08/2020 9:31 AM,Make it an action. Not a recipe.,,
+212974020293820416,corvo4,07/08/2020 9:32 AM,"I was looking into the skinning script, I was going to edit that to do what I want, but it's some complex stuff",,
+665471546525220875,Zedmag#7576,07/08/2020 9:32 AM,Ingredient 1 is in your hands. Action is on the dead player.,,
+665471546525220875,Zedmag#7576,07/08/2020 9:33 AM,It’s all about the actions.,,
+665471546525220875,Zedmag#7576,07/08/2020 9:33 AM,Use skin player.,,
+665471546525220875,Zedmag#7576,07/08/2020 9:33 AM,Knife in hand. Looking at dead player allows to skin which produces a result.,,
+665471546525220875,Zedmag#7576,07/08/2020 9:36 AM,If you create a new action you need to register the action. Then need to add the action to the perspective items.,,
+212974020293820416,corvo4,07/08/2020 9:37 AM,"So if I make this action, I would need to register the action on the item?",,
+212974020293820416,corvo4,07/08/2020 9:37 AM,So the game knows that item can perform that action,,
+665471546525220875,Zedmag#7576,07/08/2020 9:38 AM,Lookup the skinning action name. Then search files for it in scripts. You’ll see all the back traces of it.,,
+665471546525220875,Zedmag#7576,07/08/2020 9:38 AM,Correct,,
+212974020293820416,corvo4,07/08/2020 9:38 AM,"Okay, this is alot more to work with than I had before aha",,
+665471546525220875,Zedmag#7576,07/08/2020 9:40 AM,Good luck! Make sure to show us in the showcase when you’re done.,,
+212974020293820416,corvo4,07/08/2020 9:41 AM,❤️,,
+212974020293820416,corvo4,07/08/2020 9:41 AM,Thank you for your help 😄,,
+665471546525220875,Zedmag#7576,07/08/2020 9:41 AM,You can always hit me up on DM too,,
+354662406292766720,sarj_1st,07/08/2020 9:42 AM,Does anyone have a DestroyDisable working mod for version 1.08?,,
+665471546525220875,Zedmag#7576,07/08/2020 9:43 AM,Meaning? You want to disable destroying base parts?,,
+305336333906345984,rosazuckerfee,07/08/2020 5:16 PM,you dont need a mod for it. you can disable it in server cfg @SARJ,,
+225304935355383808,[S.C.] Zedmag#7605,07/08/2020 6:45 PM,"ok guys, on the topic of the #define EXPANSIONMOD.. i cant seem to make this work.. its as if its loading my mod first no matter what... there for Expansion throws an error with muliple class. ive tried the following... ```
+#ifndef EXPANSIONMOD
+class Land_City_Hospital extends BuildingSuper 
+{
+//somecode    
+};
+#else
+modded class Land_City_Hospital extends BuildingSuper 
+{
+//somecode
+};
+#endif
+``` and this ```    
+#ifdef EXPANSIONMOD
+modded class Land_City_Hospital extends BuildingSuper 
+{
+//somecode    
+};
+#else
+class Land_City_Hospital extends BuildingSuper 
+{
+//somecode
+};
+#endif
+``` but no matter what. EXP always complains that the Hospital has multiple declarations..",,
+225304935355383808,[S.C.] Zedmag#7605,07/08/2020 6:46 PM,"if i do this... ```
+#ifdef EXPANSIONMOD
+modded class Land_City_Hospital extends BuildingSuper 
+{
+//somecode    
+};
+#endif ``` it works but ONLY if EXP is enabled.. if EXP is NOT enabled, i dont get an error in my mod BUT the hospital is also not defined.. obviously",,
+150883360019972096,hunterzcz,07/08/2020 7:05 PM,i think,,
+150883360019972096,hunterzcz,07/08/2020 7:05 PM,you need elseif,,
+150883360019972096,hunterzcz,07/08/2020 7:06 PM,it strange that this preprocesor code not work for you,,
+150883360019972096,hunterzcz,07/08/2020 7:08 PM,"try this: ```#ifdef EXPANSIONMOD
+modded class Land_City_Hospital extends BuildingSuper 
+{
+//somecode    
+};
+#endif
+#ifndef EXPANSIONMOD
+class Land_City_Hospital extends BuildingSuper 
+{
+//somecode
+};
+#endif```",,👍 (1)
+665471546525220875,Zedmag#7576,07/08/2020 7:22 PM,You know what. Maybe it was the #else vs #elseif. Can’t remember which one I tried now. Thanks for noticing that. See. Second set of eyes. I’ll test later when I get home.,,
+305336333906345984,rosazuckerfee,07/08/2020 9:29 PM,"is it possible for a recipe to get a random amount of the result/item? 
+
+for example:
+item1 + item2 = item3 with amout 5 - 20",,
+643924892282257439,jestajoke,07/08/2020 10:04 PM,"yea absolutely, cast to the result in the Do() function down at the bottom and just set the quantity there based on a random int or w/e",,
+305336333906345984,rosazuckerfee,07/08/2020 10:26 PM,thank you 🙂,,👍 (1)
+362828968916942850,dr.tom,07/08/2020 10:45 PM,Can i load scripts from another mod? If how do i do that?,,
+643924892282257439,jestajoke,07/08/2020 10:46 PM,"hmm not sure what you mean, just have to have the other mod loaded and you can access its scripts from your own",,
+362828968916942850,dr.tom,07/08/2020 10:46 PM,I want for instance declare all my liquids in mod1 and then make items in mod2 which use the liquids from mod1,,
+362828968916942850,dr.tom,07/08/2020 10:47 PM,"The config gets loaded, since ive nutrition stats etc, but the liquid only shows as ""error""",,
+362828968916942850,dr.tom,07/08/2020 10:48 PM,Which tells me my scripts dont get loaded,,
+643924892282257439,jestajoke,07/08/2020 10:49 PM,"I dont think thats necessarily the case but you may very well be on to something, are you certain you have the liquid declared properly and youve set a color for it? you could do a simple test to see if your scripts are being loaded just by printing somewhere in one of your functions and see if it pops up",,
+362828968916942850,dr.tom,07/08/2020 10:50 PM,I had the liquids working within one mod before,,
+643924892282257439,jestajoke,07/08/2020 10:50 PM,need to set the color in 3_game iirc,,
+362828968916942850,dr.tom,07/08/2020 10:50 PM,Yeah,,
+362828968916942850,dr.tom,07/08/2020 10:50 PM,It worked perfectly before,,
+643924892282257439,jestajoke,07/08/2020 10:51 PM,"ahh ok I gotcha, well as long as you have the mod loaded in your environment you should be able to to use that same liquid in a bottle from another mod so to speak",,
+643924892282257439,jestajoke,07/08/2020 10:51 PM,so idk maybe try messing with the load order? I guess your right if it doesnt work after that try to verify that the mod that declares the liquid is functioning as intended,,
+362828968916942850,dr.tom,07/08/2020 10:51 PM,Mhm,,
+362828968916942850,dr.tom,07/08/2020 10:53 PM,I do not need to set the scripts from the liquid mod as required?,,
+362828968916942850,dr.tom,07/08/2020 10:53 PM,So i do not need to change anything within my config?,,
+643924892282257439,jestajoke,07/08/2020 10:54 PM,"nah required addons are just for configs/altering other configs, you can reference scripts in scope globaly as long as you have them loaded",,
+643924892282257439,jestajoke,07/08/2020 10:54 PM,without any special setup or anything,,
+362828968916942850,dr.tom,07/08/2020 10:55 PM,Maybe i need to have the scripts where it sets the color on both mods??,,
+643924892282257439,jestajoke,07/08/2020 10:58 PM,"what reason do you have for them being separate mods anyway? in theory that shouldn't be required^ but I dont think it would hurt necessarily either, just doesnt seem like the way to go about it to me",,
+362828968916942850,dr.tom,07/08/2020 10:58 PM,Cuz theres a maximum of 32 liquids possible,,
+362828968916942850,dr.tom,07/08/2020 10:59 PM,17 are already taken from the vanilla game,,
+362828968916942850,dr.tom,07/08/2020 10:59 PM,And if everyone needs to declare his own milk,,
+362828968916942850,dr.tom,07/08/2020 10:59 PM,Ure very fast at the limit,,
+643924892282257439,jestajoke,07/08/2020 11:00 PM,"ah yea but multiple mods won't allow you to supersede that limit, guess I dont see how that would make a difference in this case",,
+362828968916942850,dr.tom,07/08/2020 11:00 PM,Well by all mods who want to have liquids just loading the liquid of that one mod,,
+362828968916942850,dr.tom,07/08/2020 11:01 PM,Instead of declaring it themselves,,
+362828968916942850,dr.tom,07/08/2020 11:02 PM,Plus then the milk of two different mods can be filled into the same container,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 12:36 AM,"@Hunterz  nope, #elseif isnt a thing.. your way and multiple variants of  said ways still does the same thing... Expansion is seeing my 'class' as multiple declarations, which tells me, my mod is loading first, it thinks expansion isnt loaded, so it reverts to 'class' instead of 'modded class' then expansion throws the error..",,
+214175043846930432,broman.dev,07/09/2020 1:19 AM,"What is the method for finding an item in a player's helmet, vest, shoes slot etc?",,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 1:37 AM,start with GetAttachmentFromIndex,,
+414169679385460737,ctg_gaming,07/09/2020 2:48 AM,is there a way to make an item i retexture only accept certain items? like say i wanted a protective case to only accept gold bars/nuggets?,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:52 AM,yes,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:55 AM,"``` 
+modded class SmallProtectorCase : Container_Base
+{
+    override bool CanReceiveItemIntoCargo( EntityAI cargo ) 
+    {
+        if ( cargo.IsKindOf(""GoldBar_Base"") ) //whatever you want to be able to go into it. 
+        {
+            return true;
+        }
+        return false;
+    }
+
+}
+```",,
+414169679385460737,ctg_gaming,07/09/2020 2:57 AM,and i just put that into the same config as the texture?,,
+414169679385460737,ctg_gaming,07/09/2020 2:57 AM,"class SmallProtectorCase;
+   class ChubC_Case: SmallProtectorCase
+
+    {
+        displayName=""Apocalyptic Protective Case"";
+        descriptionShort=""Custom Case By Chubby"";
+        itemSize[] = {2,2};
+        itemsCargoSize[] = {10,100};
+        absorbency = 0;
+        quickBarBonus = 5;
+        scope=2;
+        hiddenSelections[]=
+        {
+            ""camoGround"",
+            ""zbytek""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""Chub_C\Containers\ChubC_Case_Gas.paa"",
+            ""Chub_C\Containers\ChubC_Case_Gas.paa"",
+            ""Chub_C\Containers\ChubC_Case_Gas.paa""
+        };
+    };",,
+414169679385460737,ctg_gaming,07/09/2020 2:57 AM,is what i have right now,,
+414169679385460737,ctg_gaming,07/09/2020 2:58 AM,would that just go in somewhere inside that class?,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:58 AM,no..,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:58 AM,config is config,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:58 AM,script is script,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:59 AM,two seperate monsters,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:59 AM,config class is variabls about an object...,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 2:59 AM,scripted class is functions of that object,,
+414169679385460737,ctg_gaming,07/09/2020 2:59 AM,ok.,,
+414169679385460737,ctg_gaming,07/09/2020 3:01 AM,i guess i'll look more into that part. right now im not running any scripts in the mod.,,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 3:07 AM,you will need to to be able to add functions to your object.,,
+414169679385460737,ctg_gaming,07/09/2020 3:21 AM,yup. i just wasnt thinking about that part. about it being a seperate part awy from the config for textures,,
+202828762310508554,daemonforge,07/09/2020 4:59 AM,"So does any know how one would prevent a player from removing an item but still allow for swapping, Essentially for my Heroes and Bandit mod I want bandits not be able to take off a mask but still swap to a different one if they choose, I am using CanReleaseAttachement in PlayerBase, which works great for preventing the removal but I can't swap. Any assistance in this would be awesome!",,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 5:05 AM,where are you finding CanReleaseAttachement ?,,
+148370724900306944,jacob_mango,07/09/2020 5:08 AM,In either the `EntityAI` or `Object` class,,
+202828762310508554,daemonforge,07/09/2020 5:08 AM,in PlayerBase Line 1273,,
+148370724900306944,jacob_mango,07/09/2020 5:09 AM,"Yes, I should maybe read the message history before responding 😄",,
+202828762310508554,daemonforge,07/09/2020 5:09 AM,Its okay,,
+202828762310508554,daemonforge,07/09/2020 5:10 AM,"Oh Jacob, just wondering cause Im thinking I might end up haveing a similar issue with some of the new ways I'm interacting with PlayerBase what was the issue with the teleporting to dead players? where you using `GetGame().GetPlayers(players);` Then the fix was to just check if alive before returning it right?",,
+148370724900306944,jacob_mango,07/09/2020 5:25 AM,"Nah I just wasn't updating the variable with the new player body after it had spawned, which now I am doing",,
+148370724900306944,jacob_mango,07/09/2020 5:25 AM,"Well I was, I was just doing it the wrong way before",,
+225304935355383808,[S.C.] Zedmag#7605,07/09/2020 5:46 AM,Forge.. i must have spelled it wrong.. lol i found it now.. haha..,,
+235201266098241540,Nicholiae#4019,07/09/2020 5:54 AM,Any DayZ experienced scripters know if the radio broadcast static object is scripted for the broadcast or not? trying ot build one into my map...,,
+212974020293820416,corvo4,07/09/2020 5:56 AM,"Does anyone know how to make an item not raisable when it's in your hand?
+So when you hold it, he holds it by your side, and if you hold right click it doesn't raise your fists",,
+558719861463842852,glutenfreevapes,07/09/2020 6:19 AM,yeah,,
+558719861463842852,glutenfreevapes,07/09/2020 6:19 AM,overrideraise,,
+212974020293820416,corvo4,07/09/2020 6:19 AM,Would that be in the config.cpp?,,
+558719861463842852,glutenfreevapes,07/09/2020 6:20 AM,its a script,,
+212974020293820416,corvo4,07/09/2020 6:20 AM,"Oh okay, I'll look into it",,
+212974020293820416,corvo4,07/09/2020 6:20 AM,Thank you,,
+267120764283518976,xedon,07/09/2020 3:51 PM,"How can I modify the ""insideBuilding"" Temperature ? (GameConstants.ENVIRO_TEMPERATURE_INSIDE_COE)",,
+137658517615149056,helkhiana,07/09/2020 3:58 PM,you trying to fix summer_chernarus temperature issue?,,
+267120764283518976,xedon,07/09/2020 4:00 PM,"yes and no. I enabled sommer temperatures on my server with ```modded class ChernarusPlusData extends WorldData
+{
+    override void Init()
+    {
+        super.Init();
+        
+        m_DayTemperature = 23;
+        m_NightTemperature = 12;
+    }
+};``` Now I want also change the ""insideBuilding"" Temperatures to reduce the overheat",,
+137658517615149056,helkhiana,07/09/2020 4:01 PM,then make a file in 3_Game named constants.c,,
+137658517615149056,helkhiana,07/09/2020 4:01 PM,`const float ENVIRO_TEMPERATURE_INSIDE_COEF             = 1.25;    `,,
+137658517615149056,helkhiana,07/09/2020 4:01 PM,change the number,,
+137658517615149056,helkhiana,07/09/2020 4:01 PM,that's a coefficient number so if outside is 23 then inside is 23 * 1.25,,
+267120764283518976,xedon,07/09/2020 4:03 PM,thank you very mutch ❤️,,
+665471546525220875,Zedmag#7576,07/09/2020 4:12 PM,Any way to do this for certain buildings only?,,
+202828762310508554,daemonforge,07/09/2020 5:37 PM,"You would have to look at the 
+4_World/Classes/Environment/Environment.c 
+at line 393 - protected float GetEnvironmentTemperature()
+or more specifically line 412 not sure how you would then detect which building you where in maybe using 
+maybe the GetGame().GetObjectsAtPosition() ?
+Then calculate with your own functions and a getType() on the object",,
+202828762310508554,daemonforge,07/09/2020 5:44 PM,So would anyone know how to ensure the ClientData.m_PlayerBaseList is updated on the client?? I have an issue where is seems that the playerbase grabbed from it doesn't have the updated information all the time?? like even just the GetIdentity().GetPlainId() is not returning correctly and I have my own NetSyncVariables that aren't returning correctly either,,
+235201266098241540,Nicholiae#4019,07/09/2020 9:37 PM,Anyone know if its a script to get the radio objects to broadcast to the speakers in a city?,,
+414169679385460737,ctg_gaming,07/10/2020 1:36 AM,anyone have a basic script example that could help get me started for something as far as my protector case only taking certain loot. im not sure what to look up for this specifically to set up a script file.,,
+643924892282257439,jestajoke,07/10/2020 1:50 AM,"```    override bool CanReceiveItemIntoCargo (EntityAI cargo)
+    {
+        if( !super.CanReceiveItemIntoCargo( cargo ) )  //checks up the inheritance to see if the parent allows cargo and returns false if not
+        {
+            return false;
+        }
+
+        if ( cargo.IsKindOf( ""FryingPan"" ) || cargo.IsKindOf( this.GetType() ) )  //checks if the item you are putting in is a frying pan or an item with the same name as parent (pot) and returns false if so effectively not allowing them
+        {
+            return false;
+        }
+
+        return true;
+    }``` this is from the cooking pot",,
+643924892282257439,jestajoke,07/10/2020 1:52 AM,thats not bad if your gonna do it with just a couple items or something but another option instead of using IsKindOf would be to cast to your cargo item and check some kind of bool on it FitsInYourContainer() kinda thing and if thats true than allow it and if not than don't,,
+414169679385460737,ctg_gaming,07/10/2020 2:12 AM,hmmm,,
+414169679385460737,ctg_gaming,07/10/2020 2:12 AM,ok,,
+238407276514246656,farmingwithsteve,07/10/2020 2:12 AM,Anyone have any ideas why when splitting my custom items in game they disappear when they reach a stack of 1?,,
+414169679385460737,ctg_gaming,07/10/2020 2:13 AM,"i still need to set up the rest of the script. so that piece will even work. ive been programming for a while, but modding for dayz is new to me. so im still learning how to set things up to work properly compared to how im used to doing things",,
+238407276514246656,farmingwithsteve,07/10/2020 2:35 AM,Worked it out.  `varQuantityMin = 0;`,,
+238407276514246656,farmingwithsteve,07/10/2020 2:35 AM,was previously `varQuantityMin = 1;`,,
+539623868084650021,nilly__g,07/10/2020 2:35 AM,Can someone help me think of a way I can add a single static person in the game but I want to have him move and act like a spawn able event. Almost like a helicopter crash. And have him set up with a trader menu. It be in different spawn locations. And ideally I would like to have an expansion territory set up around him so when in the area it will come up and say “ black market trader in the area” I wanna figure out how to do this so I can post it to the workshop for other people to use as well!,,
+539623868084650021,nilly__g,07/10/2020 2:36 AM,@Farming With Steve where do you find that text at. People on my server have been having issues with splitting armband stacks and such,,
+238407276514246656,farmingwithsteve,07/10/2020 3:42 AM,Its in the config.cpp where your item classes are. I'm away from the computer now as its bedtime so haven't got an example available to hand.,,
+276609923557883905,keta99,07/10/2020 5:41 AM,anyone know of any scripts that let you add custom text channels to a server? like yelling/radios/faction chats,,
+239364174000422912,Riley Reid#6508,07/10/2020 9:03 AM,yo guys was wondering if making UI is done through script or through an interface? and where can i access the resources to learn this? 🙂,,
+665471546525220875,Zedmag#7576,07/10/2020 9:15 AM,,https://cdn.discordapp.com/attachments/492295576470290433/731045813916008468/image0.gif,
+137658517615149056,helkhiana,07/10/2020 10:33 AM,should particles be played on server or client?,,
+292234618667663361,kyhbka,07/10/2020 10:39 AM,You can't play particles on the server,,
+137658517615149056,helkhiana,07/10/2020 10:42 AM,"so if i'd want to play some particles in an area on the map, should i just do it in MissionGameplay?",,
+292234618667663361,kyhbka,07/10/2020 10:44 AM,Everyone does their own thing,,
+148370724900306944,jacob_mango,07/10/2020 11:46 AM,@Helkhiana best bet is to attach the particle to an object,,
+148370724900306944,jacob_mango,07/10/2020 11:47 AM,otherwise say you want to spawn a ring of particles then you can do it via an rpc and store them elsewhere,,
+148370724900306944,jacob_mango,07/10/2020 11:47 AM,but be careful with managing the lifetime of the particle then,,
+137658517615149056,helkhiana,07/10/2020 11:48 AM,yeah thanks. i just made a HND and spawned that with the particle attached,,
+692130603709104128,jim1120,07/10/2020 4:49 PM,"Hi everyone, did you know why check don't work ?
+``
+// Call 
+if ( curemicro.Hasbrain_Mung(""brain_virus"") )
+
+//  Check
+    float Hasbrain( string name )
+    {
+        if ( m_brain == name )
+        {
+            if ( !m_brain.IsRuined() )
+            {
+                return 1;
+            }
+        }
+        return 0;
+    } 
+``",,
+692130603709104128,jim1120,07/10/2020 4:50 PM,I don't know how make m_brain on string for compare him...,,
+293474243277225984,deamouse,07/10/2020 5:13 PM,@Jím  Try if(m_brain.Contains(name)),,
+692130603709104128,jim1120,07/10/2020 6:11 PM,"@DeAmouSE Thanks but get error can't compile, ``m_brain_Mung.GetType() == name`` work fine, Thanks Daemon 👍",,
+293474243277225984,deamouse,07/10/2020 6:13 PM,@Jím I thought you had a string variable. Sorry,,
+692130603709104128,jim1120,07/10/2020 6:14 PM,I did not know either I did not inform you well ... Thank you for responding 😉,,
+202828762310508554,daemonforge,07/11/2020 1:57 AM,"So, question how would one sync a variable in PlayerBase with the client(s) I want to store some data in the PlayerBase and have it sync accross an will need to update the data periodically ? I thought RegisterNetSyncVariable would do it?? but don't seem to be synced did I miss something? Or can that not be done will I need RPC calls",,
+105031327861977088,thedimin,07/11/2020 2:06 AM,"RegisterNetSyncVariable can only sync some specific type of variables int ,float ,bool
+For other types you will have to use rpcs",,
+105031327861977088,thedimin,07/11/2020 2:06 AM,unless somebody knows a way,,
+202828762310508554,daemonforge,07/11/2020 2:07 AM,"yeah, im just using floats and int (Indexes to array settings that I am syncing with RPCs)",,
+105031327861977088,thedimin,07/11/2020 2:08 AM,"so whats not ""working""",,
+267120764283518976,xedon,07/11/2020 2:09 AM,How can I show the current environment Temperature or the Body Temperature in the Hud?,,
+202828762310508554,daemonforge,07/11/2020 2:10 AM,"```
+    override void Init()
+    {
+        RegisterNetSyncVariableBool(""m_HeroesAndBandits_Killed"");
+        
+        RegisterNetSyncVariableInt(""m_HeroesAndBandits_AffinityIndex"");
+        RegisterNetSyncVariableFloat(""m_HeroesAndBandits_AffinityPoints"");
+        RegisterNetSyncVariableInt(""m_HeroesAndBandits_LevelIndex"");
+        RegisterNetSyncVariableBool(""m_HeroesAndBandits_DataLoaded"");
+        
+        super.Init();
+
+    }
+    
+    override void OnPlayerLoaded(){
+        super.OnPlayerLoaded();
+        
+        if (GetGame().IsServer() && GetIdentity() ){ 
+            HeroesAndBanditsPlayer tempHABPlayer = GetHeroesAndBandits().GetPlayer(GetIdentity().GetPlainId());
+            m_HeroesAndBandits_AffinityIndex = tempHABPlayer.getAffinityIndex();
+            m_HeroesAndBandits_AffinityPoints = tempHABPlayer.getAffinityPoints(tempHABPlayer.getAffinityName());
+            m_HeroesAndBandits_LevelIndex= tempHABPlayer.getLevelIndex();
+            m_HeroesAndBandits_DataLoaded = true;
+            habPrint(""Player: "" + GetIdentity().GetPlainId() + "" Loaded with Affinty Index of "" + m_HeroesAndBandits_AffinityIndex + "" Points: "" + m_HeroesAndBandits_AffinityPoints, ""Debug"");
+        } 
+        
+        SetSynchDirty();
+
+    }
+```
+and client is returning false for `m_HeroesAndBandits_DataLoaded`",,

@@ -1,0 +1,1263 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+261535471698575370,hairywookiee,11/09/2018 11:05 PM,ChatPlayer is a native function,,
+334756290742190081,._corey,11/09/2018 11:06 PM,"yeah, the thing we would have to disable"""" is the one that receives the message on server side, then forwards it into output",,
+261535471698575370,hairywookiee,11/09/2018 11:07 PM,Which is implemented in native code as I understand,,
+261535471698575370,hairywookiee,11/09/2018 11:07 PM,Probably uses some of the same APIs as the VoIP system since it's area local?,,
+334756290742190081,._corey,11/09/2018 11:10 PM,yeah maybe,,
+120714283246944256,thepsilonnaught,11/10/2018 12:01 AM,"Ideally, chat-based isn't the way to go",,
+334756290742190081,._corey,11/10/2018 12:06 AM,yeah i would not make a chat based admin system honestly,,
+334756290742190081,._corey,11/10/2018 12:07 AM,its okay in other games but in DayZ i rather stick to UI,,
+334756290742190081,._corey,11/10/2018 12:18 AM,does someone know how to make a character completely static?,,
+334756290742190081,._corey,11/10/2018 12:18 AM,"for example a zombie, that stays in place, doesn't react to punches, shots or anything",,
+120714283246944256,thepsilonnaught,11/10/2018 12:19 AM,spawn it with ai = false?,,
+334756290742190081,._corey,11/10/2018 12:19 AM,what do you mean by that?,,
+120714283246944256,thepsilonnaught,11/10/2018 12:20 AM,"`proto native Object CreateObject( string type, vector pos, bool create_local = false, bool init_ai = false, bool create_physics = true );`",,
+334756290742190081,._corey,11/10/2018 12:20 AM,hm i'll test,,
+120714283246944256,thepsilonnaught,11/10/2018 12:20 AM,4th param,,
+334756290742190081,._corey,11/10/2018 12:30 AM,"i think basically, every unprovided parameter is false as default",,
+334756290742190081,._corey,11/10/2018 12:30 AM,"so i think it won't make a difference to test it with false, i'll see",,
+120714283246944256,thepsilonnaught,11/10/2018 12:32 AM,"physics is true by default, but yes",,
+120714283246944256,thepsilonnaught,11/10/2018 12:32 AM,"If you weren't providing it, then no reason to.",,
+334756290742190081,._corey,11/10/2018 12:33 AM,"yeah, it would be good to spawn for example a survivor, or a playerbase without any physics on them",,
+334756290742190081,._corey,11/10/2018 12:33 AM,for traders example,,
+334756290742190081,._corey,11/10/2018 12:33 AM,"you make a new class, add the interactions to it",,
+334756290742190081,._corey,11/10/2018 12:34 AM,so it opens the trader menu  when you walk up to the guy (or woman)  and press F,,
+334756290742190081,._corey,11/10/2018 12:34 AM,"already got that part working , but the character can be killed, or pushed around by heavy punching",,
+261535471698575370,hairywookiee,11/10/2018 12:59 AM,You can 100% suppress chat messages from being sent to the server with a client mod btw @Corey,,
+261535471698575370,hairywookiee,11/10/2018 12:59 AM,ChatInputMenu is a PITA to mod though for various reasons,,
+261535471698575370,hairywookiee,11/10/2018 1:00 AM,"Easier to create your own ChatInputMenu, then override MissionBase:",,
+261535471698575370,hairywookiee,11/10/2018 1:00 AM,``override UIScriptedMenu CreateScriptedMenu(int id),,
+261535471698575370,hairywookiee,11/10/2018 1:00 AM,"```        case MENU_CHAT_INPUT:
+            menu = new MyChatInputMenu;```",,
+261535471698575370,hairywookiee,11/10/2018 1:01 AM,and in the custom chat input class:,,
+261535471698575370,hairywookiee,11/10/2018 1:01 AM,"```    override bool OnChange(Widget w, int x, int y, bool finished)
+    {
+        super.OnChange(w, x, y, finished);
+        
+        if (!finished) return false;
+        
+        string text = m_edit_box.GetText();
+
+        if (text != """")
+        {
+            //GetGame().ChatPlayer(/*GetGame().ChatGetChannel()*/0, text);
+            
+            ChatMessageEventParams chat_params = new ChatMessageEventParams( CCDirect, ""blah"", ""not sent to server: "" + text, """" );
+            MissionGameplay.Cast( GetGame().GetMission() ).m_Chat.Add( chat_params );```",,
+261535471698575370,hairywookiee,11/10/2018 1:02 AM,,https://cdn.discordapp.com/attachments/492295576470290433/510605016197890068/chatnotsent.png,
+120714283246944256,thepsilonnaught,11/10/2018 1:02 AM,The problem we're trying to combat is the server sending messages to clients,,
+120714283246944256,thepsilonnaught,11/10/2018 1:03 AM,The server needs to receive the message to propagate it to the event listener,,
+261535471698575370,hairywookiee,11/10/2018 1:03 AM,Well there was talking about suppressing it using a client mod,,
+261535471698575370,hairywookiee,11/10/2018 1:03 AM,"Whereas you could just stop it from sending from the client, do your command processing there, then send an RPC to the server",,
+261535471698575370,hairywookiee,11/10/2018 1:04 AM,"So rather than the server processing chat, you're sending it proper commands instead",,
+261535471698575370,hairywookiee,11/10/2018 1:04 AM,That also means players wouldn't have to use #login for their chat to be picked up by the server,,
+261535471698575370,hairywookiee,11/10/2018 1:05 AM,They'd have to have the mod installed of course,,
+334756290742190081,._corey,11/10/2018 1:05 AM,@hairywookiee yeah i did that before,,
+334756290742190081,._corey,11/10/2018 1:05 AM,but still not the best option,,
+334756290742190081,._corey,11/10/2018 1:05 AM,it would be better if you could do it with a serverside script without modding,,
+334756290742190081,._corey,11/10/2018 1:05 AM,"cuz if you suppress your message like that, it still appears on the server for other players",,
+261535471698575370,hairywookiee,11/10/2018 1:06 AM,What do you mean? the message doesn't get sent to the server at all if you do what I did above ^ therefore other players can't ever get it,,
+334756290742190081,._corey,11/10/2018 1:07 AM,ah wait yeah its a custom chat,,
+261535471698575370,hairywookiee,11/10/2018 1:07 AM,Yup,,
+261535471698575370,hairywookiee,11/10/2018 1:07 AM,You can't mod the existing one easily because it has private variables 😦,,
+261535471698575370,hairywookiee,11/10/2018 1:08 AM,Of course at this point you might as well make a complete AdminUI if you're already doing client mods 😛,,
+120714283246944256,thepsilonnaught,11/10/2018 1:10 AM,Trying to get into the ui workbench.. doesn't seem that intuitive,,
+334756290742190081,._corey,11/10/2018 1:10 AM,what do you mean?,,
+334756290742190081,._corey,11/10/2018 1:10 AM,the UI editor?,,
+120714283246944256,thepsilonnaught,11/10/2018 1:10 AM,Yeah,,
+334756290742190081,._corey,11/10/2018 1:10 AM,its pretty good,,
+334756290742190081,._corey,11/10/2018 1:10 AM,but i think i am so far used to creating them manually i would keep doing that instead,,
+334756290742190081,._corey,11/10/2018 1:10 AM,would be good if you could change the background,,
+334756290742190081,._corey,11/10/2018 1:11 AM,but i just create an image and stretch it out,,
+120714283246944256,thepsilonnaught,11/10/2018 1:11 AM,any pointers?,,
+334756290742190081,._corey,11/10/2018 1:12 AM,what do you mean?,,
+142181979905982464,dannydog,11/10/2018 1:12 AM,background colour yea?,,
+334756290742190081,._corey,11/10/2018 1:12 AM,i mean a background image,,
+334756290742190081,._corey,11/10/2018 1:12 AM,like a screenshot,,
+142181979905982464,dannydog,11/10/2018 1:12 AM,for what,,
+334756290742190081,._corey,11/10/2018 1:12 AM,the UI editor,,
+142181979905982464,dannydog,11/10/2018 1:12 AM,hm,,
+142181979905982464,dannydog,11/10/2018 1:13 AM,as like a template,,
+142181979905982464,dannydog,11/10/2018 1:13 AM,u mean?,,
+334756290742190081,._corey,11/10/2018 1:13 AM,"no, a background image",,
+334756290742190081,._corey,11/10/2018 1:13 AM,not something you add to the game,,
+334756290742190081,._corey,11/10/2018 1:13 AM,just while you are working,,
+142181979905982464,dannydog,11/10/2018 1:13 AM,yes so u use it as a template,,
+334756290742190081,._corey,11/10/2018 1:13 AM,"so you have  an ingame screenshot as ""canvas""",,
+334756290742190081,._corey,11/10/2018 1:21 AM,wish there would be a lock option as well,,
+334756290742190081,._corey,11/10/2018 1:21 AM,so you can lock finished elements,,
+456226577798135808,Deleted User,11/10/2018 2:29 AM,Help maybe? :/,https://cdn.discordapp.com/attachments/492295576470290433/510626970116161536/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:30 AM,dont understand why,,
+456226577798135808,Deleted User,11/10/2018 2:31 AM,,https://cdn.discordapp.com/attachments/492295576470290433/510627450368294938/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:31 AM,Just getting spammed with chat now,,
+456226577798135808,Deleted User,11/10/2018 2:42 AM,what would cause this??,https://cdn.discordapp.com/attachments/492295576470290433/510630197255733269/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:42 AM,,https://cdn.discordapp.com/attachments/492295576470290433/510630378449534997/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:42 AM,,https://cdn.discordapp.com/attachments/492295576470290433/510630419276890122/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:43 AM,"havent touched bec, did it update or some shit?",,
+334756290742190081,._corey,11/10/2018 2:56 AM,if you dont use -BEpath is should start automaticly with the server from root,,
+456226577798135808,Deleted User,11/10/2018 3:20 AM,but i do its in the second pic,,
+334756290742190081,._corey,11/10/2018 3:25 AM,but why dont u use battleye as the original path?,,
+456226577798135808,Deleted User,11/10/2018 3:33 AM,idk,,
+456226577798135808,Deleted User,11/10/2018 3:36 AM,"i moved it all to the main directory, changed needed params in startup",,
+456226577798135808,Deleted User,11/10/2018 3:36 AM,but still same issue,,
+456226577798135808,Deleted User,11/10/2018 3:36 AM,Bec isnt working,,
+456226577798135808,Deleted User,11/10/2018 3:36 AM,though my Dart rcon is,,
+456226577798135808,Deleted User,11/10/2018 10:15 AM,"Is there a way to do it faster and without dependence of fps?
+
+if (AlphaWidget < 255)
+{
+    AlphaWidget++;
+}
+else
+{
+    AlphaWidget = 255;
+}",,
+142181979905982464,dannydog,11/10/2018 10:16 AM,hm?,,
+456226577798135808,Deleted User,11/10/2018 10:18 AM,https://gyazo.com/eb26d175194e53ebbd5c56be7f07790c,,
+456226577798135808,Deleted User,11/10/2018 10:19 AM,"forgot about fps, i do it in onupdate now",,
+120605652841136130,Cloud#0974,11/10/2018 10:30 AM,Are you able to play sounds?,,
+142181979905982464,dannydog,11/10/2018 10:30 AM,yes,,
+120605652841136130,Cloud#0974,11/10/2018 10:30 AM,"All I needed to know, thanks",,
+456226577798135808,Deleted User,11/10/2018 11:12 AM,https://github.com/mov3ax/dayz-scripts/blob/898782fd1a2fa25cea008c1d727c6da12a6de0ac/scripts/3_Game/tools/tools.c found in-game script for alpha fade,,
+456226577798135808,Deleted User,11/10/2018 11:12 AM,WidgetFadeTimer,,
+456226577798135808,Deleted User,11/10/2018 11:25 AM,"`
+
+if (!CreateWidget)
+        {
+            AlertWidget = GetGame().GetWorkspace().CreateWidgets(""$CurrentDir:missions\\DayZCommunityOfflineMode.ChernarusPlus\\core\\modules\\day_z_license_dialog.layout"");    
+        
+            float out_x;
+            float out_y;
+        
+            AlertWidget.GetPos(out_x, out_y);
+            AlertWidget.SetPos(out_x - 20, out_y);
+            AlertWidget.SetColor(ARGB(255, 0, 0, 0));
+        
+            AlertCaption = TextWidget.Cast( AlertWidget.FindAnyWidget(""Caption"") );
+            AlertText = TextWidget.Cast( AlertWidget.FindAnyWidget(""Text"") );
+            
+            AlertCaption.SetText(caption);
+            AlertText.SetText(text);
+        
+            // AlertWidget.SetAlpha(0);
+            // AlertCaption.SetAlpha(0);
+            // AlertText.SetAlpha(0);
+            
+            CreateWidget = true;
+        }
+        
+        //if (AlphaWidget < 255)
+        //{
+        //    AlphaWidget++;
+        //}
+        //else
+        //{
+        //    AlphaWidget = 255;
+        //}
+        
+        AlertFade.FadeIn(AlertWidget, 25.5);
+        AlertFade.FadeIn(AlertCaption, 25.5);
+        AlertFade.FadeIn(AlertText, 25.5);
+        
+        // AlertWidget.SetAlpha(AlphaWidget * -1);
+        // AlertCaption.SetAlpha(AlphaWidget * -1);
+        // AlertText.SetAlpha(AlphaWidget * -1);    
+
+`",,
+456226577798135808,Deleted User,11/10/2018 11:25 AM,this one don't work,,
+456226577798135808,Deleted User,11/10/2018 12:48 PM,https://github.com/mov3ax/dayz-scripts/blob/898782fd1a2fa25cea008c1d727c6da12a6de0ac/scripts/4_World/Entities/ItemBase/Thermometer.c Best thermometer ever,,
+456226577798135808,Deleted User,11/10/2018 12:48 PM,just gives you random values,,
+167370568893464576,0x346e3730,11/10/2018 1:13 PM,No way,,
+167370568893464576,0x346e3730,11/10/2018 1:13 PM,rofl,,
+456226577798135808,Deleted User,11/10/2018 1:14 PM,"idk why ``if (m_ProxyExportMode)
+{
+CETesting TestHive = GetTesting();
+TestHive.ExportProxyProto();
+TestHive.ExportProxyData( ""7500 0 7500"", 15000 );
+}",,
+456226577798135808,Deleted User,11/10/2018 1:14 PM,This does not work for me.,,
+456226577798135808,Deleted User,11/10/2018 1:14 PM,I get no loot and some places,,
+456226577798135808,Deleted User,11/10/2018 1:14 PM,even ceeditor zombies and loot does not work,,
+239201186933112833,da0ne_,11/10/2018 1:37 PM,@Deleted User no the made it that way for a more realistic way,,
+239201186933112833,da0ne_,11/10/2018 1:37 PM,that tool IRL is not 100% accurate,,
+456226577798135808,Deleted User,11/10/2018 1:37 PM,yes,,
+239201186933112833,da0ne_,11/10/2018 1:37 PM,"it gives you an estimate thus, they did the same with the random value based of a minimum and a maximum value",,
+239201186933112833,da0ne_,11/10/2018 1:37 PM,its not 100% random lol,,
+239201186933112833,da0ne_,11/10/2018 1:38 PM,that would be something devs would do 😃,,
+456226577798135808,Deleted User,11/10/2018 1:40 PM,so is there any way to get player temp?,,
+142181979905982464,dannydog,11/10/2018 1:40 PM,ye,,
+456226577798135808,Deleted User,11/10/2018 1:40 PM,they remover getstats().gettempstats,,
+456226577798135808,Deleted User,11/10/2018 1:41 PM,pb.GetStatTemperature().Get() i did that before,,
+456226577798135808,Deleted User,11/10/2018 1:41 PM,but now they removed it,,
+295660175237447691,sentepu,11/10/2018 1:41 PM,probably replaced more than totally removed,,
+456226577798135808,Deleted User,11/10/2018 1:42 PM,they commented it,,
+295660175237447691,sentepu,11/10/2018 1:44 PM,@DaOne(Mark) it is totally random since its based constants,,
+295660175237447691,sentepu,11/10/2018 1:44 PM,"```
+    static const float HIGH_TEMPERATURE_L = 38.5;
+    static const float HIGH_TEMPERATURE_H = 39.9;```",,
+295660175237447691,sentepu,11/10/2018 1:44 PM,temp player is just not implemented i think,,
+456226577798135808,Deleted User,11/10/2018 1:45 PM,but temp indicator works,,
+295660175237447691,sentepu,11/10/2018 1:45 PM,did you check the code ? its not faked with some wet effect ?,,
+135355238990348288,djctavia,11/10/2018 1:47 PM,"Stupid question, but if a PBO is signed; does PBO can be extracted ? (Is it obfuscated or something ?)",,
+295660175237447691,sentepu,11/10/2018 1:47 PM,nop its two different thing,,
+135355238990348288,djctavia,11/10/2018 1:47 PM,"Ok, just be sure, thx",,
+456226577798135808,Deleted User,11/10/2018 1:48 PM,btw,,
+456226577798135808,Deleted User,11/10/2018 1:49 PM,i can't sign my pbo,https://cdn.discordapp.com/attachments/492295576470290433/510798050441297930/unknown.png,
+456226577798135808,Deleted User,11/10/2018 2:01 PM,VerifySignture  it only verifies the server pbos and bisigns right?,,
+456226577798135808,Deleted User,11/10/2018 2:03 PM,i guess,,
+456226577798135808,Deleted User,11/10/2018 2:06 PM,"@Sen no its 100% temp, if you remove shirt and set up wind then temp also will fall down",,
+456226577798135808,Deleted User,11/10/2018 2:07 PM,looks like its moved to heat comfort,,
+456226577798135808,Deleted User,11/10/2018 2:07 PM,ill check it,,
+456226577798135808,Deleted User,11/10/2018 2:15 PM,"so is there any way to send message to chat, even with ""s"" letter?",,
+334756290742190081,._corey,11/10/2018 2:31 PM,@Deleted User you sure you wan't to animate your UI?xD,,
+456226577798135808,Deleted User,11/10/2018 2:31 PM,not whole ui,,
+456226577798135808,Deleted User,11/10/2018 2:31 PM,just mine alert,,
+456226577798135808,Deleted User,11/10/2018 2:31 PM,like this one,https://cdn.discordapp.com/attachments/492295576470290433/510808718212988968/unknown.png,
+334756290742190081,._corey,11/10/2018 2:32 PM,Well,,
+334756290742190081,._corey,11/10/2018 2:32 PM,you gonna cry blood,,
+334756290742190081,._corey,11/10/2018 2:32 PM,till you get it fine,,
+334756290742190081,._corey,11/10/2018 2:33 PM,not sure if you've seen my video on the forums about my admin panel,,
+334756290742190081,._corey,11/10/2018 2:33 PM,"but getting that shit animated, fading from panel to panel etc",,
+334756290742190081,._corey,11/10/2018 2:34 PM,i spent about a day and a half getting all that up to work and having a control over it's speed,,
+334756290742190081,._corey,11/10/2018 2:35 PM,"and honestly i don't think it worth it, especially not for a notification",,
+120714283246944256,thepsilonnaught,11/10/2018 2:37 PM,Keep it simple stupid,,
+456226577798135808,Deleted User,11/10/2018 3:31 PM,Guys is it possible to do this?,,
+334756290742190081,._corey,11/10/2018 3:32 PM,Do what,,
+456226577798135808,Deleted User,11/10/2018 3:32 PM,"```case ""/exporthive"":
+
+Msgparam = new Param1<string>( ""Exported!"" ); 
+CETesting TestHive = GetTesting();
+TestHive.ExportProxyProto();
+TestHive.ExportProxyData( ""7500 0 7500"", 15000 );```",,
+456226577798135808,Deleted User,11/10/2018 3:32 PM,@Corey,,
+334756290742190081,._corey,11/10/2018 3:32 PM,On server i guess yeah,,
+456226577798135808,Deleted User,11/10/2018 3:32 PM,Thanks goin to try it out.,,
+187261394926829568,TorNim0s#3023,11/10/2018 3:52 PM,Where i find the script i export from the offline editor?,,
+456226577798135808,Deleted User,11/10/2018 4:02 PM,"Any one figured out what is ""Server"" mod in workshop?",,
+456226577798135808,Deleted User,11/10/2018 4:03 PM,i have script for server-side how i should put it in,,
+456226577798135808,Deleted User,11/10/2018 4:03 PM,like mission?,,
+334756290742190081,._corey,11/10/2018 4:08 PM,there are 2 type of addons,,
+334756290742190081,._corey,11/10/2018 4:08 PM,mod and servermod,,
+334756290742190081,._corey,11/10/2018 4:09 PM,"servermod is only for the server, not required on client",,
+334756290742190081,._corey,11/10/2018 4:09 PM,but as i know DayZ has removed the -servermod parameter,,
+334756290742190081,._corey,11/10/2018 4:09 PM,it was removed in 62,,
+456226577798135808,Deleted User,11/10/2018 4:10 PM,So,,
+334756290742190081,._corey,11/10/2018 4:11 PM,servermods are the addons that the clients do not require to join the server,,
+456226577798135808,Deleted User,11/10/2018 4:11 PM,i understand,,
+456226577798135808,Deleted User,11/10/2018 4:12 PM,"can i make pbo mod for server, with modded class, which will work only for server?",,
+334756290742190081,._corey,11/10/2018 4:12 PM,"yeah you can, but as i said",,
+334756290742190081,._corey,11/10/2018 4:12 PM,i'm not sure if -servermod is a thing,,
+135355238990348288,djctavia,11/10/2018 4:42 PM,"Wait, it's possible to have only mod on server even if pbo are signed ? (And client can join it ofc)",,
+334756290742190081,._corey,11/10/2018 4:44 PM,it was possible,,
+334756290742190081,._corey,11/10/2018 4:44 PM,not sure if it is now,,
+334756290742190081,._corey,11/10/2018 4:44 PM,test it,,
+334756290742190081,._corey,11/10/2018 4:44 PM,load your serverside mod with -servermod= and you can test,,
+334756290742190081,._corey,11/10/2018 4:44 PM,or wait i can do it gimme a sec,,
+334756290742190081,._corey,11/10/2018 4:46 PM,"well yeah, looks like it does not work",,
+135355238990348288,djctavia,11/10/2018 4:47 PM,"I'll try, and tell you",,
+334756290742190081,._corey,11/10/2018 4:47 PM,i just tested it,,
+334756290742190081,._corey,11/10/2018 4:47 PM,its not working,,
+334756290742190081,._corey,11/10/2018 4:47 PM,"well, not for me",,
+135355238990348288,djctavia,11/10/2018 4:51 PM,"It's working for me, only with -mod",,
+135355238990348288,djctavia,11/10/2018 4:51 PM,Good to know,,
+334756290742190081,._corey,11/10/2018 4:51 PM,yeah thats what im saying,,
+334756290742190081,._corey,11/10/2018 4:51 PM,you would need -servermod,,
+334756290742190081,._corey,11/10/2018 4:51 PM,"so it's strict for server, and players don't need it",,
+334756290742190081,._corey,11/10/2018 4:51 PM,"that's how it should be, run a different mod for the server and the client",,
+135355238990348288,djctavia,11/10/2018 4:52 PM,I'm not using -servermod for tagging my mod ^^,,
+135355238990348288,djctavia,11/10/2018 4:52 PM,Only -mod worked,,
+334756290742190081,._corey,11/10/2018 4:52 PM,yeah i know,,
+187261394926829568,TorNim0s#3023,11/10/2018 5:14 PM,"Hey, anyone knows how to set the buildings that i add to the map have military loot spawn?",,
+120605652841136130,Cloud#0974,11/10/2018 5:19 PM,Has anyone managed to read the contents of `Data` in `players.db`?,,
+295660175237447691,sentepu,11/10/2018 5:28 PM,"@Cloud no, if you need some kind of db you can write in files (json supported) but currently bugged 😄",,
+120605652841136130,Cloud#0974,11/10/2018 5:29 PM,I wanted to be able to edit player data externally,,
+295660175237447691,sentepu,11/10/2018 5:30 PM,not possible yet (or ever) afaik,,
+120605652841136130,Cloud#0974,11/10/2018 5:31 PM,and why is that? Doesn't the server load player data from players.db?,,🤷 (1)
+295660175237447691,sentepu,11/10/2018 5:35 PM,bi dont want you to mess with this ? maybe later ? who knows ?,,
+120605652841136130,Cloud#0974,11/10/2018 5:35 PM,Yeah that's my guess,,
+148054598479773696,misteroutoftime,11/10/2018 5:44 PM,Wait for hive,,
+148054598479773696,misteroutoftime,11/10/2018 5:45 PM,Then unpack the Java jar,,
+148054598479773696,misteroutoftime,11/10/2018 5:45 PM,And look into the code,,
+120605652841136130,Cloud#0974,11/10/2018 5:45 PM,I'm impatient xd,,
+148054598479773696,misteroutoftime,11/10/2018 5:45 PM,Then u should know how it is binarized,,
+334756290742190081,._corey,11/10/2018 5:47 PM,@Cloud the server doesnt store data in the players.db,,
+120605652841136130,Cloud#0974,11/10/2018 5:47 PM,not player data?,,
+148054598479773696,misteroutoftime,11/10/2018 5:47 PM,Who then?,,
+334756290742190081,._corey,11/10/2018 5:47 PM,nope,,
+120605652841136130,Cloud#0974,11/10/2018 5:47 PM,because I can see what my character is wearing,,
+120605652841136130,Cloud#0974,11/10/2018 5:48 PM,"```¬√7≈F°]ÿ@πÔÙDxSurvivorF_Lindadist›ß¿?playtime™KDÓœ{£Âx‘∂ »B @úE¬ »B¬ »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B« »B »B«'»vj« ‰
+D øû›C««« @E »B«ÄA£RagˇˇHND.œ†ÚÂx‘ òBˇﬂﬂﬂ…ˇˇﬂ Ä@t¨Hoodie_GreenˇˇBodyœìQÚÂx‘ˇﬂ<©Roadflarecargo!œ◊∆ÚÂx‘ Dˇﬂ8∞CanvasPants_BlueˇˇLegsœ§xÚÂx‘ˇﬂ;≥AthleticShoes_BlackˇˇFeetœ†ÚÂx‘ˇﬂ```",,
+334756290742190081,._corey,11/10/2018 5:48 PM,data is saved inside the storage folder / data,,
+334756290742190081,._corey,11/10/2018 5:48 PM,dynamic types vehicles etc,,
+120605652841136130,Cloud#0974,11/10/2018 5:48 PM,and player data such as inventory items etc?,,
+334756290742190081,._corey,11/10/2018 5:49 PM,those are inside vehicles.bin i think,,
+334756290742190081,._corey,11/10/2018 5:49 PM,or maybe dynamic,,
+334756290742190081,._corey,11/10/2018 5:49 PM,but you cant edit those,,
+120605652841136130,Cloud#0974,11/10/2018 5:49 PM,how strange,,
+120605652841136130,Cloud#0974,11/10/2018 5:49 PM,Then wth is the data in players.db xd,,
+334756290742190081,._corey,11/10/2018 5:49 PM,stores steam id mostly that you cant access,,
+120605652841136130,Cloud#0974,11/10/2018 5:49 PM,but there is a Data column,,
+120605652841136130,Cloud#0974,11/10/2018 5:50 PM,and inside the data column is the items that I'm wearing lol,,
+120605652841136130,Cloud#0974,11/10/2018 5:50 PM,aswell as the flare that its in my inventory,,
+334756290742190081,._corey,11/10/2018 5:50 PM,"you're making me confused, but maybe it changed sindce i fucker around with it",,
+334756290742190081,._corey,11/10/2018 5:50 PM,"before beta update, you could only find the steam IDs in the DB",,
+334756290742190081,._corey,11/10/2018 5:50 PM,but i'll look into it now,,
+120605652841136130,Cloud#0974,11/10/2018 5:51 PM,"The table has a few columns, one of them is steam id, and another is `Data`. The type of it is a BLOB",,
+295660175237447691,sentepu,11/10/2018 5:51 PM,"players.db save your character infos for sure, at least your position",,
+120605652841136130,Cloud#0974,11/10/2018 5:51 PM,I cant find a file type associated with the data inside of blob,,
+334756290742190081,._corey,11/10/2018 5:52 PM,can someone send me a DB file i can look at?,,
+334756290742190081,._corey,11/10/2018 5:52 PM,my one is completely empty,,
+120605652841136130,Cloud#0974,11/10/2018 5:52 PM,yep,,
+334756290742190081,._corey,11/10/2018 5:52 PM,i disabled saving,,
+334756290742190081,._corey,11/10/2018 5:52 PM,,https://cdn.discordapp.com/attachments/492295576470290433/510859341566574606/unknown.png,
+334756290742190081,._corey,11/10/2018 5:52 PM,but this is the default structure,,
+120605652841136130,Cloud#0974,11/10/2018 5:53 PM,"Look at the one I sent you, you need to print out the `Data` column",,
+334756290742190081,._corey,11/10/2018 5:55 PM,yeah you're data is stored in there,,
+120605652841136130,Cloud#0974,11/10/2018 5:56 PM,Yep,,
+334756290742190081,._corey,11/10/2018 5:56 PM,but most of the db inspectors cant seem to recognize data,,
+334756290742190081,._corey,11/10/2018 5:56 PM,its encrypted or a custom type of db,,
+120605652841136130,Cloud#0974,11/10/2018 5:56 PM,Yep,,
+120605652841136130,Cloud#0974,11/10/2018 5:56 PM,Time to parse some hex xd,,
+334756290742190081,._corey,11/10/2018 5:56 PM,.db files are usually sql dbases but this one is,,
+334756290742190081,._corey,11/10/2018 5:56 PM,have no idea honestly,,
+120605652841136130,Cloud#0974,11/10/2018 5:56 PM,"Well it is a sqlite database, but that column, I've no idea what it is",,
+334756290742190081,._corey,11/10/2018 5:59 PM,if its an sqlite database you should be able to see the data in there,,
+334756290742190081,._corey,11/10/2018 6:00 PM,guess its some kinda edited version of it,,
+120605652841136130,Cloud#0974,11/10/2018 6:00 PM,You mean the `Data` column?,,
+334756290742190081,._corey,11/10/2018 6:00 PM,the whole data inside,,
+334756290742190081,._corey,11/10/2018 6:01 PM,if you open it up in a db browser,,
+334756290742190081,._corey,11/10/2018 6:01 PM,its empty,,
+120605652841136130,Cloud#0974,11/10/2018 6:01 PM,I assume it's some of custom structure,,
+334756290742190081,._corey,11/10/2018 6:01 PM,yeah,,
+334756290742190081,._corey,11/10/2018 6:01 PM,its a BLOB or what the fuck that is,,
+334756290742190081,._corey,11/10/2018 6:02 PM,ah right its a binary,,
+120605652841136130,Cloud#0974,11/10/2018 6:02 PM,Yeah its a blob,,
+120605652841136130,Cloud#0974,11/10/2018 6:02 PM,but that can be anything,,
+334756290742190081,._corey,11/10/2018 6:04 PM,"sucks, guess your only option is to write your own saving system",,
+334756290742190081,._corey,11/10/2018 6:04 PM,but write is fucked now,,
+120605652841136130,Cloud#0974,11/10/2018 6:04 PM,"I wanted it universal for each server, but I may have to wait until the hive",,
+456226577798135808,Deleted User,11/10/2018 6:21 PM,guys Im making a simple mod for no stamina and no loss of energy.,,
+456226577798135808,Deleted User,11/10/2018 6:22 PM,the config.cpp should have,,
+456226577798135808,Deleted User,11/10/2018 6:22 PM,"``class CfgPatches
+{
+    class @StaminaMod_scripts
+    {        requiredVersion=0.1;
+        requiredAddons[]={};
+    };
+};``",,
+214427063665295362,aeryes,11/10/2018 6:34 PM,Is there any way to allow file reading and writing through the server? I'd like to write a script that can read and write to files while the server is running?,,
+295660175237447691,sentepu,11/10/2018 6:37 PM,"yes, some functions are currently bugged tho",,
+334756290742190081,._corey,11/10/2018 6:39 PM,"it is possible, but not right now",,
+106435033203482624,kerkkoh,11/10/2018 7:32 PM,It's behind a parameter according to Eugen's message to @DaOne(Mark)  😐,,
+334756290742190081,._corey,11/10/2018 7:33 PM,What you mean dear @Kerkkoh ?,,
+106435033203482624,kerkkoh,11/10/2018 7:34 PM,"Dear Corey, this is what I mean https://i.gyazo.com/967a82872c40df5006a4742913343369.png",,
+334756290742190081,._corey,11/10/2018 7:34 PM,oh,,
+106435033203482624,kerkkoh,11/10/2018 7:35 PM,Tried `server -srcAllowFileWrite` with no results,,
+106435033203482624,kerkkoh,11/10/2018 7:35 PM,"Could also be `-srcAllowFileWrite=true`, haven't tried that one",,
+334756290742190081,._corey,11/10/2018 7:35 PM,i'll check it,,
+106435033203482624,kerkkoh,11/10/2018 7:35 PM,Or `-srcAllowFileWrite=1`,,
+106435033203482624,kerkkoh,11/10/2018 7:35 PM,Cool!,,
+334756290742190081,._corey,11/10/2018 7:39 PM,nope,,
+334756290742190081,._corey,11/10/2018 7:39 PM,tried both,,
+334756290742190081,._corey,11/10/2018 7:39 PM,doesnt look like it works,,
+106435033203482624,kerkkoh,11/10/2018 7:40 PM,Dang. I didn't find anything else that would have to do with the file writing.,,
+334756290742190081,._corey,11/10/2018 7:43 PM,yeah me either,,
+106435033203482624,kerkkoh,11/10/2018 7:45 PM,Hopefully we get an update that enables that param or tells us what the correct one is.,,
+334756290742190081,._corey,11/10/2018 7:48 PM,yeah,,
+334756290742190081,._corey,11/10/2018 7:48 PM,don't even know why would they disable it,,
+106435033203482624,kerkkoh,11/10/2018 8:02 PM,Because they feared that people would distribute mods that write something malicious on people's computers. That probably.,,
+334756290742190081,._corey,11/10/2018 8:07 PM,you can't really do a lot of with that,,
+334756290742190081,._corey,11/10/2018 8:07 PM,if you can't actually remote download,,
+106435033203482624,kerkkoh,11/10/2018 8:46 PM,I guess they didn't want to take any risks,,
+230061386888118273,.thurston,11/10/2018 8:49 PM,"@Kerkkoh it's a smart move from them, but i wish they would've let us know that they had disabled it",,
+334756290742190081,._corey,11/10/2018 8:53 PM,Well idk you cant really do a lot of harm from the game,,
+334756290742190081,._corey,11/10/2018 8:53 PM,"If its made in the right way, devs wouldnt be able to do shady stuff",,
+334756290742190081,._corey,11/10/2018 8:53 PM,So its just an asskick for the modders rn,,
+334756290742190081,._corey,11/10/2018 8:54 PM,But im not suprised,,
+334756290742190081,._corey,11/10/2018 8:54 PM,I stopped finding logics in dz since 46,,
+295660175237447691,sentepu,11/10/2018 9:08 PM,you guys try to guess the parameter ? 😄,,
+334756290742190081,._corey,11/10/2018 9:11 PM,Well tried to research it,,
+334756290742190081,._corey,11/10/2018 9:11 PM,But srcAllowFileWrite is the only thing that is related to it,,
+334756290742190081,._corey,11/10/2018 9:11 PM,And does not work,,
+334756290742190081,._corey,11/10/2018 9:11 PM,Maybe its a hidden one eith random name,,
+334756290742190081,._corey,11/10/2018 9:11 PM,Or just not even a part of the current exe we have,,
+414516422656393216,DJ_TAPOUT#7252,11/10/2018 9:38 PM,anyone seen this?,,
+414516422656393216,DJ_TAPOUT#7252,11/10/2018 9:38 PM,`14:33:20 ANIMATION (E): Can't load @UnlimitedStaminaMod/Anims/cfg/skeletons.anim.xml`,,
+334756290742190081,._corey,11/10/2018 9:40 PM,how do you do the code format on discord?,,
+120714283246944256,thepsilonnaught,11/10/2018 9:40 PM,"\`\`\`c
+code
+\`\`\`",,
+414516422656393216,DJ_TAPOUT#7252,11/10/2018 9:40 PM,the `,,
+334756290742190081,._corey,11/10/2018 9:40 PM,ah like on trello?,,
+167370568893464576,0x346e3730,11/10/2018 9:41 PM,"Well, im too slow xD",,
+334756290742190081,._corey,11/10/2018 9:41 PM,`asdasd`,,
+167370568893464576,0x346e3730,11/10/2018 9:41 PM,"It's Markdown, yeah",,
+334756290742190081,._corey,11/10/2018 9:41 PM,riiight,,
+334756290742190081,._corey,11/10/2018 9:41 PM,thanks didn't know,,
+131579380827815936,misterstrange,11/10/2018 10:27 PM,is there a way to stop camera rotation ?,,
+131579380827815936,misterstrange,11/10/2018 10:27 PM,using your mouse to look around for example,,
+456226577798135808,Deleted User,11/10/2018 11:02 PM,Any ideas why this don't work when player is on server?,https://cdn.discordapp.com/attachments/492295576470290433/510937377892597760/unknown.png,
+334756290742190081,._corey,11/10/2018 11:04 PM,IsClient returns your game,,
+334756290742190081,._corey,11/10/2018 11:05 PM,if ran on client side it should work,,
+334756290742190081,._corey,11/10/2018 11:05 PM,if you run it on server of course it does not work,,
+456226577798135808,Deleted User,11/10/2018 11:05 PM,i run mod both in client side and server side,,
+456226577798135808,Deleted User,11/10/2018 11:05 PM,but when me (client side) join to server (server side) with that mod,,
+456226577798135808,Deleted User,11/10/2018 11:05 PM,its does not work,,
+456226577798135808,Deleted User,11/10/2018 11:05 PM,but in offline mod it works,,
+334756290742190081,._corey,11/10/2018 11:06 PM,uuhm,,
+334756290742190081,._corey,11/10/2018 11:06 PM,try IsMultiplayer,,
+456226577798135808,Deleted User,11/10/2018 11:06 PM,🤔,,
+334756290742190081,._corey,11/10/2018 11:06 PM,I think then IsClient() stands for local instances,,
+456226577798135808,Deleted User,11/10/2018 11:06 PM,,https://cdn.discordapp.com/attachments/492295576470290433/510938440599076865/unknown.png,
+334756290742190081,._corey,11/10/2018 11:06 PM,change IsClient() to IsMultiplayer(),,
+456226577798135808,Deleted User,11/10/2018 11:07 PM,i will try that,,
+148370724900306944,jacob_mango,11/10/2018 11:07 PM,Isclient works,,
+148370724900306944,jacob_mango,11/10/2018 11:07 PM,Is that scheduled tick function even running on the client?,,
+456226577798135808,Deleted User,11/10/2018 11:08 PM,i guess so,,
+148370724900306944,jacob_mango,11/10/2018 11:08 PM,"At the top of the function run Print( ""blah""); and check the clients script.log",,
+334756290742190081,._corey,11/10/2018 11:08 PM,@Jacob_Mango can we talk in PM? wanna ask something,,
+456226577798135808,Deleted User,11/10/2018 11:50 PM,Anyone have a working Godmode / Fly commands for admin use?,,
+334756290742190081,._corey,11/10/2018 11:55 PM,Yeah but only for cheating,,
+334756290742190081,._corey,11/10/2018 11:56 PM,Btw Im not sure if its working now but player.SetAllowDamage(false) maybe does it,,
+334756290742190081,._corey,11/10/2018 11:56 PM,But that didnt work before,,
+120714283246944256,thepsilonnaught,11/11/2018 12:07 AM,Is there a reason why `GetPlainId()` is blank in client?,,
+334756290742190081,._corey,11/11/2018 12:08 AM,you cant get plainid on clientside,,
+334756290742190081,._corey,11/11/2018 12:08 AM,because of security purposes,,
+120714283246944256,thepsilonnaught,11/11/2018 12:09 AM,What about the guid?,,
+334756290742190081,._corey,11/11/2018 12:09 AM,i guess you cant get any client based information,,
+334756290742190081,._corey,11/11/2018 12:10 AM,"you cant get player names, uid etc",,
+120714283246944256,thepsilonnaught,11/11/2018 12:10 AM,🤔,,
+334756290742190081,._corey,11/11/2018 12:10 AM,"because the Identity, only exist on the server",,
+120714283246944256,thepsilonnaught,11/11/2018 12:10 AM,Makes sense,,
+148370724900306944,jacob_mango,11/11/2018 12:11 AM,Yeah they changed it in the recent patch and I spent most of time when I was working on Community Online Tools making a workaround for it.,,
+120714283246944256,thepsilonnaught,11/11/2018 12:11 AM,I'm wondering how then you'd only allow certain people to open a menu like debug console,,
+334756290742190081,._corey,11/11/2018 12:11 AM,"well, only give it to the specific people lol?",,
+120714283246944256,thepsilonnaught,11/11/2018 12:12 AM,:v with verify sigs off?,,
+334756290742190081,._corey,11/11/2018 12:12 AM,you should be able to have signed PBOs,,
+334756290742190081,._corey,11/11/2018 12:12 AM,that are not required,,
+334756290742190081,._corey,11/11/2018 12:12 AM,but allowed on the server,,
+120714283246944256,thepsilonnaught,11/11/2018 12:12 AM,if the server has the bikey,,
+334756290742190081,._corey,11/11/2018 12:12 AM,aren't you?,,
+120714283246944256,thepsilonnaught,11/11/2018 12:12 AM,I don't care about my test server lol,,
+334756290742190081,._corey,11/11/2018 12:13 AM,"you run 2 mods, 1 for the admin 1 for the clients",,
+120714283246944256,thepsilonnaught,11/11/2018 12:13 AM,Just sign it the same,,
+334756290742190081,._corey,11/11/2018 12:16 AM,i had to make a connection between my client / server side stuff to be able to access serversided data,,
+334756290742190081,._corey,11/11/2018 12:16 AM,was a pain in the ass honestly,,
+334756290742190081,._corey,11/11/2018 12:17 AM,just finished a serverside log for my admin panel,,
+334756290742190081,._corey,11/11/2018 12:17 AM,"i started to get memory leaks tho, maybe shit is getting too advanced for my pc",,
+334756290742190081,._corey,11/11/2018 12:18 AM,wish i still had an option to disable post processing and shadows,,
+120714283246944256,thepsilonnaught,11/11/2018 12:19 AM,Dang,,
+120714283246944256,thepsilonnaught,11/11/2018 12:19 AM,"For your menu, are you disabling the controller input? I don't think `HumanInputController::OverrideAimChangeX` is working.. The `Y` version is",,
+334756290742190081,._corey,11/11/2018 12:20 AM,`GetGame().GetInput().ResetGameFocus();`  for allowing input,,
+334756290742190081,._corey,11/11/2018 12:20 AM,`GetGame().GetInput().ChangeGameFocus( 1 );` for disabling,,
+120714283246944256,thepsilonnaught,11/11/2018 12:21 AM,That keeps the mouse movement though?,,
+334756290742190081,._corey,11/11/2018 12:21 AM,nope,,
+120714283246944256,thepsilonnaught,11/11/2018 12:21 AM,Figured,,
+456226577798135808,Deleted User,11/11/2018 12:21 AM,"Does someone nows the .c file of ""SessionFeed"" ? on scripts.pbo?",,
+456226577798135808,Deleted User,11/11/2018 12:21 AM,"and Good night everyone , 23:21 here.",,
+456226577798135808,Deleted User,11/11/2018 12:21 AM,Portugal,,
+120714283246944256,thepsilonnaught,11/11/2018 12:22 AM,"I enabled the emote wheel, but the player can still look left/right",,
+456226577798135808,Deleted User,11/11/2018 12:22 AM,is there a way to make it so admins defined by the admins.txt file or something can always join regardless of playercount on server?,,
+334756290742190081,._corey,11/11/2018 12:24 AM,@EpsilonNaught yes because the gesture wheel has the old way of locking input,,
+334756290742190081,._corey,11/11/2018 12:24 AM,and its commented out as default so i guess its not even being worked on,,
+456226577798135808,Deleted User,11/11/2018 12:24 AM,"``                     Error(""[cheat] man="" + GetManOwner() + "" is cheating with cmd="" + typename.EnumToString(InventoryCommandType, type) + "" event="" + e);
+                    return false; // cheater ``",,
+456226577798135808,Deleted User,11/11/2018 12:25 AM,This shows that when appears Error (Cheaters) it means they are cheating?,,
+120714283246944256,thepsilonnaught,11/11/2018 12:26 AM,It's a bug with hands from what I've experienced,,
+334756290742190081,._corey,11/11/2018 12:27 AM,"i love it so much, when everything was working fine",,
+334756290742190081,._corey,11/11/2018 12:27 AM,then without changing anything,,
+334756290742190081,._corey,11/11/2018 12:27 AM,it just starts crashing,,😂 (1)
+456226577798135808,Deleted User,11/11/2018 12:28 AM,"Does someone knows the .c file of ""SessionFeed"" ? on scripts.pbo?",,
+456226577798135808,Deleted User,11/11/2018 12:29 AM,if its on 3_Game or 4_World?,,
+456226577798135808,Deleted User,11/11/2018 12:29 AM,"The .c file where is the messages ""Player Joined""",,
+456226577798135808,Deleted User,11/11/2018 12:29 AM,Etc..,,
+334756290742190081,._corey,11/11/2018 12:30 AM,i'll do a quick scan,,
+456226577798135808,Deleted User,11/11/2018 12:31 AM,I know its on scripts.pbo,,
+456226577798135808,Deleted User,11/11/2018 12:31 AM,but I forgot where is the file,,
+334756290742190081,._corey,11/11/2018 12:31 AM,cant seem to find class SessionFeed,,
+334756290742190081,._corey,11/11/2018 12:31 AM,and no file like SessionFeed.c in scripts,,
+456226577798135808,Deleted User,11/11/2018 12:32 AM,"``         if (ModTunables.Cast(GetModule(ModTunables)).IsActiveMisc(""SessionFeed""))
+        {
+            g_Game.SetProfileString(""SessionFeed"", ""true"");
+        }
+        else ``",,
+456226577798135808,Deleted User,11/11/2018 12:32 AM,That mod needs to read that messages from somewhere,,
+334756290742190081,._corey,11/11/2018 12:32 AM,i dont think that exists right now,,
+334756290742190081,._corey,11/11/2018 12:32 AM,none of the files in Scripts contain SessionFeed,,
+456226577798135808,Deleted User,11/11/2018 12:33 AM,"It does , because in server shows ""player joined the server""",,
+334756290742190081,._corey,11/11/2018 12:33 AM,you mean the console?,,
+334756290742190081,._corey,11/11/2018 12:34 AM,that is extremely hard coded,,
+334756290742190081,._corey,11/11/2018 12:34 AM,you cant access any of that code,,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,,https://cdn.discordapp.com/attachments/492295576470290433/510960399110373396/DayZ_Screenshot_2018.11.10_-_22.51.53.62.png,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,In server.,,
+334756290742190081,._corey,11/11/2018 12:34 AM,you mean in the game chat,,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,Actually shows Survivor Joined the Server,,
+334756290742190081,._corey,11/11/2018 12:34 AM,i guess thats part of the admin tool you use,,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,it cant be.,,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,the dayzsurvival mod,,
+456226577798135808,Deleted User,11/11/2018 12:34 AM,uses that function from some where,,
+456226577798135808,Deleted User,11/11/2018 12:35 AM,``    protected bool m_SessionFeed    ``,,
+456226577798135808,Deleted User,11/11/2018 12:35 AM,https://github.com/Da0ne/DZMods/blob/master/mpmissions/DayZSurvival.chernarusplus/ScriptedMods/Tunables.c,,
+334756290742190081,._corey,11/11/2018 12:35 AM,yes then its part of DayZSurvival,,
+334756290742190081,._corey,11/11/2018 12:35 AM,not part of the game,,
+334756290742190081,._corey,11/11/2018 12:35 AM,"man i just scanned the whole folder, its not there, or inside any of the files",,
+456226577798135808,Deleted User,11/11/2018 12:36 AM,"it cant be part from dayzsurvival the pbo does not have anything related from that , I think a mod actually reads a game function and uses it like kill feed idk",,
+456226577798135808,Deleted User,11/11/2018 12:36 AM,I remember seeing a file on scripts.pbo,,
+456226577798135808,Deleted User,11/11/2018 12:36 AM,With this stuff,,
+239201186933112833,da0ne_,11/11/2018 12:48 AM,Lol,,
+239201186933112833,da0ne_,11/11/2018 12:48 AM,You guys did not find it?,,
+456226577798135808,Deleted User,11/11/2018 1:02 AM,Check serverdz.c?,,
+187261394926829568,TorNim0s#3023,11/11/2018 6:40 AM,Someone knows how to set the buldings i added to have a loot respawn like the other original buildings in the map?,,
+207328818203983872,notabanana,11/11/2018 7:12 AM,@TorNim0s check pinned message,,
+187261394926829568,TorNim0s#3023,11/11/2018 7:13 AM,Ohh thanks,,
+135355238990348288,djctavia,11/11/2018 7:17 AM,"Question, how work dependencies ?  In config.cpp we have a line named: ""requiredAddons[]={};""
+Do I just need to put: 
+```
+requiredAddons[]= {
+    ""custommod""
+};
+```
+And that will know if the addons is missing ?",,
+142181979905982464,dannydog,11/11/2018 7:18 AM,https://community.bistudio.com/wiki/CfgPatches,,
+135355238990348288,djctavia,11/11/2018 7:19 AM,"Ouh, nice, thank's",,
+142181979905982464,dannydog,11/11/2018 7:19 AM,i can try explain further if ur still confused after reading that,,
+230061386888118273,.thurston,11/11/2018 7:20 AM,"yeah, they're relatively easy once you understand them",,
+135355238990348288,djctavia,11/11/2018 7:20 AM,"Think I understand it, I will not bother you more that I need, test will do that ^^",,
+334756290742190081,._corey,11/11/2018 7:28 AM,so if you copy pasta a config for example a building,,
+334756290742190081,._corey,11/11/2018 7:28 AM,same classname etc,,
+334756290742190081,._corey,11/11/2018 7:28 AM,your mod will override the original right?,,
+334756290742190081,._corey,11/11/2018 7:28 AM,never tested that before,,
+230061386888118273,.thurston,11/11/2018 7:29 AM,"not too sure, i know it says something about member already defined in RPTs",,
+230061386888118273,.thurston,11/11/2018 7:29 AM,but i'd assume it would override the one that loads first,,
+230061386888118273,.thurston,11/11/2018 7:29 AM,as it's technically redefining the classname,,
+230061386888118273,.thurston,11/11/2018 7:29 AM,@Corey,,
+148370724900306944,jacob_mango,11/11/2018 7:30 AM,"it does override, inheriting the previous values",,
+334756290742190081,._corey,11/11/2018 7:30 AM,so if for example,,
+334756290742190081,._corey,11/11/2018 7:30 AM,"```
+
+    class Mil_House_zz: structures_military_aa
+    {
+        scope=2;
+        displayName=""#Mil_House"";
+        model=""DZ\structures\Mil\Mil_House.p3d"";
+    };
+```",,
+334756290742190081,._corey,11/11/2018 7:30 AM,this is the original,,
+148370724900306944,jacob_mango,11/11/2018 7:31 AM,you can change the model while keeping the same display name,,
+334756290742190081,._corey,11/11/2018 7:31 AM,and i make an addon where this class is the same,,
+334756290742190081,._corey,11/11/2018 7:31 AM,i just change the model,,
+334756290742190081,._corey,11/11/2018 7:31 AM,it will override the original one right?,,
+230061386888118273,.thurston,11/11/2018 7:31 AM,"should do, yeah",,
+148370724900306944,jacob_mango,11/11/2018 7:31 AM,yeah believe so,,
+334756290742190081,._corey,11/11/2018 7:31 AM,yeah  i always thought CfgPatches is the one to override stuff,,
+334756290742190081,._corey,11/11/2018 7:31 AM,"like ""Patch""ing stuff",,
+334756290742190081,._corey,11/11/2018 7:31 AM,but i will try it tomorrow,,
+230061386888118273,.thurston,11/11/2018 7:32 AM,"iirc CfgPatches is just defining the addon name, version and required addons",,
+334756290742190081,._corey,11/11/2018 7:33 AM,aaah alright,,
+334756290742190081,._corey,11/11/2018 7:33 AM,i was never into arma modding,,
+334756290742190081,._corey,11/11/2018 7:33 AM,i started all this shit on dayz,,
+239201186933112833,da0ne_,11/11/2018 7:52 AM,Copy pasta 🍝,,💙 (1)
+230061386888118273,.thurston,11/11/2018 7:52 AM,lmao,,
+239201186933112833,da0ne_,11/11/2018 7:52 AM,@Corey u da guy with that channel on YT that has some GTA SA mods?,,
+188269899901042699,namco-4#8876,11/11/2018 7:53 AM,"Heya folks! I need some help debugging my mod. After testing it in COM and everything working, i loaded it up on the server. Now the server loads everything fine it seems, but the client doesnt execute any of the new scripts anymore. Help?",,
+230061386888118273,.thurston,11/11/2018 7:53 AM,@namco-4 how are you launching it?,,
+334756290742190081,._corey,11/11/2018 7:53 AM,@DaOne(Mark)  no 😮,,
+188269899901042699,namco-4#8876,11/11/2018 7:53 AM,"the client through the launcher, the server via commandline",,
+230061386888118273,.thurston,11/11/2018 7:54 AM,"also, is it in the root directory for both server and client?",,
+188269899901042699,namco-4#8876,11/11/2018 7:54 AM,yup,,
+334756290742190081,._corey,11/11/2018 7:54 AM,"@DaOne(Mark) Why, you have a problem with my content?xD",,
+239201186933112833,da0ne_,11/11/2018 7:54 AM,No? Lol I was looking at some stuff you did,,
+239201186933112833,da0ne_,11/11/2018 7:54 AM,Fucking cool,,
+230061386888118273,.thurston,11/11/2018 7:54 AM,"iirc launcher doesn't run scripts, it has to be done via launch params",,
+239201186933112833,da0ne_,11/11/2018 7:54 AM,I love GTA SA,,
+334756290742190081,._corey,11/11/2018 7:54 AM,"just kidding, thanks!",,
+239201186933112833,da0ne_,11/11/2018 7:54 AM,My fav GTA,,
+334756290742190081,._corey,11/11/2018 7:55 AM,i spent lot of time developing for MTA,,
+334756290742190081,._corey,11/11/2018 7:55 AM,but community got fucked up,,
+188269899901042699,namco-4#8876,11/11/2018 7:55 AM,"well fuck me then, ill try. I thought something was wrong since the model loaded",,
+334756290742190081,._corey,11/11/2018 7:55 AM,doesnt worth it to work on it anymore,,
+239201186933112833,da0ne_,11/11/2018 7:55 AM,Yea ! MTA that BR mod they made was sick! Copy pasta the PUBG UI xD,,
+334756290742190081,._corey,11/11/2018 7:55 AM,but i ported 90% of the dayz to gta xD,,
+239201186933112833,da0ne_,11/11/2018 7:55 AM,That sucks,,
+230061386888118273,.thurston,11/11/2018 7:55 AM,"@namco-4 yeah, the assets will launch, but scripts won't",,
+230061386888118273,.thurston,11/11/2018 7:55 AM,"also, make sure your mod.cpp is correct, too!",,
+188269899901042699,namco-4#8876,11/11/2018 7:56 AM,"yea yea, i got all that stuff sorted allready",,
+188269899901042699,namco-4#8876,11/11/2018 7:56 AM,funny thing is i launched trough cmd for offline,,
+188269899901042699,namco-4#8876,11/11/2018 7:56 AM,but thought the launcher was more conviniet :P,,
+230061386888118273,.thurston,11/11/2018 7:57 AM,it's convenient but fucked lmao,,
+188269899901042699,namco-4#8876,11/11/2018 7:58 AM,"HA HA, everythink works perfect now, sweet",,
+188269899901042699,namco-4#8876,11/11/2018 7:58 AM,*everything,,
+230061386888118273,.thurston,11/11/2018 7:59 AM,that's good!,,
+188269899901042699,namco-4#8876,11/11/2018 7:59 AM,I didn't think mp would work straight away,,
+188269899901042699,namco-4#8876,11/11/2018 7:59 AM,usually everythink breaks,,
+188269899901042699,namco-4#8876,11/11/2018 7:59 AM,*thing,,
+188269899901042699,namco-4#8876,11/11/2018 8:00 AM,If all goes well i'll post the result in #dayz-showcase-archive soon,,
+334756290742190081,._corey,11/11/2018 8:00 AM,btw @DaOne(Mark)  how did you find my channel?xD,,
+230061386888118273,.thurston,11/11/2018 8:00 AM,@namco-4 look forward to seeing it!,,
+239201186933112833,da0ne_,11/11/2018 8:01 AM,@Corey you were the guy with the admin menu asking on someone to help get it more “secured”,,
+239201186933112833,da0ne_,11/11/2018 8:01 AM,So I always look for DayZ channels,,
+334756290742190081,._corey,11/11/2018 8:02 AM,i wasnt askin for helping to get it secured lol,,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,Googled “dayz modding” and saw u,,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,Idk that’s what it seem liked,,
+334756290742190081,._corey,11/11/2018 8:02 AM,i was asking for ideas what should i add to it but yeah,,
+334756290742190081,._corey,11/11/2018 8:02 AM,you googled dayz modding and found me?lolxD,,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,Right “ideas”,,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,"Ya, DuhOneZ",,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,That’s me,,
+239201186933112833,da0ne_,11/11/2018 8:02 AM,We talked on comments 😛,,
+334756290742190081,._corey,11/11/2018 8:03 AM,aaaaa i remember now,,
+148370724900306944,jacob_mango,11/11/2018 8:05 AM,if you want help on security I'll be releasing a mod along side my version of my admin tools which allows for individual permissions for every user.,https://cdn.discordapp.com/attachments/492295576470290433/511073922448621571/unknown.png,
+230061386888118273,.thurston,11/11/2018 8:05 AM,oooooooo,,
+230061386888118273,.thurston,11/11/2018 8:05 AM,i look very forward to that!,,
+334756290742190081,._corey,11/11/2018 8:05 AM,"yeah i have a basic permission set up, was my first idea before going deeper in authentication",,
+230061386888118273,.thurston,11/11/2018 8:06 AM,"also @Jacob_Mango when you release your tools, will I be allowed to use them for learning purposes? aka forking the git and adding/editing shit?",,
+230061386888118273,.thurston,11/11/2018 8:07 AM,because i currently know barely anything about the language,,
+230061386888118273,.thurston,11/11/2018 8:07 AM,and i want to learn it,,
+230061386888118273,.thurston,11/11/2018 8:07 AM,i learn the best from others work (even if it does bring bad coding practices!),,
+148370724900306944,jacob_mango,11/11/2018 8:07 AM,No modifications allowed but you can use as reference for learning. Can't just copy the code I write.,,
+230061386888118273,.thurston,11/11/2018 8:07 AM,"no, no it'll only be for private usage",,
+230061386888118273,.thurston,11/11/2018 8:07 AM,won't ever release it to the public,,
+334756290742190081,._corey,11/11/2018 8:13 AM,"That's why complete pbo and code obfuscation would be good, can release tools without providing source code",,
+230061386888118273,.thurston,11/11/2018 8:18 AM,"yeah, i'm all for obfuscation",,
+230061386888118273,.thurston,11/11/2018 8:21 AM,is anyone willing to provide something where I can learn a basic level of the lang?,,
+142181979905982464,dannydog,11/11/2018 8:21 AM,learn c# java,,
+230061386888118273,.thurston,11/11/2018 8:21 AM,"ok, ty",,
+135355238990348288,djctavia,11/11/2018 8:25 AM,"Was curious, when we call the event: ChatMessageEventTypeID
+We have 4 params: ""Channel, Player name, Message, Color..."", but if 2 players have exactly the same name; how can I be sure of who sent message ?",,
+230061386888118273,.thurston,11/11/2018 8:26 AM,I don't think 2 players can have the same name,,
+230061386888118273,.thurston,11/11/2018 8:26 AM,"Because if your name is survivor, and someone else connect with the same name",,
+230061386888118273,.thurston,11/11/2018 8:26 AM,it should rename them to survivor (1),,
+135355238990348288,djctavia,11/11/2018 8:27 AM,"Hum, ok, that good to know, was pretty anxious about that",,
+142181979905982464,dannydog,11/11/2018 8:39 AM,im about to pull my hair out on how this bloody energy component and lighting system works,,
+135355238990348288,djctavia,11/11/2018 9:01 AM,"Don't do that, bad idea 😂",,
+135355238990348288,djctavia,11/11/2018 9:12 AM,GetPlainId() is it UID ?,,
+148370724900306944,jacob_mango,11/11/2018 9:12 AM,steam64id,,
+135355238990348288,djctavia,11/11/2018 9:12 AM,From where can I get player UID if you know ? 😃,,
+148370724900306944,jacob_mango,11/11/2018 9:13 AM,GetId() returns the player's GUID which is what you are now supposed to use for logging,,
+135355238990348288,djctavia,11/11/2018 9:14 AM,"Nice, thx !",,
+334756290742190081,._corey,11/11/2018 9:16 AM,What does GUID return tho?,,
+135355238990348288,djctavia,11/11/2018 10:08 AM,"I'm working on easy chat command implementation through 1 class, I hope that will help people, working on since 5AM 😂",,
+135355238990348288,djctavia,11/11/2018 10:49 AM,Anyone have a clue of what that could be ?,https://cdn.discordapp.com/attachments/492295576470290433/511115288792662016/unknown.png,
+334756290742190081,._corey,11/11/2018 10:55 AM,Show us the line as well,,
+135355238990348288,djctavia,11/11/2018 10:56 AM,You have it uppon,,
+135355238990348288,djctavia,11/11/2018 10:56 AM,I think that because I don't define Param1<class T>,,
+334756290742190081,._corey,11/11/2018 11:08 AM,Yeah,,
+334756290742190081,._corey,11/11/2018 11:08 AM,It shozls be something like that,,
+334756290742190081,._corey,11/11/2018 11:09 AM,Param1<> asd = new Param1<> or similar,,
+334756290742190081,._corey,11/11/2018 11:09 AM,Idk the syntax i mever used param,,
+135355238990348288,djctavia,11/11/2018 12:07 PM,"I'm curious, but on Standalone there is only 1 canal for chatting right ?",,
+295660175237447691,sentepu,11/11/2018 12:26 PM,"chat is wip, there is multiple in code but only 2 working last time i looked at this",,❤ (1)
+187261394926829568,TorNim0s#3023,11/11/2018 12:56 PM,Is there any way to set the server to have server chat and local chat?,,
+135355238990348288,djctavia,11/11/2018 1:00 PM,Modding ? 😂,,
+456226577798135808,Deleted User,11/11/2018 1:07 PM,I was asking for that also.,,
+148370724900306944,jacob_mango,11/11/2018 1:11 PM,"wait, so it can still read the files, just can't write to them....",,
+456226577798135808,Deleted User,11/11/2018 1:18 PM,Idk which file to do that.,,
+456226577798135808,Deleted User,11/11/2018 1:23 PM,I was also trying to activate the global chat on the server but I cant.,,
+456226577798135808,Deleted User,11/11/2018 1:24 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511154169902792714/unknown.png,
+456226577798135808,Deleted User,11/11/2018 1:24 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511154175648858131/unknown.png,
+142181979905982464,dannydog,11/11/2018 1:24 PM,<>,,
+456226577798135808,Deleted User,11/11/2018 1:24 PM,ref array<> players = new array<>;,,
+456226577798135808,Deleted User,11/11/2018 1:24 PM,?,,
+142181979905982464,dannydog,11/11/2018 1:24 PM,ref array<PlayerBase>,,
+142181979905982464,dannydog,11/11/2018 1:25 PM,u should read up on generics,,
+456226577798135808,Deleted User,11/11/2018 1:26 PM,"they changed something, before update i was using 
+
+ref array players = new array; and that worked",,
+456226577798135808,Deleted User,11/11/2018 1:26 PM,ref array<PlayerBase> players = new array<>;,https://cdn.discordapp.com/attachments/492295576470290433/511154859374936074/unknown.png,
+456226577798135808,Deleted User,11/11/2018 1:27 PM,ref array<PlayerBase> players = new array<PlayerBase>; ?,,
+456226577798135808,Deleted User,11/11/2018 1:27 PM,im stupid xd,,
+135355238990348288,djctavia,11/11/2018 1:27 PM,"array<Man> players = new array<Man>;
+GetGame().GetWorld().GetPlayerList(players);",,
+148370724900306944,jacob_mango,11/11/2018 1:27 PM,`ref array<PlayerBase> players = new ref array<PlayerBase>;`,,
+187261394926829568,TorNim0s#3023,11/11/2018 1:33 PM,"@Deleted User if you have any progress with the global chat please let me know how you did it, i cant find a way to activate it",,
+135355238990348288,djctavia,11/11/2018 2:09 PM,"Is that normal I can't catch my print ?
+```
+override void OnEvent(EventType eventTypeId, Param params)
+{
+    super.OnEvent(eventTypeId, params);
+    if ( eventTypeId == ChatMessageEventTypeID )
+    {
+        Print(""I catch message event"");
+    }
+}
+```",,
+135355238990348288,djctavia,11/11/2018 2:09 PM,"It's located in ""class CustomMission: MissionServer""",,
+135355238990348288,djctavia,11/11/2018 2:12 PM,"Shall I use ""ChatChannelEventTypeID"" ?
+Edit: Well no, it's definitively not ""ChatChannelEventTypeID"" to use lmao",,
+456226577798135808,Deleted User,11/11/2018 2:17 PM,@DjCtavia is that for globalchat?,,
+135355238990348288,djctavia,11/11/2018 2:17 PM,"Every channel, doesn't matter for my case",,
+456226577798135808,Deleted User,11/11/2018 2:45 PM,"```
+ScriptRPC rpc = new ScriptRPC();
+rpc.Write(""string"");
+rpc.Send(null, your_rpc_name, true);
+
+void OnRPC(ParamsReadContext ctx)
+{
+        string text;
+        ctx.Read(text);
+}
+```
+
+Can someone explain how this code works, what from this client part and what server",,
+392052354826108930,mapachitorey,11/11/2018 2:48 PM,Who know how can I install Da One teleport script? The folder is updated but not the readme file.,,
+132457748645412864,pein.,11/11/2018 2:54 PM,Does anyone know the location for item weights?,,
+132457748645412864,pein.,11/11/2018 2:54 PM,Or how to increase stamina?,,
+132457748645412864,pein.,11/11/2018 2:54 PM,Not looking to disable it just increase it.,,
+456226577798135808,Deleted User,11/11/2018 2:59 PM,@pein item weights is binarized,,
+456226577798135808,Deleted User,11/11/2018 2:59 PM,in .cpp files,,
+132457748645412864,pein.,11/11/2018 2:59 PM,Ok what about stamina? Is it in scripts.pbo?,,
+132457748645412864,pein.,11/11/2018 3:00 PM,Playersconstraints.c?,,
+456226577798135808,Deleted User,11/11/2018 3:02 PM,constants.c i guess,,
+456226577798135808,Deleted User,11/11/2018 3:02 PM,if you want increase it,,
+132457748645412864,pein.,11/11/2018 3:02 PM,Perfect.,,
+132457748645412864,pein.,11/11/2018 3:02 PM,Would i need to do anything client sideM,,
+132457748645412864,pein.,11/11/2018 3:02 PM,?,,
+132457748645412864,pein.,11/11/2018 3:02 PM,Or can it just be done server side without issues?,,
+456226577798135808,Deleted User,11/11/2018 3:03 PM,if you are editing item weights,,
+456226577798135808,Deleted User,11/11/2018 3:03 PM,then you have to make a mod,,
+132457748645412864,pein.,11/11/2018 3:03 PM,And not for stamina?,,
+456226577798135808,Deleted User,11/11/2018 3:05 PM,@Jacob_Mango can you help me with RPC?,,
+456226577798135808,Deleted User,11/11/2018 3:05 PM,@pein not for stamina,,
+132457748645412864,pein.,11/11/2018 3:05 PM,Peefect thanks mate.,,
+456226577798135808,Deleted User,11/11/2018 3:07 PM,or is there any examples of RPC usage from client and server?,,
+295660175237447691,sentepu,11/11/2018 3:14 PM,yes in COM and BR there is,,
+148370724900306944,jacob_mango,11/11/2018 3:14 PM,https://github.com/Jacob-Mango/DayZ-RPCFramework,,
+148370724900306944,jacob_mango,11/11/2018 3:15 PM,And then when releasing your mod just set the mod RPCFramework on the github as a dependency.,,
+148370724900306944,jacob_mango,11/11/2018 3:15 PM,It has a tutorial on how to use the framework in there with a sample as well,,
+456226577798135808,Deleted User,11/11/2018 3:17 PM,can i send float value using that?,,
+148370724900306944,jacob_mango,11/11/2018 3:18 PM,Yep. You would send it with the parameter  new Param1<float>(37.9),,
+148370724900306944,jacob_mango,11/11/2018 3:18 PM,"I'm on my phone so can't explain properly right now, sorry",,
+456226577798135808,Deleted User,11/11/2018 3:18 PM,"Thats ok, thank you",,
+120714283246944256,thepsilonnaught,11/11/2018 3:18 PM,+1 for rpc framework :),,
+239201186933112833,da0ne_,11/11/2018 3:19 PM,+10 for RPC framework,,
+334756290742190081,._corey,11/11/2018 3:31 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511186181262934038/rpcsample.7z,
+334756290742190081,._corey,11/11/2018 3:31 PM,made it for @CaptainCookie  yesterday,,
+334756290742190081,._corey,11/11/2018 3:31 PM,simple mod that sends an RPC to the server when you press O,,
+148370724900306944,jacob_mango,11/11/2018 3:32 PM,Does it use RPC framework?,,
+334756290742190081,._corey,11/11/2018 3:32 PM,no,,
+148370724900306944,jacob_mango,11/11/2018 3:32 PM,Oh ok,,
+334756290742190081,._corey,11/11/2018 3:32 PM,i never touched that rpc framework,,
+334756290742190081,._corey,11/11/2018 3:32 PM,"also @Deleted User 
+```
+ScriptRPC rpc = new ScriptRPC();
+rpc.Write(""string"");
+rpc.Send(null, your_rpc_name, true);
+
+void OnRPC(ParamsReadContext ctx)
+{
+        string text;
+        ctx.Read(text);
+}
+
+```",,
+334756290742190081,._corey,11/11/2018 3:32 PM,dont use this,,
+334756290742190081,._corey,11/11/2018 3:32 PM,this wont work,,
+148370724900306944,jacob_mango,11/11/2018 3:33 PM,Yeah i suggest you do as it solves the issue of using conflicting ID'S for RPC commands,,
+334756290742190081,._corey,11/11/2018 3:33 PM,you can always have random IDs for sure,,
+334756290742190081,._corey,11/11/2018 3:33 PM,minimal chance for conflict,,
+148370724900306944,jacob_mango,11/11/2018 3:34 PM,Still a higher chance than using your own string as a namespace,,
+120714283246944256,thepsilonnaught,11/11/2018 3:34 PM,🤔 If you always start your RPC with your SSN 😛,,
+456226577798135808,Deleted User,11/11/2018 3:34 PM,"The question is, how i can get ""Hello, World!"" from client?",https://cdn.discordapp.com/attachments/492295576470290433/511186889169043457/unknown.png,
+456226577798135808,Deleted User,11/11/2018 3:34 PM,@Corey i will take a look at that,,
+135355238990348288,djctavia,11/11/2018 3:35 PM,"Asking again, is that normal I can't catch my print ?
+```
+override void OnEvent(EventType eventTypeId, Param params)
+{
+    super.OnEvent(eventTypeId, params);
+    if ( eventTypeId == ChatMessageEventTypeID )
+    {
+        Print(""I catch message event"");
+    }
+}
+```
+I've checked every single class, close to chat, and there is nothing more I can do, even looking at class chat, there is only an array<string> and I'm not sure that return all messages. Maybe somebody know how to catch messages ? I'm going crazy 😂",,
+120714283246944256,thepsilonnaught,11/11/2018 3:36 PM,Is this for the admin chat commands?,,
+135355238990348288,djctavia,11/11/2018 3:38 PM,Nope,,
+135355238990348288,djctavia,11/11/2018 3:38 PM,That should be accessible for everyone (for my case),,
+120714283246944256,thepsilonnaught,11/11/2018 3:39 PM,Where is that logic being performed? Client or server?,,
+135355238990348288,djctavia,11/11/2018 3:39 PM,"Server, for retrieving textual chat",,
+120714283246944256,thepsilonnaught,11/11/2018 3:42 PM,"If you're not using RPC to send messages, you need to login to the server for it to receive them on your server-side script.",,
+456226577798135808,Deleted User,11/11/2018 3:43 PM,@Corey like this?,https://cdn.discordapp.com/attachments/492295576470290433/511189352160821261/unknown.png,
+135355238990348288,djctavia,11/11/2018 3:44 PM,"Ah, don't even know what is RPC; how can I use it ?",,
+120714283246944256,thepsilonnaught,11/11/2018 3:45 PM,@DjCtavia scroll up to jacobs github,,
+456226577798135808,Deleted User,11/11/2018 3:45 PM,And there is read,https://cdn.discordapp.com/attachments/492295576470290433/511189732542119976/unknown.png,
+334756290742190081,._corey,11/11/2018 3:47 PM,Yeah @Deleted User,,
+120714283246944256,thepsilonnaught,11/11/2018 3:47 PM,@DjCtavia RPC is remote procedure call. It's basically sending information to another module with parameters and an identifier to process on the receiving side.,,
+334756290742190081,._corey,11/11/2018 3:48 PM,But i dont understand the other part of your code,,
+334756290742190081,._corey,11/11/2018 3:48 PM,OnServerRPC?,,
+334756290742190081,._corey,11/11/2018 3:48 PM,Is that a thing?,,
+456226577798135808,Deleted User,11/11/2018 3:48 PM,There's the new read,https://cdn.discordapp.com/attachments/492295576470290433/511190512456433696/unknown.png,
+135355238990348288,djctavia,11/11/2018 3:49 PM,"Ok, I understand Epsilon, but basicly, if I want to retrieve chat, through RPC, I need to mod some classes, am I right ?",,
+120714283246944256,thepsilonnaught,11/11/2018 3:49 PM,Yarp,,
+135355238990348288,djctavia,11/11/2018 3:49 PM,"Ok; there is a lot of work to do then lmao, really appreciate 😉",,
+120714283246944256,thepsilonnaught,11/11/2018 3:49 PM,"Chat is finnicky too, good luck",,
+135355238990348288,djctavia,11/11/2018 3:50 PM,I don't think it's that scary; but it's going to take time,,
+120714283246944256,thepsilonnaught,11/11/2018 3:50 PM,Like anything with DayZ yes 😃  But it'll be worth it,,❤ (1)
+456226577798135808,Deleted User,11/11/2018 4:00 PM,"@EpsilonNaught yes, i am doing one mod with 30 lines of code already 3 days in a row",,cohhFA (1)
+456226577798135808,Deleted User,11/11/2018 4:03 PM,"does ""OnRPC"" called when he receive anything from server?",,
+334756290742190081,._corey,11/11/2018 4:04 PM,yeah,,
+456226577798135808,Deleted User,11/11/2018 4:11 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511196251124137986/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:11 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511196258505850881/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:11 PM,is it a joke?,,
+135355238990348288,djctavia,11/11/2018 4:12 PM,Is Write I think,,
+135355238990348288,djctavia,11/11/2018 4:12 PM,Majority of function use uppercase for First char of function,,
+334756290742190081,._corey,11/11/2018 4:14 PM,yeah,,
+334756290742190081,._corey,11/11/2018 4:14 PM,Write not write,,
+456226577798135808,Deleted User,11/11/2018 4:15 PM,My bad,,
+456226577798135808,Deleted User,11/11/2018 4:16 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511197552347971626/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:16 PM,what about that,,
+120714283246944256,thepsilonnaught,11/11/2018 4:17 PM,you can't call `super()` without an `override`,,
+135355238990348288,djctavia,11/11/2018 4:18 PM,"And it take 4 parameters, not 3 ?",,
+456226577798135808,Deleted User,11/11/2018 4:18 PM,I am not sure i just take this stuff from ingame scripts,,
+456226577798135808,Deleted User,11/11/2018 4:18 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511198144776765480/unknown.png,
+120714283246944256,thepsilonnaught,11/11/2018 4:19 PM,Take out the super call..,,
+120714283246944256,thepsilonnaught,11/11/2018 4:19 PM,remove override,,
+456226577798135808,Deleted User,11/11/2018 4:19 PM,already,,
+456226577798135808,Deleted User,11/11/2018 4:22 PM,"ok, now when i done server side i have to use this on client, there is onrpc method, how i should call it from client? since i can't call it as override method",https://cdn.discordapp.com/attachments/492295576470290433/511199154060394496/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:23 PM,is there something like GetGame().GetUpdateQueue but for rpc?,,
+106867714374569984,dave_p.,11/11/2018 4:24 PM,is there a way to adjust a deployed tents despawn time?,,
+142181979905982464,dannydog,11/11/2018 4:24 PM,u can globally register a rpc function handler with GetDayZGame().Event_OnRPC.Insert( OnRPC );,,
+142181979905982464,dannydog,11/11/2018 4:25 PM,@-= RM =- Dave search this discord i think a couple of people have talked about it,,
+142181979905982464,dannydog,11/11/2018 4:25 PM,"@Deleted User but the function params have to be `( PlayerIdentity sender, Object target, int rpc_type, ParamsReadContext ctx ) `",,
+334756290742190081,._corey,11/11/2018 4:27 PM,yeah but i don't think that you can access OnRPC from all the functions right?,,
+334756290742190081,._corey,11/11/2018 4:27 PM,only the ones that already use it,,
+456226577798135808,Deleted User,11/11/2018 4:27 PM,"what i should put in OnRPC() parameters, GetDayZGame().Event_OnRPC.Insert( RPCFrame.OnRPC() );",,
+334756290742190081,._corey,11/11/2018 4:27 PM,for example PlayerBase,,
+456226577798135808,Deleted User,11/11/2018 4:28 PM,oh,,
+456226577798135808,Deleted User,11/11/2018 4:28 PM,my bad,,
+456226577798135808,Deleted User,11/11/2018 4:28 PM,i have to remove (),,
+456226577798135808,Deleted User,11/11/2018 4:28 PM,?,,
+334756290742190081,._corey,11/11/2018 4:28 PM,thats not what im saying,,
+334756290742190081,._corey,11/11/2018 4:28 PM,im not sure if you can use OnRPC in every code?,,
+142181979905982464,dannydog,11/11/2018 4:28 PM,@Corey no i was the first one to figure out that u can,,
+334756290742190081,._corey,11/11/2018 4:28 PM,yeah? how so?,,
+334756290742190081,._corey,11/11/2018 4:28 PM,i had to connect all my classes so i can access everything,,
+142181979905982464,dannydog,11/11/2018 4:28 PM,take a look at dayzgame.c,,
+334756290742190081,._corey,11/11/2018 4:28 PM,the original?,,
+135355238990348288,djctavia,11/11/2018 4:29 PM,"OnRPC work like an event, it should be accessible everywhere ?",,
+142181979905982464,dannydog,11/11/2018 4:29 PM,when the game receives an rpc it calls onrpc on the object AND invoke the scriptinvoker,,
+142181979905982464,dannydog,11/11/2018 4:29 PM,Event_OnRPC,,
+142181979905982464,dannydog,11/11/2018 4:30 PM,therefore u can manually insert any rpc function into that scriptinvoker for it to be called anywhere,,
+456226577798135808,Deleted User,11/11/2018 4:30 PM,there we go,https://cdn.discordapp.com/attachments/492295576470290433/511200990167564299/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:30 PM,that's worked,,
+456226577798135808,Deleted User,11/11/2018 4:30 PM,now i'll check that on server,,
+334756290742190081,._corey,11/11/2018 4:30 PM,so by GetDayZGame().Event_OnRPC.Insert( OnRPC );,,
+334756290742190081,._corey,11/11/2018 4:30 PM,"i can use this function in any class, and will register the Class's OnRPC to the game?",,
+142181979905982464,dannydog,11/11/2018 4:30 PM,yes.,,
+334756290742190081,._corey,11/11/2018 4:30 PM,thats so fucking good to know,,
+135355238990348288,djctavia,11/11/2018 4:31 PM,"Btw, Github of Jacob about RPC is really useful, pinned it may be a good idea ? ^^",,
+142181979905982464,dannydog,11/11/2018 4:31 PM,doesnt have to be called OnRPC too. just make sure the function has the correct params,,
+334756290742190081,._corey,11/11/2018 4:31 PM,yeah,,
+334756290742190081,._corey,11/11/2018 4:31 PM,thanks,,
+334756290742190081,._corey,11/11/2018 4:31 PM,gonna reform some stuff in my code..,,
+142181979905982464,dannydog,11/11/2018 4:31 PM,if i werent so lazy id make documentation,,😂 (1)
+142181979905982464,dannydog,11/11/2018 4:32 PM,but y bother when the devs will release it themselves,,
+142181979905982464,dannydog,11/11/2018 4:32 PM,#weeksnotmonths? lel,,
+331467213108281345,clarky03,11/11/2018 4:35 PM,:gibsanBits:,,
+456226577798135808,Deleted User,11/11/2018 4:35 PM,4 weeks != 1 month :sepWOT:,,
+334756290742190081,._corey,11/11/2018 4:36 PM,52.14 weeks,,
+456226577798135808,Deleted User,11/11/2018 4:37 PM,I am not sure that this is ok,https://cdn.discordapp.com/attachments/492295576470290433/511202762243964929/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:37 PM,always when i am connecting to server,,
+135355238990348288,djctavia,11/11/2018 4:37 PM,"It's ok, don't worry :peug20P206KAPPA:",,
+456226577798135808,Deleted User,11/11/2018 4:39 PM,Don't work on server...,https://cdn.discordapp.com/attachments/492295576470290433/511203256433901578/unknown.png,
+456226577798135808,Deleted User,11/11/2018 4:40 PM,can someone take a look https://pastebin.com/8AqJqrv1,,
+456226577798135808,Deleted User,11/11/2018 4:40 PM,?,,
+334756290742190081,._corey,11/11/2018 4:45 PM,GetDayZGame().Event_OnRPC.Insert( OnServerRPC ); ?,,
+456226577798135808,Deleted User,11/11/2018 4:45 PM,"i am not sure, but i will try that",,
+334756290742190081,._corey,11/11/2018 4:45 PM,"make a function void 
+´´´
+MiniRPCFramework()",,
+334756290742190081,._corey,11/11/2018 4:46 PM,"```
+MiniRPCFramework()
+{
+    GetDayZGame().Event_OnRPC.Insert( OnServerRPC ); 
+}
+```",,
+334756290742190081,._corey,11/11/2018 4:46 PM,"not sure about this, never used it @Danny 🌭 could give you more info",,
+331467213108281345,clarky03,11/11/2018 4:47 PM,Has anyone created a custom crafting recipe? Or tried to.,,
+334756290742190081,._corey,11/11/2018 4:48 PM,don't even try,,
+334756290742190081,._corey,11/11/2018 4:48 PM,crafting is broken rn,,
+331467213108281345,clarky03,11/11/2018 4:48 PM,It is?,,
+331467213108281345,clarky03,11/11/2018 4:48 PM,In what way.,,
+135355238990348288,djctavia,11/11/2018 4:51 PM,"I'd love to recreate and understanding everything of RPC, but I think I will use the classes of Jacob, strong enough for what I need, thx Jacob ! 😂",,
+331467213108281345,clarky03,11/11/2018 4:52 PM,@Corey What is broken about it?,,
+456226577798135808,Deleted User,11/11/2018 4:57 PM,still nothing,https://cdn.discordapp.com/attachments/492295576470290433/511207818070851594/unknown.png,
+142181979905982464,dannydog,11/11/2018 5:02 PM,@Clarky crafting isnt broken,,
+142181979905982464,dannydog,11/11/2018 5:02 PM,also i think its fairly easy,,
+142181979905982464,dannydog,11/11/2018 5:02 PM,ill get back to u on it when i wake up lul,,
+331467213108281345,clarky03,11/11/2018 5:02 PM,"Thought so, no idea why people are saying it is.",,
+331467213108281345,clarky03,11/11/2018 5:03 PM,Ty DannyDad,,
+331467213108281345,clarky03,11/11/2018 5:03 PM,Or DaddyDog,,
+331467213108281345,clarky03,11/11/2018 5:03 PM,🤔,,
+295660175237447691,sentepu,11/11/2018 5:14 PM,"because it was previous patch, every was recipes bugged",,
+331467213108281345,clarky03,11/11/2018 5:15 PM,Yeah now it's fixed.,,
+456226577798135808,Deleted User,11/11/2018 5:17 PM,Still don't work,,
+456226577798135808,Deleted User,11/11/2018 5:17 PM,https://pastebin.com/P9wiAqCu,,
+456226577798135808,Deleted User,11/11/2018 5:20 PM,@Deleted User whats that code unlimited stamina?,,"😂 (1),🤔 (1)"
+456226577798135808,Deleted User,11/11/2018 5:20 PM,no,,
+334756290742190081,._corey,11/11/2018 5:27 PM,oh recipes are fixed?,,
+331467213108281345,clarky03,11/11/2018 5:27 PM,They were fixed like 3 days ago,,
+334756290742190081,._corey,11/11/2018 5:27 PM,ah thats different then tho,,
+334756290742190081,._corey,11/11/2018 5:27 PM,cuz crafting is broken since fileserialization,,
+334756290742190081,._corey,11/11/2018 5:27 PM,as i read on discord,,
+331467213108281345,clarky03,11/11/2018 5:28 PM,Yeah then they hotfixed crafting.,,
+135355238990348288,djctavia,11/11/2018 5:45 PM,"Hu, I try to mod a class, and in my modded class I can't call its own member, anyone know why ?",,
+135355238990348288,djctavia,11/11/2018 5:46 PM,,https://cdn.discordapp.com/attachments/492295576470290433/511220069100027904/unknown.png,
+334756290742190081,._corey,11/11/2018 5:46 PM,because its private,,
+148054598479773696,misteroutoftime,11/11/2018 5:47 PM,U can't access privates from mods,,
+334756290742190081,._corey,11/11/2018 5:47 PM,"i don't remember who, but someone already worked on that file",,
+135355238990348288,djctavia,11/11/2018 5:48 PM,... That stupid asf,,
+142181979905982464,dannydog,11/11/2018 5:48 PM,its not,,
+295660175237447691,sentepu,11/11/2018 5:48 PM,thats basic oop,,
+142181979905982464,dannydog,11/11/2018 5:48 PM,but weve been pushing the devs to unprivate a lot of things so we can mod them,,
+142181979905982464,dannydog,11/11/2018 5:48 PM,make them protected instead,,👍 (1)
+142181979905982464,dannydog,11/11/2018 5:49 PM,etc,,
+331467213108281345,clarky03,11/11/2018 5:49 PM,Danny Permission to Pm you?,,
+142181979905982464,dannydog,11/11/2018 5:49 PM,:cooldoge:,,gibsanBits (1)
+135355238990348288,djctavia,11/11/2018 5:49 PM,"Would be better, cause most of ""important"" things can't be edited, and some mod must be stopped cause of that, bruuuh",,
+456226577798135808,Deleted User,11/11/2018 5:51 PM,"https://pastebin.com/pLtwqMk9 thats the last one, can someone check it out? i am soo tired, i am trying to make it work for 3 days now",,
+142181979905982464,dannydog,11/11/2018 5:51 PM,i honestly dont think theres anything that can stop a mod idea from working in script,,
+142181979905982464,dannydog,11/11/2018 5:51 PM,theres enough foundation for any mod to work imo,,
+142181979905982464,dannydog,11/11/2018 5:52 PM,ur reading the ctx,,
+142181979905982464,dannydog,11/11/2018 5:52 PM,but ur not doing anything afterwards?,,
+135355238990348288,djctavia,11/11/2018 5:53 PM,"You can, but create 2 variables and overloading each function is a waste that we don't need",,
+456226577798135808,Deleted User,11/11/2018 5:53 PM,ah,,
+456226577798135808,Deleted User,11/11/2018 5:53 PM,should i read RecHealth?,,
+456226577798135808,Deleted User,11/11/2018 5:53 PM,instead of ReadHealth,,
+142181979905982464,dannydog,11/11/2018 5:56 PM,hm actually ive never really used scriptrpc. just sent params instead,,
+142181979905982464,dannydog,11/11/2018 5:56 PM,basically its not syncing is that it?,,
+456226577798135808,Deleted User,11/11/2018 5:57 PM,basicly client don't recive values from server,,
+142181979905982464,dannydog,11/11/2018 5:57 PM,try printing out messages to see if ur sending AND receiving them correctly,,
+456226577798135808,Deleted User,11/11/2018 5:57 PM,since i can't get my own health value from client,,
+456226577798135808,Deleted User,11/11/2018 5:57 PM,"i get it from server using ""for"" thru all players",,
+456226577798135808,Deleted User,11/11/2018 5:58 PM,and sending each player his health value,,
+142181979905982464,dannydog,11/11/2018 5:58 PM,ur OnServerRPC has no params?,,
+142181979905982464,dannydog,11/11/2018 5:58 PM,u need to give it the same params as the client onrpc function,,
+456226577798135808,Deleted User,11/11/2018 5:58 PM,GetDayZGame().Event_OnRPC.Insert( RPCFrame.OnServerRPC );,,
+142181979905982464,dannydog,11/11/2018 5:59 PM,void OnServerRPC( params ),,
+456226577798135808,Deleted User,11/11/2018 5:59 PM,"void OnServerRPC(PlayerIdentity sender, Object target, int rpc_type, ParamsReadContext ctx)",,
+456226577798135808,Deleted User,11/11/2018 6:00 PM,like that?,,
+142181979905982464,dannydog,11/11/2018 6:00 PM,yea,,
+142181979905982464,dannydog,11/11/2018 6:00 PM,then u need to add checks,,
+456226577798135808,Deleted User,11/11/2018 6:01 PM,for empty message?,,
+142181979905982464,dannydog,11/11/2018 6:03 PM,check the received rpc type,,
+142181979905982464,dannydog,11/11/2018 6:03 PM,otherwise ur function will trigger on every single rpc type,,
+456226577798135808,Deleted User,11/11/2018 6:04 PM,"didn't this one ""switch(rpc_type)"" do that?",,
+142181979905982464,dannydog,11/11/2018 6:05 PM,ok im getting really confused by how u set this up,,
+142181979905982464,dannydog,11/11/2018 6:06 PM,onserverrpc should be externally called by u,,
+142181979905982464,dannydog,11/11/2018 6:06 PM,and its not receiving but sending rpcs. so u dont register it in event_onrpc,,
+142181979905982464,dannydog,11/11/2018 6:06 PM,event_onrpc is only for receiving rpcs,,
+142181979905982464,dannydog,11/11/2018 6:07 PM,so u need to manually call onserverrpc,,
+142181979905982464,dannydog,11/11/2018 6:07 PM,u dont need the params then,,
+142181979905982464,dannydog,11/11/2018 6:07 PM,sorry the way u did things confused the heck out of me,,
+456226577798135808,Deleted User,11/11/2018 6:07 PM,okk,,
+456226577798135808,Deleted User,11/11/2018 6:08 PM,so i should call OnServerRPC() in mine onupdate method?,,
+456226577798135808,Deleted User,11/11/2018 6:08 PM,right?,,
+142181979905982464,dannydog,11/11/2018 6:08 PM,not every tick,,
+142181979905982464,dannydog,11/11/2018 6:08 PM,but yea,,
+456226577798135808,Deleted User,11/11/2018 6:08 PM,but if i will call it every tick,,
+456226577798135808,Deleted User,11/11/2018 6:08 PM,for test,,
+456226577798135808,Deleted User,11/11/2018 6:08 PM,it would work?,,
+142181979905982464,dannydog,11/11/2018 6:09 PM,sure,,
+456226577798135808,Deleted User,11/11/2018 6:09 PM,like this,https://cdn.discordapp.com/attachments/492295576470290433/511225871814885376/unknown.png,
+456226577798135808,Deleted User,11/11/2018 6:09 PM,btw how i can send debug messages to chat now?,,
+142181979905982464,dannydog,11/11/2018 6:09 PM,mhm,,
+142181979905982464,dannydog,11/11/2018 6:09 PM,to chat or scripts.log?,,
+456226577798135808,Deleted User,11/11/2018 6:09 PM,chat,,
+142181979905982464,dannydog,11/11/2018 6:10 PM,ull need to manually call OnEvent in the mission,,
+142181979905982464,dannydog,11/11/2018 6:10 PM,or manually add text in the chat ui,,
+142181979905982464,dannydog,11/11/2018 6:10 PM,chat system currently is broken/unfinished,,
+120714283246944256,thepsilonnaught,11/11/2018 6:23 PM,Anyone know if `ZombieBase::GetHealth()` is valid for seeing if a zombie is alive? Or do I need to be more specific with the params?,,
+142181979905982464,dannydog,11/11/2018 6:24 PM,IsAlive(),,
+120714283246944256,thepsilonnaught,11/11/2018 6:25 PM,derp.. from Object.c,,
+456226577798135808,Deleted User,11/11/2018 6:41 PM,this one code does not execute at all,https://cdn.discordapp.com/attachments/492295576470290433/511233954351808542/unknown.png,
+456226577798135808,Deleted User,11/11/2018 6:41 PM,i am calling it using,,
+456226577798135808,Deleted User,11/11/2018 6:41 PM,"if( GetGame().IsClient() || !GetGame().IsMultiplayer() )
+        {
+            GetDayZGame().Event_OnRPC.Insert( RPCFrame.OnRPC );
+        }",,
+120714283246944256,thepsilonnaught,11/11/2018 6:52 PM,IsAlive no work 😦,,
+120714283246944256,thepsilonnaught,11/11/2018 6:58 PM,"```c
+/*
+            // TO DO: Doesn't work because IsAlive() is false, even when it shouldn't be.
+...
+```",,
+120714283246944256,thepsilonnaught,11/11/2018 7:11 PM,"It works after I ask `ent.GetHealth("""", ""Health"");`",,
+456226577798135808,Deleted User,11/11/2018 8:18 PM,"I keep get
+
+```
+SCRIPT    (E): NULL pointer to instance
+Class:      'VirtualHud'
+Function: 'Update'
+Stack trace:
+StatusIndicatorsMod/scripts/4_World/classes\virtualhud\displaystatus.c:120
+scripts/3_Game/dayzgame.c:1662
+```",https://cdn.discordapp.com/attachments/492295576470290433/511258480590585866/unknown.png,
+237377135235432450,astleynf,11/11/2018 8:27 PM,can anybody see whats wrong with this? it was working before the update now it does not like it,https://cdn.discordapp.com/attachments/492295576470290433/511260673129316383/Untitled-1.jpg,
+456226577798135808,Deleted User,11/11/2018 8:28 PM,try press ignore and after that restart mission,,
+456226577798135808,Deleted User,11/11/2018 8:28 PM,ah,,
+230061386888118273,.thurston,11/11/2018 8:28 PM,don't you need a ; on line 105? (ignore me if you don't still learning 😄 ),,
+456226577798135808,Deleted User,11/11/2018 8:28 PM,put this in OnInit,https://cdn.discordapp.com/attachments/492295576470290433/511261071529738271/unknown.png,
+237377135235432450,astleynf,11/11/2018 8:38 PM,any chance you can write it up so i can see it i am still getting the same,,
+334756290742190081,._corey,11/11/2018 8:38 PM,https://www.youtube.com/watch?v=dQw4w9WgXcQ,,
+334756290742190081,._corey,11/11/2018 8:38 PM,You can do it @AstleyNF !,,
+456226577798135808,Deleted User,11/11/2018 8:48 PM,@Corey lmao,,
+334756290742190081,._corey,11/11/2018 8:54 PM,i got an idea,,
+237377135235432450,astleynf,11/11/2018 9:12 PM,no still not working,,
+334756290742190081,._corey,11/11/2018 9:13 PM,never gonna give never gonna give,,
+135640013760233474,niocuad#7219,11/11/2018 9:13 PM,@AstleyNF put it in the buldingspawner.c,,
+334756290742190081,._corey,11/11/2018 9:13 PM,of course it does not work,,
+237377135235432450,astleynf,11/11/2018 9:13 PM,knock off the rick astley crap,,
+334756290742190081,._corey,11/11/2018 9:13 PM,thats not how you define a vector,,
+237377135235432450,astleynf,11/11/2018 9:14 PM,where is the buildingspawner.c,,
+334756290742190081,._corey,11/11/2018 9:14 PM,ú,https://cdn.discordapp.com/attachments/492295576470290433/511272616107966515/unknown.png,
+334756290742190081,._corey,11/11/2018 9:14 PM,remove the space from there,,
+334756290742190081,._corey,11/11/2018 9:14 PM,#2,,
+334756290742190081,._corey,11/11/2018 9:15 PM,"vector(""0 0 0"");",,
+334756290742190081,._corey,11/11/2018 9:15 PM,this is how you define a vector,,
+334756290742190081,._corey,11/11/2018 9:15 PM,no commas,,
+334756290742190081,._corey,11/11/2018 9:15 PM,small v,,
+120714283246944256,thepsilonnaught,11/11/2018 9:16 PM,"Psh. Vector(x,y,z) or bust",,
+334756290742190081,._corey,11/11/2018 9:17 PM,"or 
+```
+vector asd;
+asd[0] = floatx;
+asd[1] = floaty;
+asd[2] = floatz;
+```",,
+334756290742190081,._corey,11/11/2018 9:18 PM,but vector doesn't contain commas,,
+135640013760233474,niocuad#7219,11/11/2018 9:19 PM,This works for me.,https://cdn.discordapp.com/attachments/492295576470290433/511273699677306881/Screenshot_7.png,
+135640013760233474,niocuad#7219,11/11/2018 9:19 PM,@AstleyNF,,
+120714283246944256,thepsilonnaught,11/11/2018 9:20 PM,**V**ector uses commas,,
+334756290742190081,._corey,11/11/2018 9:20 PM,no,,
+334756290742190081,._corey,11/11/2018 9:20 PM,only if you output them as a string,,
+334756290742190081,._corey,11/11/2018 9:20 PM,but vector basicly does not,,
+237377135235432450,astleynf,11/11/2018 9:22 PM,@niocuad  do i just do include in the init.c for that,,
+135640013760233474,niocuad#7219,11/11/2018 9:24 PM,@AstleyNF not if you using daone admin tool.,,
+135640013760233474,niocuad#7219,11/11/2018 9:25 PM,just make sure it enabled in tunables.c,,
+456226577798135808,Deleted User,11/11/2018 9:34 PM,some one have definition of RegisterNetSyncVariableInt?,,
+456226577798135808,Deleted User,11/11/2018 9:56 PM,finnaly,,
+456226577798135808,Deleted User,11/11/2018 9:56 PM,There we go,https://cdn.discordapp.com/attachments/492295576470290433/511283092309278732/unknown.png,❤ (2)
+456226577798135808,Deleted User,11/11/2018 9:56 PM,@Deleted User Workin?,,
+456226577798135808,Deleted User,11/11/2018 9:56 PM,yes,,
+456226577798135808,Deleted User,11/11/2018 9:56 PM,without rpc,,
+456226577798135808,Deleted User,11/11/2018 9:56 PM,Does someone haves debug .c file? where is located?,,
+456226577798135808,Deleted User,11/11/2018 9:57 PM,thats lovely,,
+132457748645412864,pein.,11/11/2018 9:57 PM,Anyone wanna give taking the global message out of the InfectedHordes.c DZMods a go?,,
+456226577798135808,Deleted User,11/11/2018 9:57 PM,"I know , Status is , C:\Users\Niko\Desktop\Extractor folder\scripts\4_World\Classes\VirtualHud",,
+132457748645412864,pein.,11/11/2018 9:57 PM,I attempted and when I attempt to remove it I got a compile error,,
+456226577798135808,Deleted User,11/11/2018 9:58 PM,But does someone knows where is the Debug?,,
+155797669439209472,zograttv,11/11/2018 10:01 PM,@Deleted User you update the mods on workshop soon ?,,
+456226577798135808,Deleted User,11/11/2018 10:01 PM,i prob will update it tomorrow in morning,,
+456226577798135808,Deleted User,11/11/2018 10:01 PM,and i will start updating airdrop same time,,
+155797669439209472,zograttv,11/11/2018 10:02 PM,Ok. You add the airdrop on workshop too ?,,
+456226577798135808,Deleted User,11/11/2018 10:02 PM,yes,,
+456226577798135808,Deleted User,11/11/2018 10:53 PM,Where would i find files in the dta to edit say.....seachest inventory slots?,,
+82998531970826240,that1drifter,11/11/2018 10:57 PM,"not in DTA, it's in Addons\gear_camping.pbo",,
+218006214536200192,Kolobov#9591,11/11/2018 11:04 PM,"Who knows how to give a variable to an object. On the example of how it was in arma ""player setVariable [""isBill"", 20]; "" ?",,
+120714283246944256,thepsilonnaught,11/11/2018 11:06 PM,The object needs to first have the variable defined,,
+218006214536200192,Kolobov#9591,11/11/2018 11:07 PM,"int , string, float ?",,
+120714283246944256,thepsilonnaught,11/11/2018 11:07 PM,Whatever you need it to be,,
+218006214536200192,Kolobov#9591,11/11/2018 11:08 PM,Maybe date an example?,,
+120714283246944256,thepsilonnaught,11/11/2018 11:09 PM,I'm not sure what you're trying to do. Do you understand OOP?,,
+218006214536200192,Kolobov#9591,11/11/2018 11:12 PM,no,,
+356557233578049537,dr_j0nes,11/11/2018 11:14 PM,@DaOne(Mark)  Vehicle persistence of manually spawned Vehicles works now 😃 thank you for that! Just had to edit the types xml like you mentoined,,
+295660175237447691,sentepu,11/11/2018 11:32 PM,"@Deleted User to find a file, go here <https://github.com/DannyDog/DayZSAEnfScript> press T and start typing file name 😉",,
+120714283246944256,thepsilonnaught,11/11/2018 11:34 PM,Anyone having trouble with `CallLater`?,,"🇳 (1),🇾 (1)"
+120714283246944256,thepsilonnaught,11/11/2018 11:41 PM,"So.. this should work right..?
+
+```c
+void MOTD() {
+        GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(Loop, 5000, true);
+    }
+
+    void Loop() {
+        for(int i = 0; i < messages.Count(); i++) {
+            GetGame().ChatPlayer(5,messages[i]);
+        }
+    }
+```",,
+261535471698575370,hairywookiee,11/11/2018 11:49 PM,Where does Loop exist? Inside a class or in the global scope?,,
+120714283246944256,thepsilonnaught,11/11/2018 11:53 PM,in that code block,,
+120714283246944256,thepsilonnaught,11/11/2018 11:53 PM,this.Loop,,
+261535471698575370,hairywookiee,11/11/2018 11:53 PM,Hm,,
+120714283246944256,thepsilonnaught,11/11/2018 11:53 PM,this is performed during OnMissionStart(),,
+261535471698575370,hairywookiee,11/11/2018 11:53 PM,Have you tested that the function is being called? It could be that ChatPlayer() isn't working as expected instead?,,
+120714283246944256,thepsilonnaught,11/11/2018 11:54 PM,"It's not being called, I took out the prints",,
+261535471698575370,hairywookiee,11/11/2018 11:55 PM,Looks like that should be an acceptable way to use CallLater  looking at how it's used elsewhere..,,
+456226577798135808,Deleted User,11/12/2018 12:23 AM,Guys?,,
+456226577798135808,Deleted User,11/12/2018 12:23 AM,"```
+void GlobalMessage(int Channel, string Message)
+    {
+        if (Message != """")
+            GetGame().ChatPlayer(/*GetGame().ChatGetChannel()*/0, text);
+            if( !GetGame().IsMultiplayer() )
+            {
+                string name;
+                GetGame().GetPlayerName( name );
+                GetGame().ChatPlayer(1,Message)
+                ChatMessageEventParams chat_params = new ChatMessageEventParams( CCDirect, name, text, """" );
+                MissionGameplay.Cast( GetGame().GetMission() ).m_Chat.Add( chat_params );
+            }
+    } ```",,
+456226577798135808,Deleted User,11/12/2018 12:23 AM,"plus
+            GetGame().ChatPlayer(1,Message)",,
+456226577798135808,Deleted User,11/12/2018 12:24 AM,"GetGame().ChatPlayer(1,Message) 1 , is used as System Messaging like =Global.",,
+207328818203983872,notabanana,11/12/2018 12:24 AM,"Am I understanding this right, you want to read player message, then resend it to global chat as the server?",,
+207328818203983872,notabanana,11/12/2018 12:25 AM,Isn't global chat in the game already? Instead of making your own look and see if you can get the chat already in game working?,,
+456226577798135808,Deleted User,11/12/2018 12:26 AM,My server does not have global chat sadly.. idk why..,,
+456226577798135808,Deleted User,11/12/2018 12:27 AM,@Not A Banana,,
+456226577798135808,Deleted User,11/12/2018 12:27 AM,On yours it works?,,
+207328818203983872,notabanana,11/12/2018 12:27 AM,"I havent tried modding it in, I think @Kegan has",,
+207328818203983872,notabanana,11/12/2018 12:27 AM,"I had a modified rcon that would forward messages containing /global back in as admin messages, pretty jank way of doing it",,
+456226577798135808,Deleted User,11/12/2018 12:28 AM,It does not work anymore,,
+456226577798135808,Deleted User,11/12/2018 12:28 AM,I had that also,,
+456226577798135808,Deleted User,11/12/2018 12:28 AM,its says error /global does not exists anymore.,,
+456226577798135808,Deleted User,11/12/2018 12:28 AM,Command unknow,,
+207328818203983872,notabanana,11/12/2018 12:28 AM,Hm? Should work,,
+456226577798135808,Deleted User,11/12/2018 12:29 AM,It does not,,
+207328818203983872,notabanana,11/12/2018 12:30 AM,The edited dart?,,
+207328818203983872,notabanana,11/12/2018 12:31 AM,I dont think we're talking about the same thing lol,,
+456226577798135808,Deleted User,11/12/2018 12:32 AM,ye the edited dart,,
+241370201222938626,kegan.eth,11/12/2018 12:35 AM,Br has it,,
+241370201222938626,kegan.eth,11/12/2018 12:35 AM,we use an RPC to communicate it,,
+241370201222938626,kegan.eth,11/12/2018 12:35 AM,"because ya, the other chat channels are broken / not implemented",,
+207328818203983872,notabanana,11/12/2018 12:36 AM,So there isnt a working version in game rn? You made your own?,,
+241370201222938626,kegan.eth,11/12/2018 12:36 AM,I also looked into the chat events,,
+241370201222938626,kegan.eth,11/12/2018 12:36 AM,only direct chat fires the chat event handler,,
+241370201222938626,kegan.eth,11/12/2018 12:36 AM,"so ya, RPC seems to be the only way to do it atm",,
+456226577798135808,Deleted User,11/12/2018 12:36 AM,cannot just edit the chat.c @Kegan ?,,
+456226577798135808,Deleted User,11/12/2018 12:36 AM,"```        if( channel & CCSystem || channel & CCDirect || channel & CCMegaphone || channel & CCTransmitter || channel & CCPublicAddressSystem )
+         {
+            if( g_Game.GetProfileOption( EDayZProfilesOptions.GAME_MESSAGES ) )
+                return;
+         } ```",,
+456226577798135808,Deleted User,11/12/2018 12:36 AM,^^^,,
+241370201222938626,kegan.eth,11/12/2018 12:36 AM,"that code is there sure, but only CCDirect gets sent over the network",,
+241370201222938626,kegan.eth,11/12/2018 12:37 AM,the others do not,,
+456226577798135808,Deleted User,11/12/2018 12:37 AM,CCSystem gets,,
+241370201222938626,kegan.eth,11/12/2018 12:37 AM,CCSystem is server messages like MOTD,,
+241370201222938626,kegan.eth,11/12/2018 12:37 AM,players are not supposed to send chat over CCSystem,,
+456226577798135808,Deleted User,11/12/2018 12:37 AM,Oh so cc is broken,,
+456226577798135808,Deleted User,11/12/2018 12:37 AM,And Admin?,,
+207328818203983872,notabanana,11/12/2018 12:37 AM,"If you want to do global chat without client modding, you'll have to use the janky rcon way @Deleted User. I'm 99% that rcon client works still, but I can never get dart to connect to my local network so I cant test",,
+241370201222938626,kegan.eth,11/12/2018 12:38 AM,It's not broken. It's just not implemented,,
+456226577798135808,Deleted User,11/12/2018 12:38 AM,I can give you my local dart it works for 127.0.0.1,,
+456226577798135808,Deleted User,11/12/2018 12:38 AM,for me it didnt work..,,
+456226577798135808,Deleted User,11/12/2018 12:38 AM,idk..,,
+207328818203983872,notabanana,11/12/2018 12:39 AM,"Open dart, connect to your server, log in and type /global test into direct chat and send me the chat log dart shows",,
+241370201222938626,kegan.eth,11/12/2018 12:39 AM,BR worked chat.c and used an RPC to implement globalchat,,
+456226577798135808,Deleted User,11/12/2018 12:39 AM,"Like ```     CCSystem(1)
+    CCAdmin(2)
+    CCDirect(4)
+    CCMegaphone(8)
+    CCTransmitter(16)
+    CCPublicAddressSystem(32)  ```",,
+456226577798135808,Deleted User,11/12/2018 12:39 AM,The Battleye or Admin messages,,
+456226577798135808,Deleted User,11/12/2018 12:39 AM,are from ccadmin right?,,
+241370201222938626,kegan.eth,11/12/2018 12:39 AM,"RPC:
+https://gitlab.desolationredux.com/DayZ/BattleRoyale/blob/64-exp-update-fixes/dayzbr/Addons/scripts/scripts/5_Mission/battleroyale/BattleRoyale.c#L72
+
+Chat menu tweaks
+https://gitlab.desolationredux.com/DayZ/BattleRoyale/blob/64-exp-update-fixes/dayzbr/Addons/scripts/scripts/5_Mission/gui/Chat/BrChatMenu.c
+
+Chat.c
+https://gitlab.desolationredux.com/DayZ/BattleRoyale/blob/64-exp-update-fixes/dayzbr/Addons/scripts/scripts/5_Mission/gui/Chat/BrChat.c",,
+456226577798135808,Deleted User,11/12/2018 12:44 AM,Ohh,,
+456226577798135808,Deleted User,11/12/2018 12:44 AM,Lovely,,
+456226577798135808,Deleted User,11/12/2018 12:44 AM,do you still need to write /global or?,,
+241370201222938626,kegan.eth,11/12/2018 12:45 AM,no,,
+241370201222938626,kegan.eth,11/12/2018 12:45 AM,you press page up/page down,,
+241370201222938626,kegan.eth,11/12/2018 12:45 AM,and it will pull up the built in chat channel display,,
+241370201222938626,kegan.eth,11/12/2018 12:45 AM,to tell u if you are in global/direct chat,,
+241370201222938626,kegan.eth,11/12/2018 12:45 AM,then you just type in chat like normal,,
+456226577798135808,Deleted User,11/12/2018 12:51 AM,,https://cdn.discordapp.com/attachments/492295576470290433/511327199954206720/DayZ_Screenshot_2018.11.11_-_23.51.31.55.png,
+456226577798135808,Deleted User,11/12/2018 12:51 AM,@Not A Banana,,
+456226577798135808,Deleted User,11/12/2018 12:52 AM,Going to try that @Kegan 😦,,
+207328818203983872,notabanana,11/12/2018 12:53 AM,@Deleted User Lol it's working in the image. You're logged in as admin so daones admin tool is giving error for unknown command,,
+207328818203983872,notabanana,11/12/2018 12:54 AM,"""System: Battleye Client: (Global) Admin: Niko-Staff: Hello"" is the global message in that image",,
+207328818203983872,notabanana,11/12/2018 12:54 AM,Everyone sees it,,
+456226577798135808,Deleted User,11/12/2018 12:59 AM,Ah.,,
+456226577798135808,Deleted User,11/12/2018 12:59 AM,Im dumb.,,
+207328818203983872,notabanana,11/12/2018 1:00 AM,"But the implementation is pretty bad. If you are going to have client mods, definitely move to something similar to what Kegan is doing",,
+474231648842547210,cookie_commander,11/12/2018 1:54 AM,Has anyone ever had an error with sending an rpc and the rpc is received but trying to use sender.GetGame().GetPlayer() is null?,,
+474231648842547210,cookie_commander,11/12/2018 2:00 AM,I wanted to see if I could just test something 'simple' like teleporting the player,,
+474231648842547210,cookie_commander,11/12/2018 2:00 AM,I've packed everything into one image if anyone has any ideas that would be a great help!,https://cdn.discordapp.com/attachments/492295576470290433/511344578012381186/unknown.png,
+148370724900306944,jacob_mango,11/12/2018 2:21 AM,I'm the greatest 😛,https://cdn.discordapp.com/attachments/492295576470290433/511349792945733632/unknown.png,
+230061386888118273,.thurston,11/12/2018 2:22 AM,lmao,,
+261535471698575370,hairywookiee,11/12/2018 2:27 AM,"PlayerIdentity.getGame() - is that a thing you can even do, @CaptainCookie ?",,
+261535471698575370,hairywookiee,11/12/2018 2:28 AM,"and if you're calling the RPC on PlayerBase itself, can't you just go this.SetPosition() ?",,
+474231648842547210,cookie_commander,11/12/2018 3:06 AM,Oh sweet,,
+474231648842547210,cookie_commander,11/12/2018 3:06 AM,that works,,
+474231648842547210,cookie_commander,11/12/2018 3:07 AM,I'll get a friend on tomorrow if it actaully works with ident or if it does it to everyone 😃,,
+261535471698575370,hairywookiee,11/12/2018 3:08 AM,It should call it on whatever PlayerBase object the clients send,,
+261535471698575370,hairywookiee,11/12/2018 3:09 AM,That does mean that people could teleport other players unless you work some security in 😛,,
+148370724900306944,jacob_mango,11/12/2018 3:22 AM,whoop whoop,https://cdn.discordapp.com/attachments/492295576470290433/511365067288215562/unknown.png,
+107560637399306240,cooltrain,11/12/2018 3:23 AM,Look at this fancy pants actually *cleaning* his code,,
+230061386888118273,.thurston,11/12/2018 3:24 AM,"ayy, no longer crashes the server... it just lags it now 😄",,
+230061386888118273,.thurston,11/12/2018 3:24 AM,"nah, jk. Amazing work @Jacob_Mango",,
+107560637399306240,cooltrain,11/12/2018 3:24 AM,lmao,,
+207328818203983872,notabanana,11/12/2018 3:28 AM,@Jacob_Mango Is cos gonna have object editor/export features of com?,,
+207328818203983872,notabanana,11/12/2018 3:28 AM,Collaboratively building sounds nice,,
+230061386888118273,.thurston,11/12/2018 3:33 AM,"oooooo, that's something that'll be very, very welcome",,
+356557233578049537,dr_j0nes,11/12/2018 4:59 AM,"Okk has anybody else problems with synchronizing the Direction/Orientation of Vehicles to clients? I spawn it and after that I use SetOrientation. When I teleport to a different Location and come back, the Orientation/Direction is right. ^^",,
+356557233578049537,dr_j0nes,11/12/2018 5:00 AM,"Before teleport the Orientation/Direction is like ""0 0 0""",,
+356557233578049537,dr_j0nes,11/12/2018 5:01 AM,Do I really need to call SetOrientation on every CLient?,,
+356557233578049537,dr_j0nes,11/12/2018 5:02 AM,For static Objects SetOrientation works out of the Box :/ (Some doors btw dont update the collisions),,
+171235844693295105,Platyy#6875,11/12/2018 7:47 AM,"Has anyone had any luck implementing the Timer class? I'm not having any luck...
+```class Logger
+{
+    protected ref Timer m_Timer;
+    
+    void Logger()
+    {
+        OnInit();
+    }
+    
+    void OnInit()
+    {
+        m_Timer = new ref Timer();
+        m_Timer.Run(5, this, ""Log"", NULL, true);
+        Log();
+    }
+    
+    protected void Log()
+    {
+        // Do Stuff
+    }
+};```
+
+Basically, I'm thinking `this` in the timers' Run function needs to point to something else other than my class, any ideas?",,
+456226577798135808,Deleted User,11/12/2018 8:48 AM,Remove this one log() from init,https://cdn.discordapp.com/attachments/492295576470290433/511447126987767810/image0.jpg,
+456226577798135808,Deleted User,11/12/2018 8:48 AM,It’s will be called by timer anyway,,
+135355238990348288,djctavia,11/12/2018 8:50 AM,"@Platyy Your code look good, except for log in ""OnInit"" like mov3ax said; and you need ``` this ``` for pointing your logger class and find Log method, so...",,
+135355238990348288,djctavia,11/12/2018 8:50 AM,But maybe the protected is the problem,,
+456226577798135808,Deleted User,11/12/2018 8:51 AM,Look for Light.c file,,
+456226577798135808,Deleted User,11/12/2018 8:51 AM,It have good example,,
+456226577798135808,Deleted User,11/12/2018 8:51 AM,How to use timer,,
+135355238990348288,djctavia,11/12/2018 8:51 AM,"Don't need to search, problem is protected method of log 😉
+edit: NVM, it can be protected, just a lot have public function linked to timer",,
+456226577798135808,Deleted User,11/12/2018 8:52 AM,https://github.com/mov3ax/dayz-scripts/blob/bbd959441bd7e9fe8e0557dfc2123dab77c901ff/scripts/4_World/Entities/Light.c,,
+171235844693295105,Platyy#6875,11/12/2018 8:53 AM,"I've tried both protected and normal void Log(), neither work, calling Log() from OnInit() shouldn't make a difference (I've tried without it, no luck)",,
+135355238990348288,djctavia,11/12/2018 8:55 AM,"And you can write : "" m_Timer = new Timer(); """,,
+171235844693295105,Platyy#6875,11/12/2018 8:56 AM,I've tried that too 😅,,
+135355238990348288,djctavia,11/12/2018 8:56 AM,So... are your sure your main class is called ?,,
+171235844693295105,Platyy#6875,11/12/2018 8:58 AM,"That's why I have the first Log() in the OnInit(), to make sure it gets called, which it does. The timer doesn't call the function when Run() is executed for the first time. I'm assuming the first time the Timer calls the function is after the duration has elapsed at least once",,
+171235844693295105,Platyy#6875,11/12/2018 9:01 AM,"Am I initalizing my mission incorrectly? At the bottom of init.c I'm calling my class like so:
+```Mission CreateCustomMission(string path)
+{
+    Logger _logger = new Logger();
+    return new CustomMission();
+}```
+It fires once, but I'm guessing it gets deleted after that? Do I need to return my class as the mission?",,
+135355238990348288,djctavia,11/12/2018 9:04 AM,it's not a ref,,
+135355238990348288,djctavia,11/12/2018 9:04 AM,"Once constructor done, your variable is destroy",,
+135355238990348288,djctavia,11/12/2018 9:05 AM,You need to store it into MissionServer class,,
+171235844693295105,Platyy#6875,11/12/2018 9:06 AM,Yikes okay,,
+171235844693295105,Platyy#6875,11/12/2018 9:06 AM,So create a method in `class CustomMission: MissionServer` that instantiates my class?,,
+148370724900306944,jacob_mango,11/12/2018 9:06 AM,you can do it within the constructor of CustomMission as well,,
+171235844693295105,Platyy#6875,11/12/2018 9:09 AM,"So ```    void CustomMission()
+    {
+        Logger _logger = new Logger();
+    }```
+?",,

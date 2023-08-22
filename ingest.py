@@ -5,6 +5,7 @@ import faiss
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 import pickle
+import time
 
 
 # Here we load in the data in the format that Notion exports it in.

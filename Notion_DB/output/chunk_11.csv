@@ -1,0 +1,1473 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+148370724900306944,jacob_mango,11/16/2018 1:31 PM,Look at how we use it in Community Offline mode,,
+148370724900306944,jacob_mango,11/16/2018 1:31 PM,On my phone right now so can't send,,
+142989660870803456,Dardo#6634,11/16/2018 1:34 PM,also non-static methods? because i tried by calling a non-static method using calllater and it's not getting called neither one time,,
+142989660870803456,Dardo#6634,11/16/2018 1:37 PM,instead static methods are getting called,,
+148370724900306944,jacob_mango,11/16/2018 1:38 PM,Hmm,,
+148370724900306944,jacob_mango,11/16/2018 1:38 PM,Well I just pushed a mod to the workshop which uses calllater,,
+148370724900306944,jacob_mango,11/16/2018 1:39 PM,And when I did a brief test before pushing it worked,,
+142989660870803456,Dardo#6634,11/16/2018 1:47 PM,🤔,,
+148370724900306944,jacob_mango,11/16/2018 1:50 PM,https://github.com/Arkensor/DayZCommunityOfflineMode/blob/development/Missions/DayZCommunityOfflineMode.ChernarusPlus/core/modules/Persistency/PersistencyModule.c,,
+148370724900306944,jacob_mango,11/16/2018 1:50 PM,Many CallLater in this class,,
+142989660870803456,Dardo#6634,11/16/2018 1:52 PM,thx,,
+142989660870803456,Dardo#6634,11/16/2018 2:07 PM,well that's kinda weird,,
+295660175237447691,sentepu,11/16/2018 2:40 PM,still blocked ? share script,,
+142989660870803456,Dardo#6634,11/16/2018 2:47 PM,no it's working now,,
+142989660870803456,Dardo#6634,11/16/2018 2:47 PM,i just defined the method i wanted to call as static,,
+142989660870803456,Dardo#6634,11/16/2018 2:48 PM,but can't understand why it needed to be static,,
+295660175237447691,sentepu,11/16/2018 2:49 PM,"ye it shouldnt need it, send in pm if you prefer",,
+142989660870803456,Dardo#6634,11/16/2018 2:53 PM,https://hastebin.com/inejilafaj.cs here it is,,
+142989660870803456,Dardo#6634,11/16/2018 2:54 PM,"the method that should get called is 'syncElements' and as you can see it is static, otherwise the CallLater command will do nothing",,
+334756290742190081,._corey,11/16/2018 3:21 PM,ref ScriptCallQueue queuename;,,
+334756290742190081,._corey,11/16/2018 3:21 PM,queuename = new ScriptCallQueue();  // initalize it,,
+334756290742190081,._corey,11/16/2018 3:22 PM,queuename.Tick(yourtimeslicevariable); // this inside onupdate,,
+334756290742190081,._corey,11/16/2018 3:23 PM,"queuename.CallLater(this.FunctionName, int delay, bool loop, variables...); anywhere",,
+295660175237447691,sentepu,11/16/2018 3:28 PM,try with giving params to your function,,
+295660175237447691,sentepu,11/16/2018 3:30 PM,"```c
+void StartLoop() {
+      //Check if loop not running
+      if (!loopRunning) {
+          GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(this.syncElements,timeout,true, file_name);
+          loopRunning= true;
+      }
+  }
+  /*void StopLoop() {
+      thread.Clear();
+      loopRunning=false;
+  }*/
+  void syncElements(string file_name) {
+
+       Print(file_name);
+       if( FileExist( file_name ) )
+       {
+           string line_content;
+           private FileHandle file = OpenFile( file_name, FileMode.READ );
+
+           if (file != 0)
+           {
+               int linecount = 0;
+               while ( FGets( file,  line_content ) > 0 )
+               {
+                 linecount++;
+                 if (linecount > elements.Count())
+                  elements.Insert((string)line_content);
+               }
+
+               CloseFile(file);
+           }
+
+       }
+       elements.Debug(); //Print on script.log
+  }```",,
+295660175237447691,sentepu,11/16/2018 3:30 PM,something like that,,
+142989660870803456,Dardo#6634,11/16/2018 3:30 PM,Thank you guys,,
+142989660870803456,Dardo#6634,11/16/2018 3:30 PM,I'll try both,,
+295660175237447691,sentepu,11/16/2018 3:31 PM,@Corey scriptcallqueue is already initialized by game since we do `GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY)` dont you think ?,,
+334756290742190081,._corey,11/16/2018 3:32 PM,i prefer to run my own,,
+120714283246944256,thepsilonnaught,11/16/2018 3:32 PM,Works for me by extending ScriptModule,,
+295660175237447691,sentepu,11/16/2018 3:42 PM,"for most case id stay with game provided callqueue, more specificly with gameplay category since you can pause mission and do transitions/cinematics and things like that, times where you dont necessarly want your code to run",,
+334756290742190081,._corey,11/16/2018 4:44 PM,"that's the reason why i would not, rather have my stuff in their own queue, not to fill up the one that the game uses as base for its functions",,
+103498977588047872,.ceve,11/16/2018 4:54 PM,"hey, I'm working on implementing some kind of group/team-system with player-markers as it seems that DayZ hasn't one built in like arma 3 (and probably with good reason) and I will try to open source it later on. but if someone has ideas or working on something similar just ping me 😃",,
+155797669439209472,zograttv,11/16/2018 5:10 PM,@DaOne(Mark) work on a guild/group system already no ?,,
+239201186933112833,da0ne_,11/16/2018 5:11 PM,"not yet :(, i have been busy with IRL stuff. Now starting off wit cool down system for the Spawn selector. guild/group system is defiantly going to be a thing but in the future",,
+155797669439209472,zograttv,11/16/2018 5:14 PM,I have a question if we already have a character alive how is your mod behaving? We just have the menu to choose either spawn or spawn where we logged out?,,
+239201186933112833,da0ne_,11/16/2018 5:14 PM,"i dont like to give out time , but maybe in the next two weeks i will have some sort of guild system wit UI and map markers integration",,
+103498977588047872,.ceve,11/16/2018 5:14 PM,same 😄,,
+155797669439209472,zograttv,11/16/2018 5:14 PM,take your time bring a good mod,,
+239201186933112833,da0ne_,11/16/2018 5:15 PM,no the menu only shows up when you respawn or join the server as a fresh character/dont have a save,,
+103498977588047872,.ceve,11/16/2018 5:15 PM,but we really badly need a better map,,
+239201186933112833,da0ne_,11/16/2018 5:15 PM,"theres currently some issues with the map, first iteration so i cant blame them. Not bad could get better im sure it will",,
+155797669439209472,zograttv,11/16/2018 5:16 PM,why tchernaurs+ is not enought good for you ?,,
+239201186933112833,da0ne_,11/16/2018 5:16 PM,oh thought u was talking about the GUI map lol,,
+155797669439209472,zograttv,11/16/2018 5:16 PM,Oh ok XD,,
+239201186933112833,da0ne_,11/16/2018 5:16 PM,i love Chernarnus,,
+239201186933112833,da0ne_,11/16/2018 5:16 PM,i know it more than my home town xD,,
+155797669439209472,zograttv,11/16/2018 5:17 PM,But in your gif you send via gyazo it is not tchernarus+?,,
+239201186933112833,da0ne_,11/16/2018 5:17 PM,it is,,
+103498977588047872,.ceve,11/16/2018 5:18 PM,i was talking about the GUI map,,
+155797669439209472,zograttv,11/16/2018 5:18 PM,I can't even recognize her XD,,
+155797669439209472,zograttv,11/16/2018 5:18 PM,With a mod you can't modify the GUI map ?,,
+103498977588047872,.ceve,11/16/2018 5:20 PM,the MapWidget is really basic at least 😄,,
+155797669439209472,zograttv,11/16/2018 5:21 PM,I have a question is it possible to make a prophunt game mode ?,,
+103498977588047872,.ceve,11/16/2018 5:22 PM,ofc,,
+155797669439209472,zograttv,11/16/2018 5:22 PM,XD I just share a idea it can be fun when you want just play on small server with friends.,,
+103498977588047872,.ceve,11/16/2018 5:25 PM,you could also build some kind of l4d2-style campaign in chernagorsk if you want too 😄,,
+155797669439209472,zograttv,11/16/2018 5:29 PM,I hope in the future to see big mods on the workshop so excited I hope to see arma 3 modders on Dayz because the game has a lot of potential modding level.,,
+103498977588047872,.ceve,11/16/2018 5:30 PM,what are you looking forward too?,,
+155797669439209472,zograttv,11/16/2018 5:30 PM,New maps,,
+155797669439209472,zograttv,11/16/2018 5:30 PM,Mods to help the creation of RP server,,
+155797669439209472,zograttv,11/16/2018 5:30 PM,Custom weapons,,
+103498977588047872,.ceve,11/16/2018 5:31 PM,"my favourites in arma 3 were wasteland and altis life, and in arma 2 days it was dayz origins",,
+155797669439209472,zograttv,11/16/2018 5:31 PM,Wasteland 😮 I forgot,,
+155797669439209472,zograttv,11/16/2018 5:31 PM,Dayz Wasteland My dream,,
+103498977588047872,.ceve,11/16/2018 5:31 PM,that is actually what I'm trying to build,,
+155797669439209472,zograttv,11/16/2018 5:32 PM,I think alone you can do it but its hard certainly need to create a team to devs a wasteland mod,,
+103498977588047872,.ceve,11/16/2018 5:33 PM,yeah we are three people atm.. 😃 one is going to make some custom texture / objects stuff. and 2 of us will be coding and coming up with ideas. going to have it rather barebones and focus on the core gameplay loop in the beginning and later on trying to add features!,,
+155797669439209472,zograttv,11/16/2018 5:34 PM,Are you going to add events like convoys? With a money and store system for buying guns and stuff?,,
+103498977588047872,.ceve,11/16/2018 5:35 PM,"hmm convoys idk, but certainly money and gun stores",,
+103498977588047872,.ceve,11/16/2018 5:37 PM,"havent irked out the details but we don't want everything to be available at all times to the players, so they have reasons to go around the map and fight at least 😃",,
+232822194642616320,SIG172#4197,11/16/2018 5:42 PM,"Hi, not sure if this is the right place, can anyone tell me how to add startup kit like a gun / mag and 20 rounds to a player on DayZ server?",,
+232822194642616320,SIG172#4197,11/16/2018 5:42 PM,This is like start up kit,,
+142989660870803456,Dardo#6634,11/16/2018 8:01 PM,Not a strictly scripting-related question... but i was thinking about trying to script something similiar so i was wondering : is dayz projected to reflect real weather conditions of the location where the server machine actually is located?,,
+295660175237447691,sentepu,11/16/2018 8:02 PM,that would be very weird lol chernarus with africa weather 😄,,
+120714283246944256,thepsilonnaught,11/16/2018 8:03 PM,"No, but it uses the lat/long of czech for the sky I believe. You could script it though.",,
+120714283246944256,thepsilonnaught,11/16/2018 8:03 PM,"Write to a .txt file from a weather feed, and grab the lines you need from a weather manager or something.",,
+142989660870803456,Dardo#6634,11/16/2018 8:03 PM,Oh i understand,,
+142989660870803456,Dardo#6634,11/16/2018 8:04 PM,Yeah i wanted to do something like that just to practice a bit,,
+232822194642616320,SIG172#4197,11/16/2018 8:10 PM,"Hi all, when every I try to add more items to the standard kit it causes my server to crash.  example below:                                                                                                                                                                                       override void StartingEquipSetup(PlayerBase player, bool clothesChosen)
+    {
+/*
+        player.RemoveAllItems();
+
+        EntityAI item = player.GetInventory().CreateInInventory(topsArray.GetRandomElement());
+        EntityAI item2 = player.GetInventory().CreateInInventory(pantsArray.GetRandomElement());
+        EntityAI item3 = player.GetInventory().CreateInInventory(shoesArray.GetRandomElement());
+*/
+        EntityAI itemEnt;
+        ItemBase itemBs;
+        
+        itemEnt = player.GetInventory().CreateInInventory(""Rag"");
+        itemBs = ItemBase.Cast(itemEnt);
+        itemBs.SetQuantity(2);
+        SetRandomHealth(itemEnt);
+
+        itemEnt = player.GetInventory().CreateInInventory(""RoadFlare"");
+        itemBs = ItemBase.Cast(itemEnt);
+
+        itemEnt = player.GetInventory().CreateInInventory(""BaseballBat"");
+        itemBs = ItemBase.Cast(itemEnt);
+        
+        itemEnt = player.GetInventory().CreateInInventory(""AKM"");
+        itemBs = ItemBase.Cast(itemEnt);
+                
+    }
+};",,
+232822194642616320,SIG172#4197,11/16/2018 8:11 PM,what am i doing wrong please?,,
+128970383192883201,stove#8547,11/16/2018 9:47 PM,why do you have /* and */ canceling all that code out,,
+128970383192883201,stove#8547,11/16/2018 9:48 PM,@SIG172,,
+232822194642616320,SIG172#4197,11/16/2018 9:48 PM,the above is there by default,,
+128970383192883201,stove#8547,11/16/2018 9:48 PM,got it,,
+128970383192883201,stove#8547,11/16/2018 9:49 PM,try changing AKM to smt else,,
+232822194642616320,SIG172#4197,11/16/2018 9:49 PM,I was just trying to show an example,,
+128970383192883201,stove#8547,11/16/2018 9:49 PM,i think it might not be AKM,,
+232822194642616320,SIG172#4197,11/16/2018 9:49 PM,okay thanks I'll try that,,
+128970383192883201,stove#8547,11/16/2018 9:49 PM,np lmk how it goes,,
+232822194642616320,SIG172#4197,11/16/2018 9:49 PM,ah yes i did try a number of things and they all cause a crash.,,
+232822194642616320,SIG172#4197,11/16/2018 9:50 PM,is i leave it as stock then its fine.,,
+128970383192883201,stove#8547,11/16/2018 9:50 PM,"hm okay, let me keep looking",,
+232822194642616320,SIG172#4197,11/16/2018 9:50 PM,so i think it must be a script issue prehaps...,,
+232822194642616320,SIG172#4197,11/16/2018 9:50 PM,"so what happens is the server loads okay, player joins and just starts to move then server craches",,
+128970383192883201,stove#8547,11/16/2018 9:50 PM,"``
+        itemEnt = player.GetInventory().CreateInInventory(""Rag"");
+        itemBs = ItemBase.Cast(itemEnt);
+        itemBs.SetQuantity(2);
+        SetRandomHealth(itemEnt);
+``",,
+128970383192883201,stove#8547,11/16/2018 9:51 PM,try itemBS.setRandomHealth(ItemEnt);,,
+232822194642616320,SIG172#4197,11/16/2018 9:51 PM,yep thats to give say two items if rag,,
+232822194642616320,SIG172#4197,11/16/2018 9:51 PM,ah okay with you. will try it,,
+128970383192883201,stove#8547,11/16/2018 9:51 PM,i havent made dayz scripts yet but that just looks wrong,,
+207328818203983872,notabanana,11/16/2018 9:53 PM,"FYI you can paste code in an easier to read way by prefacing it with three `, and ending with another three",,
+128970383192883201,stove#8547,11/16/2018 9:54 PM,@Not A Banana do you see the problem?,,
+128970383192883201,stove#8547,11/16/2018 9:54 PM,is it what i said or,,
+207328818203983872,notabanana,11/16/2018 9:54 PM,One sec I havent actually read any of it,,
+128970383192883201,stove#8547,11/16/2018 9:54 PM,okay,,
+207328818203983872,notabanana,11/16/2018 9:55 PM,I dont see why that would cause a crash,,
+128970383192883201,stove#8547,11/16/2018 9:55 PM,"```        SetRandomHealth(itemEnt);
+```",,
+128970383192883201,stove#8547,11/16/2018 9:55 PM,how is that possible,,
+207328818203983872,notabanana,11/16/2018 9:55 PM,What are you asking,,
+128970383192883201,stove#8547,11/16/2018 9:55 PM,like how is this right,,
+128970383192883201,stove#8547,11/16/2018 9:55 PM,it looks so wrong ;D,,
+207328818203983872,notabanana,11/16/2018 9:55 PM,That just sets the rags damage levels to random,,
+128970383192883201,stove#8547,11/16/2018 9:56 PM,okie dokie,,
+232822194642616320,SIG172#4197,11/16/2018 9:56 PM,i can see that makes sense,,
+232822194642616320,SIG172#4197,11/16/2018 9:56 PM,I'm not a coder but happy to learn,,
+128970383192883201,stove#8547,11/16/2018 9:56 PM,cow,,
+128970383192883201,stove#8547,11/16/2018 9:56 PM,did u maybe screw w/ the {s,,
+207328818203983872,notabanana,11/16/2018 9:57 PM,"@SIG172 go to pastebin.com, paste entire init there, share here",,
+128970383192883201,stove#8547,11/16/2018 9:57 PM,elsewhere in the script,,
+128970383192883201,stove#8547,11/16/2018 9:57 PM,^^,,
+232822194642616320,SIG172#4197,11/16/2018 9:57 PM,no as standard,,
+128970383192883201,stove#8547,11/16/2018 9:57 PM,also while ur at it what's the name of the file w that,,
+232822194642616320,SIG172#4197,11/16/2018 9:57 PM,only added the following:,,
+232822194642616320,SIG172#4197,11/16/2018 9:57 PM,"itemEnt = player.GetInventory().CreateInInventory(""BaseballBat"");
+        itemBs = ItemBase.Cast(itemEnt);
+
+        itemEnt = player.GetInventory().CreateInInventory(""AKM"");
+        itemBs = ItemBase.Cast(itemEnt);",,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,or wheres it located,,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,wait a minute,,
+232822194642616320,SIG172#4197,11/16/2018 9:58 PM,under the mission folder in init.c,,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,maybe its glitching cause the character cant hold an AK and a baseball bat,,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,is that possible,,
+232822194642616320,SIG172#4197,11/16/2018 9:58 PM,i tried each independent,,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,okay,,
+232822194642616320,SIG172#4197,11/16/2018 9:58 PM,it was an example,,
+128970383192883201,stove#8547,11/16/2018 9:58 PM,v weird,,
+232822194642616320,SIG172#4197,11/16/2018 9:59 PM,do if i add just baseballbat it bombs out,,
+232822194642616320,SIG172#4197,11/16/2018 9:59 PM,to me its like there is no unique itentifier (array) prehaps,,
+232822194642616320,SIG172#4197,11/16/2018 9:59 PM,identifier....,,
+128970383192883201,stove#8547,11/16/2018 10:00 PM,where can i find the .c in the scripts.pbo,,
+128970383192883201,stove#8547,11/16/2018 10:00 PM,i want to see the original,,
+232822194642616320,SIG172#4197,11/16/2018 10:00 PM,as i say I'm not a developer.... just a systems tech,,
+128970383192883201,stove#8547,11/16/2018 10:00 PM,cow,,
+232822194642616320,SIG172#4197,11/16/2018 10:01 PM,yep,,
+128970383192883201,stove#8547,11/16/2018 10:01 PM,wheres the original file,,
+128970383192883201,stove#8547,11/16/2018 10:01 PM,where do i find it in scripts.pbo,,
+232822194642616320,SIG172#4197,11/16/2018 10:02 PM,no in PBO... its located here.........,https://cdn.discordapp.com/attachments/492295576470290433/513096518178439168/unknown.png,
+128970383192883201,stove#8547,11/16/2018 10:02 PM,oh,,
+128970383192883201,stove#8547,11/16/2018 10:02 PM,ok,,
+128970383192883201,stove#8547,11/16/2018 10:03 PM,send entire init.c in pastebin,,
+128970383192883201,stove#8547,11/16/2018 10:03 PM,pls,,
+232822194642616320,SIG172#4197,11/16/2018 10:03 PM,,https://cdn.discordapp.com/attachments/492295576470290433/513096794360643584/unknown.png,
+232822194642616320,SIG172#4197,11/16/2018 10:03 PM,okay one moment,,
+232822194642616320,SIG172#4197,11/16/2018 10:04 PM,https://pastebin.com/vkLrrkPa,,
+128970383192883201,stove#8547,11/16/2018 10:05 PM,ty,,
+232822194642616320,SIG172#4197,11/16/2018 10:05 PM,no problems and thanks too,,
+207328818203983872,notabanana,11/16/2018 10:06 PM,"Change 
+```
+        itemEnt = player.GetInventory().CreateInInventory(""BaseballBat"");
+        itemBs = ItemBase.Cast(itemEnt);
+        itemBs.SetQuantity(1);
+        SetRandomHealth(itemEnt);
+       
+        itemEnt = player.GetInventory().CreateInInventory(""AKM"");
+        itemBs = ItemBase.Cast(itemEnt);
+        itemBs.SetQuantity(1);
+        SetRandomHealth(itemEnt);
+```",,
+207328818203983872,notabanana,11/16/2018 10:06 PM,To,,
+128970383192883201,stove#8547,11/16/2018 10:07 PM,at least in minecraft you can't have a variable that links to different items,,
+207328818203983872,notabanana,11/16/2018 10:07 PM,"```       player.GetInventory().CreateInInventory(""BaseballBat"");      
+             player.GetInventory().CreateInInventory(""AKM"");
+
+```",,
+207328818203983872,notabanana,11/16/2018 10:07 PM,Idk why my formatting is fucked but you get the idea,,
+128970383192883201,stove#8547,11/16/2018 10:07 PM,oh so if theres more than one weapon it goes under the same section,,
+207328818203983872,notabanana,11/16/2018 10:07 PM,You cant set quantity on those items and you have no need for itement/itembs stuff,,
+207328818203983872,notabanana,11/16/2018 10:08 PM,"AKMs dont stack, so trying to set it's quantity is likely your issue",,
+128970383192883201,stove#8547,11/16/2018 10:08 PM,OH yeah now that u say it the itement is useless,,
+128970383192883201,stove#8547,11/16/2018 10:08 PM,just spawn that shit in there,,
+232822194642616320,SIG172#4197,11/16/2018 10:08 PM,got it,,
+128970383192883201,stove#8547,11/16/2018 10:08 PM,banana how could u set a variable to an item,,
+128970383192883201,stove#8547,11/16/2018 10:09 PM,"so like AK = DayZItem(""AKM"");",,
+128970383192883201,stove#8547,11/16/2018 10:09 PM,or smt,,
+207328818203983872,notabanana,11/16/2018 10:09 PM,"```c
+    override void StartingEquipSetup(PlayerBase player, bool clothesChosen)
+    {
+/*
+        player.RemoveAllItems();
+ 
+        EntityAI item = player.GetInventory().CreateInInventory(topsArray.GetRandomElement());
+        EntityAI item2 = player.GetInventory().CreateInInventory(pantsArray.GetRandomElement());
+        EntityAI item3 = player.GetInventory().CreateInInventory(shoesArray.GetRandomElement());
+*/
+        EntityAI itemEnt;
+        ItemBase itemBs;
+       
+        itemEnt = player.GetInventory().CreateInInventory(""Rag"");
+        itemBs = ItemBase.Cast(itemEnt);
+        itemBs.SetQuantity(4);
+        SetRandomHealth(itemEnt);
+ 
+        player.GetInventory().CreateInInventory(""RoadFlare"");
+        player.GetInventory().CreateInInventory(""RoadFlare"");
+ 
+        player.GetInventory().CreateInInventory(""BaseballBat"");      
+        player.GetInventory().CreateInInventory(""AKM"");
+
+               
+    }
+};
+```",,
+207328818203983872,notabanana,11/16/2018 10:09 PM,There you go @SIG172,,
+128970383192883201,stove#8547,11/16/2018 10:09 PM,banana,,
+128970383192883201,stove#8547,11/16/2018 10:09 PM,thanks for helping,,
+232822194642616320,SIG172#4197,11/16/2018 10:10 PM,"Thanks, I will test it now and let you know",,
+232822194642616320,SIG172#4197,11/16/2018 10:10 PM,I appreciate the help here too,,
+128970383192883201,stove#8547,11/16/2018 10:10 PM,👍🏽,,
+232822194642616320,SIG172#4197,11/16/2018 10:15 PM,"your both stars, thanks 😃",,
+232822194642616320,SIG172#4197,11/16/2018 10:15 PM,it works like a dream,,
+232822194642616320,SIG172#4197,11/16/2018 10:15 PM,👍,,
+456226577798135808,Deleted User,11/16/2018 10:25 PM,so many messages,,
+456226577798135808,Deleted User,11/16/2018 10:26 PM,xD,,
+456226577798135808,Deleted User,11/17/2018 12:05 AM,How do i increase weight carry cap,,
+456226577798135808,Deleted User,11/17/2018 12:05 AM,cant seem to get it to work to save my life,,
+456226577798135808,Deleted User,11/17/2018 12:07 AM,is it just in constants or playerconstants,,
+178870959216918529,.__zap__.,11/17/2018 12:26 AM,"Anyone know the hash BI uses for GetIdentity().GetId()?      
+```unique id of player (hashed steamID, database Xbox id...)```",,
+181864632216977408,arkensor,11/17/2018 12:27 AM,MD5( SHA256( GetPlainID() ) ) afair,,
+178870959216918529,.__zap__.,11/17/2018 12:28 AM,thanks,,
+456226577798135808,Deleted User,11/17/2018 12:37 AM,anyone know about how to up weight cap?...,,
+456226577798135808,Deleted User,11/17/2018 1:02 AM,wtf,,
+456226577798135808,Deleted User,11/17/2018 1:02 AM,,https://cdn.discordapp.com/attachments/492295576470290433/513141789495001128/unknown.png,
+456226577798135808,Deleted User,11/17/2018 1:02 AM,,https://cdn.discordapp.com/attachments/492295576470290433/513141862798852096/unknown.png,
+456226577798135808,Deleted User,11/17/2018 1:02 AM,1 folder there only?,,
+148370724900306944,jacob_mango,11/17/2018 1:03 AM,would mean there is no files in that folder so they weren't packaged,,
+456226577798135808,Deleted User,11/17/2018 1:03 AM,so lets remove that dependencies,,
+87349760389844992,shu1738,11/17/2018 4:33 AM,@DaOne(Mark) have a question. earlier was trying out the zed hordes and some of the zombies were like a hologram. could see through the zombies. then after i killed them all the server crashed but did not see any errors. is the hologram zeds not supposed to happen? xd,,
+239201186933112833,da0ne_,11/17/2018 4:42 AM,"Nah the server crash was just random, the zombie is supposed to spawn like that",,
+239201186933112833,da0ne_,11/17/2018 4:42 AM,I added that in the code,,
+239201186933112833,da0ne_,11/17/2018 4:42 AM,I was supposed to make those zombies have more health and they would only spawn if you kill the “boss”,,
+239201186933112833,da0ne_,11/17/2018 4:43 AM,"Kinda like a 2 stage zed, Kill the big boss and it’s ghost will summon",,
+239201186933112833,da0ne_,11/17/2018 4:43 AM,"But I just left it as that, moved on got distracted.",,
+190975358684626945,skcody,11/17/2018 4:54 AM,"question, if i want to have loops running simultaneously, do i have to create threads for each loop to run in or how does that work in dayz",,
+207328818203983872,notabanana,11/17/2018 4:58 AM,Wait the ghost zombies I see on modded servers isnt a bug? Neat,,
+207328818203983872,notabanana,11/17/2018 4:58 AM,Interesting that was possible server side only,,
+87349760389844992,shu1738,11/17/2018 5:03 AM,"@DaOne(Mark) cool, i think it was bad timing when it crashed lol",,
+87349760389844992,shu1738,11/17/2018 5:43 AM,@DaOne(Mark) also a bit curious when installed and using -mod moddedscripts players will get kicked for modified pbo. also on the dzsalauncher it shows im running the mod modded scripts but other servers that have it running it doesnt say that. just confused about this,,
+190975358684626945,skcody,11/17/2018 6:13 AM,"Has anyone had an issue in offline dayz where you cannot press esc to bring up the menu with the options to continue/restart/exit? my esc key works, and I can do it when I join a server; however, it does not work in singleplayer. This is making it very annoying to test changes in my scripts as I have to restart the game each time.",,
+148370724900306944,jacob_mango,11/17/2018 6:14 AM,yeah I've had that issue,,
+148370724900306944,jacob_mango,11/17/2018 6:14 AM,just thought it was because I broke something in my mod,,
+190975358684626945,skcody,11/17/2018 6:20 AM,have you been able to solve it? nothing ive tried seems to work,,
+148370724900306944,jacob_mango,11/17/2018 6:45 AM,nah haven't attemped myself,,
+456226577798135808,Deleted User,11/17/2018 11:44 AM,"```
+PC-MOV3AX, 17.11 2018 12:42:15
+ScriptMembersNetSync::RegisterVariable - ""m_LifeSpanState"" - duplicite registration
+Class:      'SurvivorBase'
+Entity id:0
+
+Function: 'Init'
+Stack trace:
+scripts/4_World/entities\manbase\playerbase.c:299
+StatusIndicatorsMod/scripts/4_World/entities\manbase\playerbase.c:30
+
+Runtime mode
+CLI params: window  name mov3ax noPause  mod C:\SteamLibrary\steamapps\common\DayZ\@UnlimitedStaminaMod;C:\SteamLibrary\steamapps\common\DayZ\@StatusIndicatorsMod 
+```
+
+there is pb:
+
+```
+modded class PlayerBase extends ManBase
+{
+    float Health;
+    float Blood;
+    float Food;
+    float Water;
+    
+    void UpdateValues()
+    {
+        if (GetGame().IsServer())
+        {
+            array<Man> players = new array<Man>;
+            GetGame().GetWorld().GetPlayerList(players); // CGame::GetPlayers
+        
+            for ( int i = 0; i < players.Count(); i++ ) 
+            { 
+                PlayerBase pb; 
+                Class.CastTo(pb, players.Get(i)); 
+
+                Health = pb.GetHealth( """","""" );
+                Blood = pb.GetHealth( """",""Blood"" );
+                Food = pb.GetStatEnergy().Get();
+                Water = pb.GetStatWater().Get();
+            }
+        }
+    }
+    
+    void PlayerBase()
+    {    
+        Init();
+        
+        Health = 0;
+        Blood = 0;
+        Food = 0;
+        Water = 0;
+        
+        RegisterNetSyncVariableFloat(""Health"");
+        RegisterNetSyncVariableFloat(""Blood"");
+        RegisterNetSyncVariableFloat(""Food"");
+        RegisterNetSyncVariableFloat(""Water"");
+        
+        Print(""Status Indicators Mod by mov3ax: PlayerBase Init"");
+        
+        GetGame().GetUpdateQueue(CALL_CATEGORY_GAMEPLAY).Insert(UpdateValues);    
+    }
+}
+```",,
+94846990000594944,QuickZ#5873,11/17/2018 11:46 AM,"changing ``weather.GetRain().SetForecastTimeLimits( 600 , 600 );`` to ``weather.GetRain().SetForecastTimeLimits( 200 , 600 );`` will that make it rain shorter periods of time in general?
+Also is there a way to lower the chance for it to start raining in the first place? I looked in to a reddit thread for some comments about it. Seamed like it was not possible in the init.c at least.",,
+135355238990348288,djctavia,11/17/2018 1:14 PM,"@Deleted User Glad to see you extracted my pbo files lmao, I've been using the format of Kegan videos",,
+156186845531734017,mainecracka,11/17/2018 1:25 PM,"please help. im brand new to modding and im trying to completely remove stamina. i have removed everything except weight being a factor, just wonder what needs to be done in the StaminaHandler to have weight not effect stamina? I look at the script and im completely confused",,
+135355238990348288,djctavia,11/17/2018 1:30 PM,"Pro tips, there is mod for illimited stamina on workshop",,
+135355238990348288,djctavia,11/17/2018 1:30 PM,You can still extract the pbo for check what you can do; there is a lot of way to do it,,
+456226577798135808,Deleted User,11/17/2018 1:45 PM,@Mainecracka look for my mod in workshop,,
+456226577798135808,Deleted User,11/17/2018 1:46 PM,UnlimitedStaminaMod,,
+456226577798135808,Deleted User,11/17/2018 1:46 PM,is there any way to catch messages in chat?,,
+156186845531734017,mainecracka,11/17/2018 1:56 PM,Thank you. Like I said I’m brand new to this so I’m hoping to transfer the pbo onto my server,,
+456226577798135808,Deleted User,11/17/2018 2:04 PM,@DjCtavia I was checking why there is dependencies which  are not there..,,
+456226577798135808,Deleted User,11/17/2018 2:04 PM,I removed them.,,
+456226577798135808,Deleted User,11/17/2018 2:48 PM,"@DjCtavia have you figured out how to catch message?
+
+```
+override void OnEvent(EventType eventTypeId, Param params)
+{
+    super.OnEvent(eventTypeId, params);
+    if ( eventTypeId == ChatMessageEventTypeID )
+    {
+        Print(""I catch message event"");
+    }
+}
+```
+
+like you send b4?",,
+135355238990348288,djctavia,11/17/2018 2:49 PM,"I did not actually, I thought about creating a temporary mod for catching user message; but I didn't know if that would be a waste of time cause BI are actually working hard than ever on DayZ 😂
+Using RPC",,
+300997586708332544,sleepymode,11/17/2018 2:50 PM,"Hey guys, is it possible to pass a function as an argument of another function?",,
+135355238990348288,djctavia,11/17/2018 2:51 PM,"Yep, I think you need to use ""func""",,
+300997586708332544,sleepymode,11/17/2018 2:51 PM,Just func or is there a specific type? Or do I need to pass a pointer to the function?,,
+135355238990348288,djctavia,11/17/2018 2:51 PM,function(func myFunction),,
+135355238990348288,djctavia,11/17/2018 2:52 PM,"That simple guess, I've seen that from files",,
+300997586708332544,sleepymode,11/17/2018 2:53 PM,"Will try that then, cheers.",,
+103498977588047872,.ceve,11/17/2018 3:03 PM,"hmmm. if I do FindAnyWidget(); i can cast it to Widget - right? 
+but how do I get the script class it has created?",,
+103498977588047872,.ceve,11/17/2018 3:07 PM,"oh! ofc, the Widget-class has a GetScript() 😄",,
+300997586708332544,sleepymode,11/17/2018 3:11 PM,How do I actually add it into the function call as an anonymous function?,,
+135355238990348288,djctavia,11/17/2018 3:12 PM,"What you mean by ""anonymous"" ?",,
+300997586708332544,sleepymode,11/17/2018 3:14 PM,"As in, without having to register it beforehands",,
+300997586708332544,sleepymode,11/17/2018 3:14 PM,so I can write it while passing it as an argument,,
+103498977588047872,.ceve,11/17/2018 3:14 PM,you mean an lambda?,,
+300997586708332544,sleepymode,11/17/2018 3:14 PM,"It's the same thing, but, yeah",,
+103498977588047872,.ceve,11/17/2018 3:15 PM,yeh,,
+103498977588047872,.ceve,11/17/2018 3:15 PM,hm,,
+135355238990348288,djctavia,11/17/2018 3:15 PM,"You mean like in JS when yo do something like this:
+```
+(args...) => {
+    // My function in js...
+}
+```",,
+135355238990348288,djctavia,11/17/2018 3:16 PM,I'm not sure to understand,,
+300997586708332544,sleepymode,11/17/2018 3:16 PM,I don't know Javascript but,,
+103498977588047872,.ceve,11/17/2018 3:16 PM,I don't know if its possible,,
+105574798691680256,totallynotgrim,11/17/2018 3:16 PM,You cant really call a Func in enscript,,
+105574798691680256,totallynotgrim,11/17/2018 3:16 PM,You can pass it to Call,,
+103498977588047872,.ceve,11/17/2018 3:16 PM,"by the way, for scripting - do you use the scripting editor or something else?",,
+300997586708332544,sleepymode,11/17/2018 3:17 PM,Something else,,
+105574798691680256,totallynotgrim,11/17/2018 3:17 PM,Sublime :FeelsWoWMan:,,
+103498977588047872,.ceve,11/17/2018 3:17 PM,"Sublime, do you get autocomplete for functions?",,
+300997586708332544,sleepymode,11/17/2018 3:17 PM,I use Visual Studio Code,,
+105574798691680256,totallynotgrim,11/17/2018 3:17 PM,I could if i would bother to make a def file,,
+105574798691680256,totallynotgrim,11/17/2018 3:17 PM,CBA atm,,
+105574798691680256,totallynotgrim,11/17/2018 3:17 PM,Waiting for somebody else to do it,,
+105574798691680256,totallynotgrim,11/17/2018 3:17 PM,:Kappa:,,
+300997586708332544,sleepymode,11/17/2018 3:18 PM,It's such a pain in the ass to add syntax to Sublime,,
+105574798691680256,totallynotgrim,11/17/2018 3:18 PM,No its not really,,
+103498977588047872,.ceve,11/17/2018 3:18 PM,I would want to use Jetbrains CLion but.. yeah didn't get it really to work as I wanted 😄,,
+105574798691680256,totallynotgrim,11/17/2018 3:18 PM,Ill probably make a auto def generator if nobody dose it in mean time,,
+135355238990348288,djctavia,11/17/2018 3:18 PM,"In my case I use Workbench for scripting, and Visual Studio Code for searching specific class or code 😂",,
+300997586708332544,sleepymode,11/17/2018 3:19 PM,"Also as for what I meant, I don't know javascript but here's an example in Lua",,
+300997586708332544,sleepymode,11/17/2018 3:19 PM,"```lua
+local funcTable = {}
+
+function regFunc(func) {
+    table.insert(funcTable, func)
+}
+
+regFunc(function()
+    print(""hello"")
+end)
+```",,
+135355238990348288,djctavia,11/17/2018 3:19 PM,"There is auto complet. on workbench script tool, but for searching a piece of code, that just a garbage, depending",,
+103498977588047872,.ceve,11/17/2018 3:19 PM,@SleepyMode thats the same that @DjCtavia wrote,,
+300997586708332544,sleepymode,11/17/2018 3:19 PM,"Again, don't know JS, had no clue what he wrote",,
+105574798691680256,totallynotgrim,11/17/2018 3:19 PM,Also Ctrl-X dosent cut the current line,,
+105574798691680256,totallynotgrim,11/17/2018 3:19 PM,No TY,,
+105574798691680256,totallynotgrim,11/17/2018 3:19 PM,Unusable,,
+105574798691680256,totallynotgrim,11/17/2018 3:20 PM,:monkaGun:,,😂 (2)
+135355238990348288,djctavia,11/17/2018 3:20 PM,"I'm not that sure you can do that in enscription, but you can still give a try @SleepyMode",,
+103498977588047872,.ceve,11/17/2018 3:20 PM,maybe I should create extension for visual studio code so I can pack pbos directly from it 🤔,,
+239201186933112833,da0ne_,11/17/2018 3:20 PM,i think you can make you own custom auto complete actions with sumblime,,
+239201186933112833,da0ne_,11/17/2018 3:20 PM,so i could write 'faggot' and it would print in an if statement template,,
+105574798691680256,totallynotgrim,11/17/2018 3:20 PM,You can,,
+239201186933112833,da0ne_,11/17/2018 3:20 PM,OH! tell me Grim,,
+300997586708332544,sleepymode,11/17/2018 3:20 PM,Okay well will functions within scope work then? I don't want to end up writing 500 functions in a class lmao,,
+239201186933112833,da0ne_,11/17/2018 3:20 PM,huo pls,,
+105574798691680256,totallynotgrim,11/17/2018 3:21 PM,https://medium.freecodecamp.org/a-guide-to-preserving-your-wrists-with-sublime-text-snippets-7541662a53f2,,
+103498977588047872,.ceve,11/17/2018 3:21 PM,"But everyone is doing the same now?
+Editing in an editor
+Packing pbos
+Copying them to server and client
+Starting server
+Starting client",,
+103498977588047872,.ceve,11/17/2018 3:21 PM,?,,
+105574798691680256,totallynotgrim,11/17/2018 3:21 PM,They are called snippets,,
+239201186933112833,da0ne_,11/17/2018 3:21 PM,"sickcunt, thanks",,
+456226577798135808,Deleted User,11/17/2018 3:46 PM,is there a way to add text to multilinetextbox instead of replacing old text by SetText,,
+456226577798135808,Deleted User,11/17/2018 3:46 PM,?,,
+334756290742190081,._corey,11/17/2018 3:48 PM,@Deleted User  yeah,,
+334756290742190081,._corey,11/17/2018 3:48 PM,"`string newText = multilinetextbox.GetText() + "" the stuff you want to add""`",,
+334756290742190081,._corey,11/17/2018 3:49 PM,its up to you how you format it,,
+456226577798135808,Deleted User,11/17/2018 3:50 PM,,https://cdn.discordapp.com/attachments/492295576470290433/513365205942796289/unknown.png,
+456226577798135808,Deleted User,11/17/2018 3:51 PM,my bad i was using MultilineTextWidget instead of MultilineEditBoxWidget,,
+334756290742190081,._corey,11/17/2018 3:51 PM,no matter what you should be able to useGetText on the text widgets,,
+456226577798135808,Deleted User,11/17/2018 3:54 PM,"ok, but why it ask for a parameters?",https://cdn.discordapp.com/attachments/492295576470290433/513366371199877156/unknown.png,
+239201186933112833,da0ne_,11/17/2018 3:55 PM,what do you mean?,,
+239201186933112833,da0ne_,11/17/2018 3:55 PM,"""ask for params""",,
+239201186933112833,da0ne_,11/17/2018 3:55 PM,"it does not, its just going to output a string",,
+456226577798135808,Deleted User,11/17/2018 3:56 PM,ah that is output,,
+456226577798135808,Deleted User,11/17/2018 3:56 PM,i am blind,,
+94846990000594944,QuickZ#5873,11/17/2018 3:57 PM,so that is not a out param?,,
+239201186933112833,da0ne_,11/17/2018 3:57 PM,"so you could use it like this:
+```
+string TextFromTextBox0 ;
+MyOtherTxtBox.GetText(TextFromTextBox0 ); 
+MyTextBox.SetText(TextFromTextBox0 );
+```",,
+94846990000594944,QuickZ#5873,11/17/2018 3:58 PM,ah then it is a out param,,
+239201186933112833,da0ne_,11/17/2018 3:58 PM,yup,,
+94846990000594944,QuickZ#5873,11/17/2018 3:59 PM,got confused when you said it was not asking for one. ^^,,
+456226577798135808,Deleted User,11/17/2018 4:00 PM,i just come from c++,,
+94846990000594944,QuickZ#5873,11/17/2018 4:01 PM,its a nice way to get a reference to something outside the function/method scope,,
+94846990000594944,QuickZ#5873,11/17/2018 4:01 PM,if its like in C#,,
+103498977588047872,.ceve,11/17/2018 4:05 PM,why are you sometimes passing in stuff like a ref and sometimes returning it?,,
+103498977588047872,.ceve,11/17/2018 4:07 PM,"like
+```        MyScriptClass scriptClass;
+        myWidget.GetScript(scriptClass);
+        scriptClass.DoStuff();```",,
+456226577798135808,Deleted User,11/17/2018 4:10 PM,"```
+ChatText.GetText(ChatOutput);    
+Print(""ChatOut: "" + ChatOutput);
+```
+
+SCRIPT       : ChatOut:",,
+456226577798135808,Deleted User,11/17/2018 4:10 PM,🤔,,
+456226577798135808,Deleted User,11/17/2018 4:17 PM,that worked,https://cdn.discordapp.com/attachments/492295576470290433/513372100078206996/unknown.png,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,@Deleted User that does what?,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,global?,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,I see.,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,"wip, chat framework due bi broked their one",,🙆 (1)
+456226577798135808,Deleted User,11/17/2018 4:19 PM,HUD.,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,Going to be released?,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,yes,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,keep the good work be sure to sign it 👍,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,❤,,
+456226577798135808,Deleted User,11/17/2018 4:19 PM,"minor things , big changes.",,
+103498977588047872,.ceve,11/17/2018 4:26 PM,looks nice,,
+105574798691680256,totallynotgrim,11/17/2018 4:42 PM,``MyTextBox.SetText( MyOtherTxtBox.GetText() );`` @Deleted User that will never work,,
+456226577798135808,Deleted User,11/17/2018 4:42 PM,nvm i already got it,,
+105574798691680256,totallynotgrim,11/17/2018 4:43 PM,Cool,,
+239201186933112833,da0ne_,11/17/2018 4:43 PM,what?,,
+239201186933112833,da0ne_,11/17/2018 4:43 PM,what do u mean it will never work,,
+105574798691680256,totallynotgrim,11/17/2018 4:47 PM,MyOtherTxtBox.GetText() returns VOID,,
+105574798691680256,totallynotgrim,11/17/2018 4:48 PM,It requires an variable where it will fill the text,,
+105574798691680256,totallynotgrim,11/17/2018 4:48 PM,eg,,
+105574798691680256,totallynotgrim,11/17/2018 4:48 PM,"```
+string output;
+whatever.GetText(output);
+```",,
+239201186933112833,da0ne_,11/17/2018 4:53 PM,nope,,
+239201186933112833,da0ne_,11/17/2018 4:53 PM,i use it like that...it works,,
+105574798691680256,totallynotgrim,11/17/2018 4:54 PM,No it dosent as return is void,,
+105574798691680256,totallynotgrim,11/17/2018 4:54 PM,if it works its a bug,,
+239201186933112833,da0ne_,11/17/2018 4:55 PM,``` proto void GetText(out string text); ```,,
+239201186933112833,da0ne_,11/17/2018 4:55 PM,"it out puts a string, so does not mater if its a ``` proto void```",,
+105574798691680256,totallynotgrim,11/17/2018 4:55 PM,void is not anything,,
+105574798691680256,totallynotgrim,11/17/2018 4:55 PM,void is nothing,,
+239201186933112833,da0ne_,11/17/2018 4:56 PM,"i know that, but you dont have to give it a string to output, you can just place it as it is in a function that intakes a string",,
+239201186933112833,da0ne_,11/17/2018 4:56 PM,because its returning a string,,
+105574798691680256,totallynotgrim,11/17/2018 4:57 PM,Its not returning a string,,
+105574798691680256,totallynotgrim,11/17/2018 4:57 PM,Its returning void,,
+105574798691680256,totallynotgrim,11/17/2018 4:58 PM,meaning nothing,,
+105574798691680256,totallynotgrim,11/17/2018 4:58 PM,If it actually works like you are sayin its most fucked up thing i saw in any language ever,,
+239201186933112833,da0ne_,11/17/2018 4:59 PM,"ah shit lol, was thinking about wrong thing",,
+239201186933112833,da0ne_,11/17/2018 4:59 PM,GetCurrentItem(),,😅 (1)
+300997586708332544,sleepymode,11/17/2018 5:09 PM,Is it safe to edit the dta folder of the server directly or should I use a mod to manipulate features?,,
+456226577798135808,Deleted User,11/17/2018 5:10 PM,how to read text from Param4?,,
+456226577798135808,Deleted User,11/17/2018 5:10 PM,param3,,
+300997586708332544,sleepymode,11/17/2018 5:11 PM,Just access the .param1/.param2/.param3 of it,,
+456226577798135808,Deleted User,11/17/2018 5:11 PM,yes,,
+456226577798135808,Deleted User,11/17/2018 5:11 PM,i am doing params.param3.,,
+456226577798135808,Deleted User,11/17/2018 5:11 PM,the function is Read()?,,
+300997586708332544,sleepymode,11/17/2018 5:12 PM,The function for what?,,
+456226577798135808,Deleted User,11/17/2018 5:12 PM,for reading content of .param3,,
+300997586708332544,sleepymode,11/17/2018 5:12 PM,Just access .param3 directly,,
+456226577798135808,Deleted User,11/17/2018 5:12 PM,ok,,
+456226577798135808,Deleted User,11/17/2018 5:15 PM,"yeah, that worked",https://cdn.discordapp.com/attachments/492295576470290433/513386792485912576/unknown.png,
+456226577798135808,Deleted User,11/17/2018 5:15 PM,but i have 1 issue,,
+456226577798135808,Deleted User,11/17/2018 5:16 PM,"```
+super.OnEvent(eventTypeId, params);
+if ( eventTypeId == ChatMessageEventTypeID )
+{
+```
+
+this does not work when player send message, that works only when i send message using 
+
+`GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, """", ""Test"", """"));`",,
+456226577798135808,Deleted User,11/17/2018 5:19 PM,ok i think i have to recreate input system aswell,,
+300997586708332544,sleepymode,11/17/2018 5:20 PM,How do I register static functions?,,
+128970383192883201,stove#8547,11/17/2018 5:24 PM,is there any video on how to get started scripting dayz sa,,
+456226577798135808,Deleted User,11/17/2018 5:24 PM,what you mean by register?,,
+128970383192883201,stove#8547,11/17/2018 5:24 PM,i just dont know how to setup my workbench and shit,,
+456226577798135808,Deleted User,11/17/2018 5:24 PM,@stove https://www.youtube.com/watch?v=dCHoLgB0aXY,,
+128970383192883201,stove#8547,11/17/2018 5:24 PM,ty,,
+230061386888118273,.thurston,11/17/2018 5:25 PM,@Deleted User i think he means define,,
+456226577798135808,Deleted User,11/17/2018 5:25 PM,static void yourfunction()?,,
+128970383192883201,stove#8547,11/17/2018 5:25 PM,wait is this guy gonna show me how to setup my stuff,,
+128970383192883201,stove#8547,11/17/2018 5:25 PM,looks like hes just gonna teach me data types,,
+230061386888118273,.thurston,11/17/2018 5:26 PM,"you asked for a scripting introduction, he provided you with one",,
+128970383192883201,stove#8547,11/17/2018 5:26 PM,"``
+stevenToday at 11:24 AM
+i just dont know how to setup my workbench and shit``",,
+128970383192883201,stove#8547,11/17/2018 5:26 PM,i appreciate the link,,
+128970383192883201,stove#8547,11/17/2018 5:26 PM,but its not what i needed lol,,
+230061386888118273,.thurston,11/17/2018 5:26 PM,"``
+stevenToday at 4:24 PM
+is there any video on how to get started scripting dayz sa
+``",,
+456226577798135808,Deleted User,11/17/2018 5:26 PM,go to options of workbench,,
+128970383192883201,stove#8547,11/17/2018 5:26 PM,yeah look at the full text bro lol,,
+128970383192883201,stove#8547,11/17/2018 5:26 PM,ok mov,,
+456226577798135808,Deleted User,11/17/2018 5:27 PM,"and set your working path, dayz, server or whatever",,
+128970383192883201,stove#8547,11/17/2018 5:27 PM,mk,,
+300997586708332544,sleepymode,11/17/2018 5:27 PM,Is there any actual way of making static methods to a class?,,
+300997586708332544,sleepymode,11/17/2018 5:27 PM,It marks it as an error for some reason 😦,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,can i use visual studio for this,,
+300997586708332544,sleepymode,11/17/2018 5:28 PM,You can,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,great,,
+300997586708332544,sleepymode,11/17/2018 5:28 PM,but it's not recommended,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,o,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,what do most people use,,
+300997586708332544,sleepymode,11/17/2018 5:28 PM,the workbench,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,ohh the dayz tools one,,
+300997586708332544,sleepymode,11/17/2018 5:28 PM,yep,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,got it,,
+128970383192883201,stove#8547,11/17/2018 5:28 PM,thats easy enough,,
+300997586708332544,sleepymode,11/17/2018 5:46 PM,is #define a thing?,,
+456226577798135808,Deleted User,11/17/2018 5:50 PM,not sure,,
+456226577798135808,Deleted User,11/17/2018 5:50 PM,use static values instead,,
+300997586708332544,sleepymode,11/17/2018 6:14 PM,Is using g_Game the same as doing GetGame()?,,
+456226577798135808,Deleted User,11/17/2018 6:17 PM,g_Game = new DayZGame;,,
+300997586708332544,sleepymode,11/17/2018 6:17 PM,Is that a yes? I'm not too good at this yet 😦,,
+456226577798135808,Deleted User,11/17/2018 6:18 PM,afaik GetGame() returning CGame,,
+456226577798135808,Deleted User,11/17/2018 6:18 PM,but g_Game is DayZGame,,
+300997586708332544,sleepymode,11/17/2018 6:19 PM,"Cheers, thank you 😃",,
+456226577798135808,Deleted User,11/17/2018 6:19 PM,class DayZGame extends CGame,,
+456226577798135808,Deleted User,11/17/2018 6:19 PM,anyway it extends CGame so you can use it,,
+239201186933112833,da0ne_,11/17/2018 6:32 PM,"GetGame() returns game, default game is g_Game but you can change that as you can make your own",,
+155797669439209472,zograttv,11/17/2018 6:45 PM,"I have a problem generating loot spawn on the map with custom buildings (with communityOffline then imported into the init.c file)
+when I follow the tutorial on the pinned message I don't have the message[CE][MapExport]
+no nothing and yet the message is executed after the custom buildings",,
+190975358684626945,skcody,11/17/2018 7:19 PM,@Deleted User thanks for linking my video lol,,
+300997586708332544,sleepymode,11/17/2018 7:21 PM,What color classes are there for ChatMP?,,
+456226577798135808,Deleted User,11/17/2018 7:25 PM,thats the keycode for enter?,,
+456226577798135808,Deleted User,11/17/2018 7:26 PM,i guess its KC_RETURN,,
+155797669439209472,zograttv,11/17/2018 7:26 PM,no one can help me,,
+456226577798135808,Deleted User,11/17/2018 7:28 PM,"@ZograTTV you have to wait till someone who know how to work with CE editor will be there, also i think you better ask it in #generic-dayz or #tools-dayz",,
+155797669439209472,zograttv,11/17/2018 7:28 PM,ok,,
+103498977588047872,.ceve,11/17/2018 7:29 PM,hmm anyone know if you can use callback functions,,
+103498977588047872,.ceve,11/17/2018 7:29 PM,thinking like c# that you can define actions,,
+103498977588047872,.ceve,11/17/2018 7:30 PM,"```if(MyCallBackFunction != null) {
+  MyCallbackFunction.Invoke(parameters);
+}```",,
+178870959216918529,.__zap__.,11/17/2018 7:39 PM,"```static ref ScriptInvoker UpdateSomething = new ScriptInvoker();
+...
+UpdateSomething.Invoke( params );
+...
+UpdateSomething.Insert( ReceivedSomething );
+...
+void ReceivedSomething( params )
+{
+}
+```",,
+280184042169565184,Rush101#2747,11/17/2018 7:39 PM,thanks for the video mov3ax quite informative,,
+300997586708332544,sleepymode,11/17/2018 7:42 PM,uh guys how do I properly split a string?,,
+300997586708332544,sleepymode,11/17/2018 7:43 PM,The documentation on it in the file is very confusing,,
+300997586708332544,sleepymode,11/17/2018 7:43 PM,"parameters not matching, it stating to use EnString type(which does not exist. it's the name of the file)",,
+300997586708332544,sleepymode,11/17/2018 7:43 PM,etc,,
+300997586708332544,sleepymode,11/17/2018 8:00 PM,"Found out how to do it, documentation is just flawed",,
+135355238990348288,djctavia,11/17/2018 8:01 PM,"```
+string myString = ""Hello world !"";
+array<string> splitedString; // work with TStringArray
+myString.Split("" "", splitedString); // {""Hello"", ""world"", ""!""}
+```",,
+300997586708332544,sleepymode,11/17/2018 8:01 PM,yeah ^,,
+190975358684626945,skcody,11/17/2018 8:15 PM,"can someone give me some general insight here. I have not dived very far into it until now. im trying understand how you can setup events and various scripts to run after the mission has started. this is an example for what i mean, lets say i wanted the player to be able to spawn a vehicle whenever he/she wanted to. how could i set it up so the player can trigger that script whenever he wanted?(i dont need to know how to spawn a vehicle or anything, just how to trigger it). is there some sort of event handling that ive overlooked or do i need to check for something on each tick or what?",,
+295660175237447691,sentepu,11/17/2018 8:16 PM,you would attach a key or custom UI button triggering the spawn of vehicle,,
+190975358684626945,skcody,11/17/2018 8:20 PM,can i do this all on the server,,
+190975358684626945,skcody,11/17/2018 8:20 PM,not the ui,,
+135355238990348288,djctavia,11/17/2018 8:23 PM,"I'm not sure that could be possible on server only, cause you need to assign a key",,
+135355238990348288,djctavia,11/17/2018 8:26 PM,"Maybe I'm wrong, you need to give a try, Mission have this: void OnKeyPress(int key)",,
+456226577798135808,Deleted User,11/17/2018 8:30 PM,any way to delete line like that? https://gyazo.com/c2e73ad6e1db0d16d9604738191efddb,,
+135355238990348288,djctavia,11/17/2018 8:32 PM,The empty line come from something special mov3ax ? After special interaction or anything ?,,
+456226577798135808,Deleted User,11/17/2018 8:34 PM,"empty line is ChatText.SetLine(0, """");",,
+135355238990348288,djctavia,11/17/2018 8:34 PM,That is set by you or specific input ?,,
+456226577798135808,Deleted User,11/17/2018 8:35 PM,set by me,,
+135355238990348288,djctavia,11/17/2018 8:35 PM,It is for padding text to bottom ?,,
+456226577798135808,Deleted User,11/17/2018 8:36 PM,yes,,
+295660175237447691,sentepu,11/17/2018 8:37 PM,"@[SK] Cody only way is using daone admintool, which is reading chat but only works when logged in admin",,
+135355238990348288,djctavia,11/17/2018 8:41 PM,I think you can trick it with textalign mov3ax,,
+135355238990348288,djctavia,11/17/2018 8:43 PM,I don't exactly know if you have a: text-vertical: bottom,,
+456226577798135808,Deleted User,11/17/2018 8:45 PM,i guess i also can edit the line,,
+456226577798135808,Deleted User,11/17/2018 8:45 PM,line is string,,
+135355238990348288,djctavia,11/17/2018 8:49 PM,"You could too, but I really think the easy way is to find for text to start on bottom",,
+456226577798135808,Deleted User,11/17/2018 9:05 PM,is \r a thing there?,,
+135355238990348288,djctavia,11/17/2018 9:15 PM,Carriage return ?,,
+135355238990348288,djctavia,11/17/2018 9:16 PM,Don't know if that work,,
+456226577798135808,Deleted User,11/17/2018 9:27 PM,"ok i got it, but i got another issue now",,
+456226577798135808,Deleted User,11/17/2018 9:27 PM,when i change resolution,,
+456226577798135808,Deleted User,11/17/2018 9:27 PM,text may go off chat box,,
+135355238990348288,djctavia,11/17/2018 9:29 PM,Use % ?,,
+135355238990348288,djctavia,11/17/2018 9:30 PM,"I think you have set everything in pixel, but the best way for fit any screen is to set position and scale to %",,
+456226577798135808,Deleted User,11/17/2018 9:30 PM,in workbench?,https://cdn.discordapp.com/attachments/492295576470290433/513450789822529540/unknown.png,
+135355238990348288,djctavia,11/17/2018 9:30 PM,"Yeah, click on your widget, you will have 3 cubes",,
+135355238990348288,djctavia,11/17/2018 9:30 PM,"the 4 arrow on right, and second with ""resize""",,
+135355238990348288,djctavia,11/17/2018 9:30 PM,They have option for only have a % and not pixels,,
+456226577798135808,Deleted User,11/17/2018 9:32 PM,,https://cdn.discordapp.com/attachments/492295576470290433/513451280027615252/unknown.png,
+456226577798135808,Deleted User,11/17/2018 9:32 PM,that last one?,,
+456226577798135808,Deleted User,11/17/2018 9:32 PM,on the right side,,
+135355238990348288,djctavia,11/17/2018 9:32 PM,Yep,,
+135355238990348288,djctavia,11/17/2018 9:32 PM,with % on top and left,,
+135355238990348288,djctavia,11/17/2018 9:33 PM,You should do that on all of your widget,,
+456226577798135808,Deleted User,11/17/2018 9:35 PM,have i do that on second button aswell?,https://cdn.discordapp.com/attachments/492295576470290433/513452075599003651/unknown.png,
+135355238990348288,djctavia,11/17/2018 9:37 PM,Yes,,
+135355238990348288,djctavia,11/17/2018 9:37 PM,"Second is for size, third for placement",,
+135355238990348288,djctavia,11/17/2018 9:37 PM,And first is anchor btw (Guess you know 😂 ),,
+456226577798135808,Deleted User,11/17/2018 9:39 PM,yeah i know what first does xd,,
+456226577798135808,Deleted User,11/17/2018 9:41 PM,hmm,https://cdn.discordapp.com/attachments/492295576470290433/513453552807706624/unknown.png,
+456226577798135808,Deleted User,11/17/2018 9:41 PM,still same bug,,
+135355238990348288,djctavia,11/17/2018 9:49 PM,Try to check the box for wrapping text,,
+456226577798135808,Deleted User,11/17/2018 9:50 PM,there is no text wrap but i have enabled these parameters,https://cdn.discordapp.com/attachments/492295576470290433/513455989601730560/unknown.png,
+135355238990348288,djctavia,11/17/2018 9:52 PM,Totaly bottom there is not the option ?,,
+456226577798135808,Deleted User,11/17/2018 9:54 PM,i don't see that,,
+135355238990348288,djctavia,11/17/2018 9:54 PM,What is your widget ?,,
+456226577798135808,Deleted User,11/17/2018 9:57 PM,place where is messages is MultilineEditBoxWidget,,
+135355238990348288,djctavia,11/17/2018 10:02 PM,"NVM, you can use limit visible",,
+135355238990348288,djctavia,11/17/2018 10:02 PM,But that will cut text that out of box,,
+135355238990348288,djctavia,11/17/2018 10:02 PM,"I don't really know what you really want to do, but you can still add a scroll bar next to it",,
+135355238990348288,djctavia,11/17/2018 10:03 PM,"But I don't know how scroll bar work, maybe someone know, ask in #ui-ux-dayz ^^",,
+456226577798135808,Deleted User,11/17/2018 10:03 PM,"ok, anyway thanks for help",,🙁 (1)
+456226577798135808,Deleted User,11/17/2018 10:23 PM,Hey @Deleted User i have the airdrop mod installed...but i dont think its working?,,
+456226577798135808,Deleted User,11/17/2018 10:24 PM,i guess it should work,,
+456226577798135808,Deleted User,11/17/2018 10:24 PM,https://github.com/mov3ax/airdrop/blob/new/plugins/AirDrop.c#L78-L95 try update this code,,
+456226577798135808,Deleted User,11/17/2018 10:25 PM,line 78-95?,,
+456226577798135808,Deleted User,11/17/2018 10:28 PM,yes,,
+178870959216918529,.__zap__.,11/18/2018 2:12 AM,"Finally converted to RPCManager.  Feels soo good, thanks @Jacob_Mango",,
+207328818203983872,notabanana,11/18/2018 2:35 AM,@Zap Got an estimate of release time?,,
+178870959216918529,.__zap__.,11/18/2018 3:19 AM,@Not A Banana working hard my man.  aiming for two weeks.,,
+207328818203983872,notabanana,11/18/2018 3:19 AM,"Nice, very excited",,
+103498977588047872,.ceve,11/18/2018 3:25 AM,what are you working on?,,
+178870959216918529,.__zap__.,11/18/2018 3:26 AM,PvPEngine,,
+207328818203983872,notabanana,11/18/2018 3:27 AM,@ceve Do a search 'from: Zap#5976 In: showcase ',,
+207328818203983872,notabanana,11/18/2018 3:27 AM,He's making a really neat mod for deathmatch,,
+103498977588047872,.ceve,11/18/2018 3:28 AM,sounds nice 😃,,
+456226577798135808,Deleted User,11/18/2018 4:53 AM,is it possible to change zombie damage?,,
+120714283246944256,thepsilonnaught,11/18/2018 6:27 AM,"Anything is possible, except releasing DayZ",,
+241370201222938626,kegan.eth,11/18/2018 7:09 AM,https://hastebin.com/agiwaduvom.cpp,,
+241370201222938626,kegan.eth,11/18/2018 7:09 AM,Here is the workings of DoMove functionality for bots,,
+241370201222938626,kegan.eth,11/18/2018 7:09 AM,it does not do pathing or object collision detection,,
+241370201222938626,kegan.eth,11/18/2018 7:10 AM,but it will move to the target location and animate its rotations / turns,,
+241370201222938626,kegan.eth,11/18/2018 7:10 AM,http://ss.lystic.net/Uploads/kLCIgOBZ/8zVy8LZ5erx3nX5R.mp4,,
+241370201222938626,kegan.eth,11/18/2018 7:11 AM,video of animated turns,,
+241370201222938626,kegan.eth,11/18/2018 7:11 AM,they also swim 😄,,
+207328818203983872,notabanana,11/18/2018 7:11 AM,Cool shit 😮,,
+207328818203983872,notabanana,11/18/2018 7:11 AM,This just a little experiment or you planning on going further with this?,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,This is as far as I take it,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,The DoMove FSM state can be expanded,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,for collision detection and avoidence,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,or hooke dup to a proper pathing system,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,but im not doing all that,,
+241370201222938626,kegan.eth,11/18/2018 7:12 AM,"I got the groundwork done, someone else can expand it if they want",,
+135397703759691776,_ayano,11/18/2018 3:18 PM,Is there no way to access the logic behind zombies atm?,,
+135397703759691776,_ayano,11/18/2018 3:19 PM,"Or use any part of it like ""move to that location""?",,
+142181979905982464,dannydog,11/18/2018 3:19 PM,theres a SetTarget function i think in the zombie controller,,
+142181979905982464,dannydog,11/18/2018 3:19 PM,but afaik theres not much exposed on the ai side,,
+135397703759691776,_ayano,11/18/2018 3:20 PM,"hope they change that, would be dope to write custom AI for some purposes",,
+142181979905982464,dannydog,11/18/2018 3:20 PM,mhm they said they would think about it,,
+230061386888118273,.thurston,11/18/2018 3:20 PM,'mum' 😄,,
+142181979905982464,dannydog,11/18/2018 3:20 PM,dont hold ur breath tho,,
+135397703759691776,_ayano,11/18/2018 3:20 PM,"i wonder if AI driving vehicles is a thing they inherited from the previous engine, probably not functional anymore",,
+230061386888118273,.thurston,11/18/2018 3:20 PM,who doesn't love auto correct!,,
+142181979905982464,dannydog,11/18/2018 3:20 PM,maybe post 1.0 lol,,
+142181979905982464,dannydog,11/18/2018 3:20 PM,this aint arma tho,,
+334756290742190081,._corey,11/18/2018 3:20 PM,"@Kegan yo Kegan, thats nice",,
+142181979905982464,dannydog,11/18/2018 3:21 PM,why would they have so driving vehicles,,
+334756290742190081,._corey,11/18/2018 3:21 PM,because they are lazy asses,,
+142181979905982464,dannydog,11/18/2018 3:21 PM,that's their reasoning behind many things ^,,
+334756290742190081,._corey,11/18/2018 3:21 PM,and rather copy paste afunction,,
+334756290742190081,._corey,11/18/2018 3:21 PM,so maybe there is some spare functions in there from the older system,,
+142181979905982464,dannydog,11/18/2018 3:21 PM,not as simple as copy pasting mate,,
+135397703759691776,_ayano,11/18/2018 3:21 PM,"im pretty sure they didnt start from scratch with this engine build, they really only cut out what had to be replaced and replaced it",,
+334756290742190081,._corey,11/18/2018 3:21 PM,i absolutely know,,
+334756290742190081,._corey,11/18/2018 3:21 PM,just saying,,
+334756290742190081,._corey,11/18/2018 3:22 PM,"don't be suprised if you some stuff from arma implemented here, so that's why ai vehicles could be possible, who knows",,
+135397703759691776,_ayano,11/18/2018 3:22 PM,"so might be vehicle driving is still somewhere in the engine, functioning or not, but its definitely not something they will be giving care time anytime soon/within the next 10 years",,
+230061386888118273,.thurston,11/18/2018 3:22 PM,"I could be completely wrong, but i hear it has some parts of the A2:OA engine in it",,
+148370724900306944,jacob_mango,11/18/2018 3:22 PM,They didn't start from scratch of course,,
+334756290742190081,._corey,11/18/2018 3:22 PM,it is built on a2 oa @thurston  as i know,,
+148370724900306944,jacob_mango,11/18/2018 3:23 PM,They used Enforce Engine as the base and merged it with Real Virtuality 3.5 so it would be compatible with DayZ.,,
+230061386888118273,.thurston,11/18/2018 3:23 PM,"oh, is it? if that's the case, it sucks that they didn't retain the gunplay from it",,
+148370724900306944,jacob_mango,11/18/2018 3:24 PM,They had to rewrite significant parts of the engine and they also changed the animation system.,,
+135397703759691776,_ayano,11/18/2018 3:25 PM,"Well, I just hope that catering the game/engine to a more widespread use is something that is eventually up on the list sometime, if they don't have time to deliver it, Arma 4 will do that",,
+334756290742190081,._corey,11/18/2018 3:25 PM,yeah they did,,
+148370724900306944,jacob_mango,11/18/2018 3:25 PM,Plus I don't think it was in the developers goal to keep the 0.62 gunplay clunkyness,,
+334756290742190081,._corey,11/18/2018 3:25 PM,still waiting for that skeleton optimization that they promised,,
+334756290742190081,._corey,11/18/2018 3:25 PM,where they said they will decrease the bone count from 200+ to around 20,,
+148370724900306944,jacob_mango,11/18/2018 3:25 PM,They did that?,,
+334756290742190081,._corey,11/18/2018 3:25 PM,did they? like how,,
+148370724900306944,jacob_mango,11/18/2018 3:25 PM,It's only for distant objects,,
+334756290742190081,._corey,11/18/2018 3:25 PM,ah alright,,
+334756290742190081,._corey,11/18/2018 3:26 PM,thought its gonna be for the player skeleton itself,,
+148370724900306944,jacob_mango,11/18/2018 3:26 PM,Nah,,
+334756290742190081,._corey,11/18/2018 3:26 PM,twentyish bones are damn low amount,,
+148370724900306944,jacob_mango,11/18/2018 3:26 PM,It was just for infected,,
+148370724900306944,jacob_mango,11/18/2018 3:26 PM,So when they were say 200m from the closest player not every bone was being updated,,
+148370724900306944,jacob_mango,11/18/2018 3:27 PM,As no player would see it,,
+148370724900306944,jacob_mango,11/18/2018 3:27 PM,Also past 500m the infected are client side,,
+148370724900306944,jacob_mango,11/18/2018 3:27 PM,Meaning They aren't updated on the server,,
+148370724900306944,jacob_mango,11/18/2018 3:28 PM,"So the client just says ""here, let's play idle animations""",,
+334756290742190081,._corey,11/18/2018 3:28 PM,yeah understand,,
+241370201222938626,kegan.eth,11/18/2018 7:09 PM,im 100% sure they have to include some Ai logic in the full release,,
+208239246148894720,teaobvious,11/18/2018 7:11 PM,then we do arma mod for dayz :<,,
+230061386888118273,.thurston,11/18/2018 7:12 PM,...life mods here we come 🙄,,
+208239246148894720,teaobvious,11/18/2018 7:12 PM,do life mods need ai?,,
+241370201222938626,kegan.eth,11/18/2018 7:12 PM,@TeaObvious  why do u think i wrote domove 🤔,,
+241370201222938626,kegan.eth,11/18/2018 7:12 PM,xd,,
+208239246148894720,teaobvious,11/18/2018 7:12 PM,😛,,
+230061386888118273,.thurston,11/18/2018 7:12 PM,"i mean, it requires NPCs for the shops, etc",,
+208239246148894720,teaobvious,11/18/2018 7:12 PM,"i thought the idea behind life mods is, that they are easy and cheap to make without much work",,
+208239246148894720,teaobvious,11/18/2018 7:13 PM,sure but these npcs don't need to be animated,,
+241370201222938626,kegan.eth,11/18/2018 7:13 PM,My original goal no joke,,
+241370201222938626,kegan.eth,11/18/2018 7:13 PM,was just to make it so the AI would head track the player,,
+241370201222938626,kegan.eth,11/18/2018 7:13 PM,but it was easier to make him walk,,
+241370201222938626,kegan.eth,11/18/2018 7:13 PM,🤔,,
+208239246148894720,teaobvious,11/18/2018 7:13 PM,😄,,
+456226577798135808,Deleted User,11/18/2018 7:47 PM,Is there a daytime script?🤔,,
+456226577798135808,Deleted User,11/18/2018 7:59 PM,is there any way to detect file extension?,,
+241370201222938626,kegan.eth,11/18/2018 8:21 PM,@Deleted User  we added random times to the latest version of BR (our stable branch).,,
+241370201222938626,kegan.eth,11/18/2018 8:22 PM,"```
+        //Set Random Time
+        int year = 2018;
+        int month = 12;
+        int day = 24;
+        int hour = Math.RandomIntInclusive(8,17); //7am to 5pm
+        int minute = 0;
+        GetGame().GetWorld().SetDate(year, month, day, hour, minute);
+
+```",,
+241370201222938626,kegan.eth,11/18/2018 8:22 PM,its 8am to 5pm but ya,,
+456226577798135808,Deleted User,11/18/2018 8:40 PM,@Kegan Let me try to integrate than on our config.,,
+456226577798135808,Deleted User,11/18/2018 8:40 PM,Thanks,,
+334756290742190081,._corey,11/18/2018 9:12 PM,@Kegan  hey Kegan,,
+334756290742190081,._corey,11/18/2018 9:12 PM,can i ask you how you got those AIs to move?,,
+334756290742190081,._corey,11/18/2018 9:12 PM,i want to create a waypoint system,,
+241370201222938626,kegan.eth,11/18/2018 9:17 PM,I built a custom HFSM for them,,
+241370201222938626,kegan.eth,11/18/2018 9:18 PM,"The code url is above, here it is @Corey",,
+241370201222938626,kegan.eth,11/18/2018 9:18 PM,https://hastebin.com/agiwaduvom.cpp,,
+241370201222938626,kegan.eth,11/18/2018 9:18 PM,let me grab the way I tested it,,
+334756290742190081,._corey,11/18/2018 9:18 PM,alright thanks i didn't look i was on phone,,
+241370201222938626,kegan.eth,11/18/2018 9:18 PM,np,,
+241370201222938626,kegan.eth,11/18/2018 9:19 PM,Here is how I constructed the bots,,
+241370201222938626,kegan.eth,11/18/2018 9:19 PM,"```
+                Object mirek = GetGame().CreateObject(""SurvivorM_Mirek"", GetGame().GetPlayer().GetPosition(), false, false, true);
+                Object eva = GetGame().CreateObject(""SurvivorF_Eva"", GetGame().GetPlayer().GetPosition(), false, true, true);
+                if(mirek.IsInherited(PlayerBase))
+                {
+                    PlayerBase mirekPB = PlayerBase.Cast( mirek );
+                    m_MirekBot = new ImprovedBot(mirekPB);
+                    m_MirekBot.Start(false/*, new MyBotTrigger(mirekPB)*/);
+                    Print(""MIREK BOT"");
+                }
+                else
+                {
+                    Print(""MIREK FAIL"");
+                }
+                if(eva.IsInherited(PlayerBase))
+                {
+                    PlayerBase evaPB = PlayerBase.Cast( eva );
+                    m_EvaBot = new ImprovedBot(evaPB);
+                    m_EvaBot.Start(false/*, new MyBotTrigger(evaPB)*/);
+                    Print(""EVA BOT"");
+                }
+                else
+                {
+                    Print(""EVA FAIL"");
+                }
+```",,
+241370201222938626,kegan.eth,11/18/2018 9:19 PM,"The bot requires this to be run in an onUpdate function
+```
+        if(m_MirekBot)
+        {
+            m_MirekBot.OnUpdate(timeslice);
+        }
+        if(m_EvaBot)
+        {
+            m_EvaBot.OnUpdate(timeslice);
+        }
+```",,
+241370201222938626,kegan.eth,11/18/2018 9:19 PM,"Then it is just
+
+```
+                m_MirekBot.DoMove(GetCursorPos(), true, 3);
+                m_EvaBot.DoMove(GetCursorPos(), true, 1);
+```",,
+241370201222938626,kegan.eth,11/18/2018 9:20 PM,"Position, Force movement Speed, Movement Speed",,
+334756290742190081,._corey,11/18/2018 9:20 PM,this is some next gen shit,,
+334756290742190081,._corey,11/18/2018 9:20 PM,very nice,,
+241370201222938626,kegan.eth,11/18/2018 9:20 PM,"If you don't force a movement speed, they will run until they are 10m away, jog for another 5, and walk the remaining 5",,
+334756290742190081,._corey,11/18/2018 9:20 PM,could make a traderzone more immersive with actual guards moving around,,
+241370201222938626,kegan.eth,11/18/2018 9:21 PM,"Yep, if you know the exact paths you want them to walk, you can monitor the Bot's state for their IDLE state and move them to waypoint coords",,
+334756290742190081,._corey,11/18/2018 9:21 PM,"any idea how to make them, non collidable / killable? i was trying to disable simulation on created AIs but didnt make any progress",,
+241370201222938626,kegan.eth,11/18/2018 9:21 PM,allowDamage might be fixed,,
+241370201222938626,kegan.eth,11/18/2018 9:21 PM,"Also I have not tested this on a server, the SetDirection calls may desync or cause network lag",,
+334756290742190081,._corey,11/18/2018 9:22 PM,"also, would be good if you could disable hit reaction",,
+334756290742190081,._corey,11/18/2018 9:22 PM,"cuz if you heavy punch an ""NPC"" they move around",,
+241370201222938626,kegan.eth,11/18/2018 9:22 PM,"True, soemone could punch a bot into a position where it couldnt move from",,
+334756290742190081,._corey,11/18/2018 9:22 PM,"or even if you just make a stationary bot, they can punch him around",,
+334756290742190081,._corey,11/18/2018 9:23 PM,and i added my trader open as an action to characters,,
+334756290742190081,._corey,11/18/2018 9:23 PM,so its not good,,
+241370201222938626,kegan.eth,11/18/2018 9:23 PM,How did you do that action?,,
+241370201222938626,kegan.eth,11/18/2018 9:23 PM,"I would like to make it so the bots roam around a ""trader zone"" and people can walk up and Press F to make them stop, turn to face them, and *trade*",,
+334756290742190081,._corey,11/18/2018 9:24 PM,"i recreated a character using config, and added the actions to it",,
+241370201222938626,kegan.eth,11/18/2018 9:24 PM,And they animate?,,
+334756290742190081,._corey,11/18/2018 9:24 PM,"yeah, they are like your character",,
+241370201222938626,kegan.eth,11/18/2018 9:24 PM,bretty nice,,
+334756290742190081,._corey,11/18/2018 9:24 PM,it just has a custom classname and interactions,,
+241370201222938626,kegan.eth,11/18/2018 9:24 PM,I'll work on a proof of concept advanced trader AI,,
+334756290742190081,._corey,11/18/2018 9:25 PM,i was thinking about making a player-based economy,,
+334756290742190081,._corey,11/18/2018 9:25 PM,where the whole economy of the server is controlled by players,,
+241370201222938626,kegan.eth,11/18/2018 9:25 PM,"something like
+
+```
+m_WalkingTadeBot.AddWaypoint(position);
+m_WalkingTadeBot.AddWaypoint(position);
+m_WalkingTadeBot.AddWaypoint(position);
+m_WalkingTadeBot.AddWaypoint(position);
+m_WalkingTradeBot.BeginMovement();
+```",,
+241370201222938626,kegan.eth,11/18/2018 9:25 PM,with press F to stop and shop,,
+334756290742190081,._corey,11/18/2018 9:26 PM,"so if you go to the trader zone, you put your items into the ""vault"" for a price, other players can buy it",,
+334756290742190081,._corey,11/18/2018 9:26 PM,"i already got the whole thing written down as the idea and how should it work, i just have to code it",,
+334756290742190081,._corey,11/18/2018 9:26 PM,but a bit lazy to do it rn,,
+334756290742190081,._corey,11/18/2018 9:27 PM,"i was thinking about making a waypoint creator for NPCs, that saves them into a file or something",,
+334756290742190081,._corey,11/18/2018 9:27 PM,so its easy to add to an NPC,,
+334756290742190081,._corey,11/18/2018 9:27 PM,and just scan between positions untill npc reaches A then move To B etc etc,,
+241370201222938626,kegan.eth,11/18/2018 9:28 PM,"```
+if(m_FSM.GetCurrentState() == m_Move)
+        {
+            if(vector.Distance(GetPlayerOwner().GetPosition(), m_Target) < 2)
+            {
+                ProcessEvent(__TargetReached__); //we have reached our destination. transition back to idle
+            }
+        }
+```",,
+241370201222938626,kegan.eth,11/18/2018 9:28 PM,My bot has this,,
+241370201222938626,kegan.eth,11/18/2018 9:29 PM,which says when it has reached a destination,,
+241370201222938626,kegan.eth,11/18/2018 9:29 PM,I would just change this so it updates the target to the next waypoint,,
+241370201222938626,kegan.eth,11/18/2018 9:29 PM,but im going to redo the AI fsm I think for this,,
+241370201222938626,kegan.eth,11/18/2018 9:29 PM,would require more events and logic,,
+334756290742190081,._corey,11/18/2018 9:30 PM,yeah,,
+334756290742190081,._corey,11/18/2018 9:30 PM,already quite decent,,
+207328818203983872,notabanana,11/19/2018 12:26 AM,"@thurston ```i mean, it requires NPCs for the shops, etc``` Life doesnt use AI does it?",,
+207328818203983872,notabanana,11/19/2018 12:26 AM,"They just plop down a dummy and attach a menu to it, dont they? Been years since I touched a life mod though, because they run like shit and are filled with kids",,
+334756290742190081,._corey,11/19/2018 12:27 AM,yeah but thats arma,,
+334756290742190081,._corey,11/19/2018 12:27 AM,and in DayZ normal characters has a T-pose,,
+334756290742190081,._corey,11/19/2018 12:27 AM,"and also in arma they animate the traders somehow, so they are actual Ai characters",,
+207328818203983872,notabanana,11/19/2018 12:28 AM,They do animate them? That's neat. I havent played more than 5 minutes of arma 3 life. In arma 2 they just slapped down a player model without ai,,
+207328818203983872,notabanana,11/19/2018 12:28 AM,Also dayz dummy characters dont tpose,,
+207328818203983872,notabanana,11/19/2018 12:29 AM,They idle animate fine,,
+334756290742190081,._corey,11/19/2018 12:29 AM,are there dummy characters in dayz?,,
+334756290742190081,._corey,11/19/2018 12:29 AM,have no idea how to place them,,
+207328818203983872,notabanana,11/19/2018 12:29 AM,,https://cdn.discordapp.com/attachments/492295576470290433/513858327877255198/20181118172910_1.jpg,
+207328818203983872,notabanana,11/19/2018 12:29 AM,SurvivorM_Mirek,,
+334756290742190081,._corey,11/19/2018 12:30 AM,try heavy punch it,,
+207328818203983872,notabanana,11/19/2018 12:31 AM,Works,,
+207328818203983872,notabanana,11/19/2018 12:31 AM,They die too,,
+334756290742190081,._corey,11/19/2018 12:31 AM,yeah,,
+334756290742190081,._corey,11/19/2018 12:31 AM,thats the problem,,
+207328818203983872,notabanana,11/19/2018 12:31 AM,Well you could easily make it immortal,,
+334756290742190081,._corey,11/19/2018 12:31 AM,but how you make it not collide with punches,,
+334756290742190081,._corey,11/19/2018 12:31 AM,cuz thats the only problem that i couldnt solve yet,,
+207328818203983872,notabanana,11/19/2018 12:32 AM,"Could make it get moved back into position if moved, but thats hacky. Im sure its doable to make it not react to hits, I just havent looked at all",,
+334756290742190081,._corey,11/19/2018 12:33 AM,"yeah, we could set its position back if moved, but thats like useless threads on the server",,
+334756290742190081,._corey,11/19/2018 12:33 AM,or just kill the player if he punches it but thats junk way to do it,,
+239201186933112833,da0ne_,11/19/2018 12:41 AM,You can make a box around the trader,,
+239201186933112833,da0ne_,11/19/2018 12:41 AM,Check gameplay.c for some collision box commands,,
+334756290742190081,._corey,11/19/2018 12:45 AM,oooooooh rightt i didnt think about that,,
+334756290742190081,._corey,11/19/2018 12:46 AM,box has to be quite big cuz idk if you can punch throught it,,
+239201186933112833,da0ne_,11/19/2018 12:48 AM,Make it Thicc,,
+239201186933112833,da0ne_,11/19/2018 12:48 AM,Extra Thieeec,,
+334756290742190081,._corey,11/19/2018 12:48 AM,ooh but wait,,
+334756290742190081,._corey,11/19/2018 12:49 AM,collisions block actions as well,,
+334756290742190081,._corey,11/19/2018 12:49 AM,sheit,,
+239201186933112833,da0ne_,11/19/2018 12:49 AM,Add the action to the box 😛,,
+334756290742190081,._corey,11/19/2018 12:49 AM,"well, gonna add the action to the box",,
+334756290742190081,._corey,11/19/2018 12:49 AM,yeah,,
+239201186933112833,da0ne_,11/19/2018 12:49 AM,Or make the trigger action via position,,
+128970383192883201,stove#8547,11/19/2018 12:49 AM,corey,,
+128970383192883201,stove#8547,11/19/2018 12:49 AM,maybe surround the trader guy in props,,
+128970383192883201,stove#8547,11/19/2018 12:49 AM,or like a trading stand,,
+334756290742190081,._corey,11/19/2018 12:50 AM,yeah that was the first thing i wanted to do after found out i could punch them,,
+239201186933112833,da0ne_,11/19/2018 12:50 AM,God I wish AttachTo was still a thing...,,
+128970383192883201,stove#8547,11/19/2018 12:50 AM,yep,,
+128970383192883201,stove#8547,11/19/2018 12:50 AM,good luck,,
+128970383192883201,stove#8547,11/19/2018 12:50 AM,cant wait for a trader mod 😃,,
+239201186933112833,da0ne_,11/19/2018 12:51 AM,Well I’m not sure about this but when I spawn a player on the server it has no hit reactions when you punch it,,
+239201186933112833,da0ne_,11/19/2018 12:51 AM,Try making your player entity via CreateObject? About the health....not sure don’t have a good godmode method atm,,
+334756290742190081,._corey,11/19/2018 12:52 AM,createobject has hit reaction,,
+334756290742190081,._corey,11/19/2018 12:52 AM,thats what i used,,
+239201186933112833,da0ne_,11/19/2018 12:53 AM,Are you casting the entity to PlayerBase?,,
+239201186933112833,da0ne_,11/19/2018 12:53 AM,If so...try without,,
+334756290742190081,._corey,11/19/2018 12:54 AM,of course not,,
+334756290742190081,._corey,11/19/2018 12:54 AM,dont want to run a useless playerbase,,
+239201186933112833,da0ne_,11/19/2018 12:54 AM,Btw wtf is your avatar pic lol,,
+334756290742190081,._corey,11/19/2018 1:02 AM,me with my papa,,
+190975358684626945,skcody,11/19/2018 1:15 AM,"quick question for yall while your on the topic, whats the command to add actions to an object?",,
+103498977588047872,.ceve,11/19/2018 1:16 AM,"CreateObject(""type"") - how does it know which class it should create?",,
+103498977588047872,.ceve,11/19/2018 1:21 AM,"in this case, I want to create an object but want it to be a certain class so I can set some custom properties on it",,
+190975358684626945,skcody,11/19/2018 1:23 AM,"?
+```c
+Class.CastTo()
+```",,
+103498977588047872,.ceve,11/19/2018 1:28 AM,"but if I for example use it in action targeting, can I get these properties again?",,
+209036247715414016,wschlesner,11/19/2018 1:30 AM,I'm trying to make it so when players spawn in it chooses a random class that I will create. Where do I change the files for this and does anyone have a standard guide for this? Thanks,,
+103498977588047872,.ceve,11/19/2018 1:30 AM,"```MyAwesomeZombie zombie;
+        
+        Object obj = GetGame().CreateObject( ""ZmbM_HunterOld_Winter"", ""8526.65 6.78444 2475.18"", false );
+        Class.CastTo(zombie, obj);
+
+        zombie.IsAwesome = true;```",,
+103498977588047872,.ceve,11/19/2018 1:32 AM,"```override bool ActionCondition( PlayerBase player, ActionTarget target, ItemBase item )
+    {    
+        Object targetObject = target.GetObject();
+        Zombie zombie;
+        Class.CastTo(zombie, obj);
+
+        if ( zombie && zombie.IsAwesome ) 
+        {
+            return true;
+        }
+    }```",,
+103498977588047872,.ceve,11/19/2018 1:32 AM,I hope it makes sense 😄,,
+142181979905982464,dannydog,11/19/2018 1:33 AM,you can just extend the entity and use that class,,
+142181979905982464,dannydog,11/19/2018 1:34 AM,ie: class myawesomezombie extends ZombieBase,,
+142181979905982464,dannydog,11/19/2018 1:34 AM,should work unless im forgetting the requirements for config.cpp as well,,
+103498977588047872,.ceve,11/19/2018 1:36 AM,"yeah thats essentialy what I do, but I want to set IsAwesome = true; on the server",,
+103498977588047872,.ceve,11/19/2018 1:36 AM,and get IsAwesome == true when doing ActionCondition,,
+142181979905982464,dannydog,11/19/2018 1:36 AM,u need to manually sync that data,,
+142181979905982464,dannydog,11/19/2018 1:36 AM,I believe there are ways to do that without requiring manually doing rpcs,,
+142181979905982464,dannydog,11/19/2018 1:36 AM,but no one here has explored that yet,,
+142181979905982464,dannydog,11/19/2018 1:37 AM,I believe it's something like SetSynchData or something,,
+103498977588047872,.ceve,11/19/2018 1:37 AM,"yeah, I'm wondering how you sync the properties of custom made objects",,
+142181979905982464,dannydog,11/19/2018 1:37 AM,check some of the existing items i believe it's spotlight? it has certain variables it syncs over client,,
+334756290742190081,._corey,11/19/2018 1:39 AM,in actioncondition root,,
+334756290742190081,._corey,11/19/2018 1:39 AM,return false;,,
+190975358684626945,skcody,11/19/2018 1:39 AM,"@Randy you can do something along the lines of this
+```c
+int myrdmNum = Math.RandomInt(0, 4);
+switch (myrdmNum)
+{
+    case 0: your class stuff;
+    case 1: your class stuff;
+    case 2: your class stuff;
+    case 3: your class stuff;
+    case 4: your class stuff;
+}
+```?",,
+190975358684626945,skcody,11/19/2018 1:39 AM,is that what you were asking,,
+103498977588047872,.ceve,11/19/2018 1:41 AM,is GetCompEM() the magic stuff?,,
+142181979905982464,dannydog,11/19/2018 1:42 AM,nah,,
+103498977588047872,.ceve,11/19/2018 1:42 AM,oh wait no energy manager nvm 😄,,
+142181979905982464,dannydog,11/19/2018 1:42 AM,basically seems like certain items requiring energy sync the variable m_energy,,
+142181979905982464,dannydog,11/19/2018 1:42 AM,search that,,
+142181979905982464,dannydog,11/19/2018 1:43 AM,see if u can find it to the example i mean,,
+103498977588047872,.ceve,11/19/2018 1:43 AM,aha maybe RegisterNetSyncVariableFloat,,
+142181979905982464,dannydog,11/19/2018 1:44 AM,yep,,
+103498977588047872,.ceve,11/19/2018 1:45 AM,interesting,,
+148370724900306944,jacob_mango,11/19/2018 1:47 AM,"last time I tried that didn't work but that was for the first experimental update when we got the server files and the internal documentation for it said ""NOT IMPLEMENTED"". could be now though",,
+209036247715414016,wschlesner,11/19/2018 1:48 AM,"@[SK] Cody Yes, that is what I'm looking for. Where would I place this snippet of code? Do you also have the snippet of code that goes into the class section?",,
+103498977588047872,.ceve,11/19/2018 1:49 AM,it looks interesting,,
+103498977588047872,.ceve,11/19/2018 1:49 AM,going to test,,
+142181979905982464,dannydog,11/19/2018 1:49 AM,:ok_hand:,,
+190975358684626945,skcody,11/19/2018 1:52 AM,@Randy would this be for a new player when they die/join for the first time? or everytime they join the server no matter what?,,
+209036247715414016,wschlesner,11/19/2018 1:53 AM,@[SK] Cody It would be for when they join and die. I'm changing spawns around so I can make a small PvP server for some friends to PvP each other,,
+190975358684626945,skcody,11/19/2018 2:04 AM,"well if your just changing spawns around, change this in the create character method
+```c
+vector getRandomPos()
+{
+    TVectorArray positions = {""15135.1 0 13901.1"", ""15017.8 0 13892.4"", ""14887.1 0 14547.9""};
+    int num = Math.RandomInt(0, positions.Count());
+    return positions[num];
+}
+
+override PlayerBase CreateCharacter(PlayerIdentity identity, vector pos, ParamsReadContext ctx, string characterName)
+{
+    Entity playerEnt;
+    playerEnt = GetGame().CreatePlayer(identity, characterName, getRandomPos(), 0, ""NONE"");//Creates random player
+    Class.CastTo(m_player, playerEnt);
+        
+    GetGame().SelectPlayer(identity, m_player);
+        
+    return m_player;
+}
+```",,
+241370201222938626,kegan.eth,11/19/2018 3:54 AM,waiot,,
+241370201222938626,kegan.eth,11/19/2018 3:54 AM,@DaOne(Mark),,
+241370201222938626,kegan.eth,11/19/2018 3:54 AM,it doesn't automatically generate the object with a playerbase class attached?,,
+241370201222938626,kegan.eth,11/19/2018 3:54 AM,It only creates and hooks it up when its casted?,,
+241370201222938626,kegan.eth,11/19/2018 3:54 AM,That can't be correct,,
+239201186933112833,da0ne_,11/19/2018 4:02 AM,"no, it should",,
+239201186933112833,da0ne_,11/19/2018 4:02 AM,but in some cases you gotta cast to base class,,
+239201186933112833,da0ne_,11/19/2018 4:03 AM,or else in logs you get a punch of errors about improper casting and missing functions,,
+87349760389844992,shu1738,11/19/2018 7:54 AM,@Deleted User the airdrops currently do work but no message is given in chat. any idea to fix this?,,
+148370724900306944,jacob_mango,11/19/2018 8:05 AM,"```java
+static void Message( Man man, string txt ) 
+{
+    if ( GetGame().IsServer() && GetGame().IsMultiplayer() )
+    {
+        GetGame().RPCSingleParam(man, ERPCs.RPC_USER_ACTION_MESSAGE, new Param1<string>(txt), false, man.GetIdentity());
+    } else 
+    {
+        GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, """", txt, """"));
+    }
+}
+```",,
+148370724900306944,jacob_mango,11/19/2018 8:06 AM,use that for sending messages assembly commands person,,
+148370724900306944,jacob_mango,11/19/2018 8:06 AM,i mean @Deleted User,,
+148370724900306944,jacob_mango,11/19/2018 8:06 AM,😛,,
+230061386888118273,.thurston,11/19/2018 9:39 AM,@Kegan https://twitter.com/DayZ/status/1064437882444808192,,
+230061386888118273,.thurston,11/19/2018 9:40 AM,Looks like they're not going to be extending the AI logic,,
+239201186933112833,da0ne_,11/19/2018 9:57 AM,Yea it’s a nope for sure because then it would take another 5 years to finish the game,,😄 (1)
+241370201222938626,kegan.eth,11/19/2018 10:06 AM,L m a o,,
+241370201222938626,kegan.eth,11/19/2018 10:06 AM,Well,,
+241370201222938626,kegan.eth,11/19/2018 10:06 AM,I guess I am building KeganAI,,
+241370201222938626,kegan.eth,11/19/2018 10:07 AM,@thurston  @DaOne(Mark),,
+230061386888118273,.thurston,11/19/2018 10:07 AM,KAI for short lmao,,
+230061386888118273,.thurston,11/19/2018 10:07 AM,Always give your AI a name 😄,,
+241370201222938626,kegan.eth,11/19/2018 10:07 AM,lmao,,
+241370201222938626,kegan.eth,11/19/2018 10:08 AM,Its really not that hard,,
+241370201222938626,kegan.eth,11/19/2018 10:08 AM,Just need a sick path calculation,,
+241370201222938626,kegan.eth,11/19/2018 10:08 AM,and its good,,
+241370201222938626,kegan.eth,11/19/2018 10:08 AM,my next Ai movement system will include waypoints,,
+241370201222938626,kegan.eth,11/19/2018 10:08 AM,"If someone can figure out, from one point to another, a way to generate path waypoints, bam done",,
+241370201222938626,kegan.eth,11/19/2018 10:10 AM,http://ss.lystic.net/Uploads/VbGOeIIc/Jp69ynoSZuUGNc6B.png,,
+239201186933112833,da0ne_,11/19/2018 10:10 AM,nice,,
+241370201222938626,kegan.eth,11/19/2018 10:10 AM,example of pathing,,
+230061386888118273,.thurston,11/19/2018 10:10 AM,already done!,,
+239201186933112833,da0ne_,11/19/2018 10:10 AM,we got a map bois,,
+230061386888118273,.thurston,11/19/2018 10:10 AM,just use that as pathing!,,
+230061386888118273,.thurston,11/19/2018 10:10 AM,lmao,,
+239201186933112833,da0ne_,11/19/2018 10:11 AM,define red circle as bot define orange cross as destination . gg to ez,,
+241370201222938626,kegan.eth,11/19/2018 10:11 AM,buildings have path lods right?,,
+230061386888118273,.thurston,11/19/2018 10:11 AM,uhhhh,,
+230061386888118273,.thurston,11/19/2018 10:11 AM,that i'm not sure on,,
+148370724900306944,jacob_mango,11/19/2018 10:11 AM,it was always known they won't expand AI logic for that purpose,,
+239201186933112833,da0ne_,11/19/2018 10:11 AM,path lods for what?,,
+148370724900306944,jacob_mango,11/19/2018 10:11 AM,what is unknown is if they will expose the navmesh for us to use,,
+241370201222938626,kegan.eth,11/19/2018 10:11 AM,For zombies for example,,
+239201186933112833,da0ne_,11/19/2018 10:11 AM,no the nav mesh is generated when the map is fully loaded,,
+239201186933112833,da0ne_,11/19/2018 10:12 AM,"cuz when u place a server obj, the zed will just YOOONIK walk thru it",,
+148370724900306944,jacob_mango,11/19/2018 10:12 AM,no?,,
+148370724900306944,jacob_mango,11/19/2018 10:12 AM,it can be updated in realtime,,
+148370724900306944,jacob_mango,11/19/2018 10:12 AM,there is a function for updating the navmesh in realtime,,
+148370724900306944,jacob_mango,11/19/2018 10:12 AM,base building uses it,,
+239201186933112833,da0ne_,11/19/2018 10:12 AM,"it was not like that back in 62, guess its chnaged",,
+148370724900306944,jacob_mango,11/19/2018 10:12 AM,COM doesn't use it yet though,,
+239201186933112833,da0ne_,11/19/2018 10:13 AM,@Kegan try to start off with raycasting,,
+239201186933112833,da0ne_,11/19/2018 10:13 AM,see where u would get with taht,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,psh,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,im not doing that yet,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,not pathing,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,i want to add other ai functionality,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,"for example, @Jacob_Mango  does the SetAimChangeX/Y",,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,is that for weapons,,
+148370724900306944,jacob_mango,11/19/2018 10:14 AM,i believe so,,
+241370201222938626,kegan.eth,11/19/2018 10:14 AM,like can I use it to have an ai aim at a target,,
+148370724900306944,jacob_mango,11/19/2018 10:15 AM,"but you have to do some kind of magic with it since it is the change in aim, not setting the actual aim position",,
+241370201222938626,kegan.eth,11/19/2018 10:15 AM,Is there functionality to force fire a weapon,,
+148370724900306944,jacob_mango,11/19/2018 10:15 AM,yea,,
+239201186933112833,da0ne_,11/19/2018 10:15 AM,check weapon FSM,,
+241370201222938626,kegan.eth,11/19/2018 10:15 AM,Where is the weapon fsm,,
+241370201222938626,kegan.eth,11/19/2018 10:15 AM,I am starting work but ill be off in 8 hours to take a look,,
+241370201222938626,kegan.eth,11/19/2018 10:16 AM,good ole 4am can't sleep starting work,,
+148370724900306944,jacob_mango,11/19/2018 10:17 AM,,https://cdn.discordapp.com/attachments/492295576470290433/514006185829990411/unknown.png,
+148370724900306944,jacob_mango,11/19/2018 10:17 AM,should work,,
+241370201222938626,kegan.eth,11/19/2018 10:17 AM,nice,,
+148370724900306944,jacob_mango,11/19/2018 10:17 AM,it's what the weapon fsm does,,
+239201186933112833,da0ne_,11/19/2018 10:17 AM,"it works, bind it to a key that hold 50 AKMS",,
+241370201222938626,kegan.eth,11/19/2018 10:17 AM,I want to rebuild the standard arma 3 AI logic,,
+239201186933112833,da0ne_,11/19/2018 10:17 AM,lets see what happens,,
+241370201222938626,kegan.eth,11/19/2018 10:18 AM,One thing I wanted to do with dayzbr was have ai guarding things like helicrashes,,
+148370724900306944,jacob_mango,11/19/2018 10:18 AM,"talking about arma 3, are you allowed to put a paypal link in workshop?",,
+241370201222938626,kegan.eth,11/19/2018 10:18 AM,no idea,,
+241370201222938626,kegan.eth,11/19/2018 10:18 AM,ive never seen it,,
+239201186933112833,da0ne_,11/19/2018 10:18 AM,i think u can,,
+241370201222938626,kegan.eth,11/19/2018 10:18 AM,but i don't think anything is against it,,
+239201186933112833,da0ne_,11/19/2018 10:18 AM,i have seen it wit gmod,,
+230061386888118273,.thurston,11/19/2018 10:18 AM,"i mean, steam allows it and theres nothing saying you cant",,
+148370724900306944,jacob_mango,11/19/2018 10:18 AM,"also, i heard bad things about AI in arma 3 atleast compared to arma 2",,
+148370724900306944,jacob_mango,11/19/2018 10:18 AM,ahh yeah nice,,
+241370201222938626,kegan.eth,11/19/2018 10:19 AM,Well its not like the doMove functionality or anything like that is exposed,,
+241370201222938626,kegan.eth,11/19/2018 10:19 AM,so id be building it from a user perspective and not code,,
+241370201222938626,kegan.eth,11/19/2018 10:20 AM,Will open source it on gitlab,,
+239201186933112833,da0ne_,11/19/2018 10:22 AM,"@Kegan wanna get a team of Russians for 50$ to work back the exe and find core functionality LUL
+find out how they do zeds",,
+148370724900306944,jacob_mango,11/19/2018 10:23 AM,even if you do that the only way to expose those functions to script would be supplying a dll injector to the server which I highly doubt BI here would like.,,
+239201186933112833,da0ne_,11/19/2018 10:23 AM,just a meme,,
+241370201222938626,kegan.eth,11/19/2018 10:23 AM,Not tru,,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,xinput,,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,xd,,
+148370724900306944,jacob_mango,11/19/2018 10:24 AM,"yes, injecting...",,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,thats not injecting,,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,if the process willingly loads the assembly,,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,its not an injection,,
+241370201222938626,kegan.eth,11/19/2018 10:24 AM,"besides, that is what i am going to do for BR",,
+241370201222938626,kegan.eth,11/19/2018 10:25 AM,"If BI has a problem with it, they should have supplied callExtension functionality",,
+239201186933112833,da0ne_,11/19/2018 10:25 AM,"callExtension is a thing, since 61.",,
+148370724900306944,jacob_mango,11/19/2018 10:25 AM,they should expose CURL (it's already in the game) and expose the nav mesh,,
+239201186933112833,da0ne_,11/19/2018 10:25 AM,but not sure why they stopped it,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,They need to expose curl so i can add api requests from clients,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,for leaderboards data and twitch streams,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,directly from the main menu,,
+230061386888118273,.thurston,11/19/2018 10:26 AM,Imagine BR with twitch integration,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,the second we get cURL,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,we are doign that,,
+239201186933112833,da0ne_,11/19/2018 10:26 AM,i think in terms of zombie pathing and navmesh they would only let us generate new ones. thats about it,,
+230061386888118273,.thurston,11/19/2018 10:26 AM,"meaning viewers can select where the zone is, etc",,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,Oh,,
+241370201222938626,kegan.eth,11/19/2018 10:26 AM,Even better,,
+239201186933112833,da0ne_,11/19/2018 10:27 AM,oh dang,,
+239201186933112833,da0ne_,11/19/2018 10:27 AM,thinking ahead now boi,,
+230061386888118273,.thurston,11/19/2018 10:27 AM,😃,,
+239201186933112833,da0ne_,11/19/2018 10:28 AM,@Kegan did you ever get to figure out/stop the server from kicking client wo has no player attached upon connect ?,,
+171235844693295105,Platyy#6875,11/19/2018 10:29 AM,I mean you don't need to wait for cURL to be exposed 🤔,,
+241370201222938626,kegan.eth,11/19/2018 10:29 AM,Took me a second to understand what you just said,,
+241370201222938626,kegan.eth,11/19/2018 10:29 AM,but no,,
+241370201222938626,kegan.eth,11/19/2018 10:29 AM,I haven't,,
+239201186933112833,da0ne_,11/19/2018 10:29 AM,😦,,
+230061386888118273,.thurston,11/19/2018 10:31 AM,"Damn (sorry to go OT for a sec), but Mikero is going ham on this - https://thurston.pw/Mikero%27s_Dayz_Tools",,
+239201186933112833,da0ne_,11/19/2018 11:10 AM,oh nice! dude hes been around this discord actively helping....i just recently noticed its the father of Arma....i was like i see that name alot....maybe in every config i unpack lol,,
+108630700348968960,shortround,11/19/2018 11:12 AM,He's been here since the start and has made the mod-made tools that literally every BI modder uses.,,
+108630700348968960,shortround,11/19/2018 11:12 AM,He knows his shit.,,
+148370724900306944,jacob_mango,11/19/2018 11:16 AM,but he has only been in this server for a week because no one invited him until I did,,
+230061386888118273,.thurston,11/19/2018 11:19 AM,"Yeah, mikero knows what he's doing",,
+148370724900306944,jacob_mango,11/19/2018 11:24 AM,mikero = god in bohemia modding community,,
+230061386888118273,.thurston,11/19/2018 11:28 AM,@mikero 😉,,
+108630700348968960,shortround,11/19/2018 11:29 AM,i didnt even know this existed until I hopped on the dayz discord.,,
+239201186933112833,da0ne_,11/19/2018 11:30 AM,dang we have the whole DayZ team here 😛,,
+239201186933112833,da0ne_,11/19/2018 11:30 AM,look at that 7 ppl,,
+230061386888118273,.thurston,11/19/2018 11:31 AM,I know!,,
+108630700348968960,shortround,11/19/2018 11:31 AM,uh,,
+108630700348968960,shortround,11/19/2018 11:31 AM,re,,
+103498977588047872,.ceve,11/19/2018 11:59 AM,"a follow up on the question before, what maps a type of object to a certain class? is it in some config?",,
+103498977588047872,.ceve,11/19/2018 12:00 PM,"so ""ZmbM_HunterOld_Winter"" how does it maps to ZombieBase ? 😃",,
+108630700348968960,shortround,11/19/2018 12:43 PM,Uh.,,
+241370201222938626,kegan.eth,11/19/2018 1:47 PM,good question,,
+103498977588047872,.ceve,11/19/2018 1:49 PM,I want to create my completely own type that I can use in CreateObject..,,
+84883724755283968,lissa_xyz,11/19/2018 1:51 PM,"I've got what might be a dumb question, coming from python, is this basically inheritance using myClassObj where it'd be self. in py?",https://cdn.discordapp.com/attachments/492295576470290433/514060166338183178/unknown.png,
+188269899901042699,namco-4#8876,11/19/2018 1:52 PM,you can use this.,,
+188269899901042699,namco-4#8876,11/19/2018 1:53 PM,so this.addHealth(); or just addHealth();,,
+188269899901042699,namco-4#8876,11/19/2018 1:53 PM,"oh wait, do you mean line 20?",,
+84883724755283968,lissa_xyz,11/19/2018 1:53 PM,"thats not my code, im watching a yt vid, but im not too familiar with c/c++ and the like.. just trying to make sense of it",,
+84883724755283968,lissa_xyz,11/19/2018 1:53 PM,im coming from python,,
+188269899901042699,namco-4#8876,11/19/2018 1:54 PM,I'm just a bit confused because the code above has nothing to do with inheritance,,
+188269899901042699,namco-4#8876,11/19/2018 1:54 PM,just function calls,,
+148054598479773696,misteroutoftime,11/19/2018 2:04 PM,@Lissa_xyz self is this in enf,,
+148054598479773696,misteroutoftime,11/19/2018 2:05 PM,In clay. Methods u don't put this as first param,,
+148054598479773696,misteroutoftime,11/19/2018 2:05 PM,Class,,
+148054598479773696,misteroutoftime,11/19/2018 2:05 PM,It automaticly does that,,
+84883724755283968,lissa_xyz,11/19/2018 2:06 PM,ah kk,,
+456226577798135808,Deleted User,11/19/2018 3:12 PM,Is there way to change zombie damage?,,😃 (2)
+514086646023716864,cbg#7638,11/19/2018 3:58 PM,"@ceve I'm not sure but it seems in many places types are defined as constants (const int), so check const.c and _const.c files",,
+103498977588047872,.ceve,11/19/2018 4:07 PM,havent found it 😦,,
+334756290742190081,._corey,11/19/2018 4:30 PM,"@Kegan yeah objects do have paths built into the p3d , have no idea tho how to use that",,
+135355238990348288,djctavia,11/19/2018 4:35 PM,"@Deleted User Modded class DayZInfectedType;
+Override RegisterAttacks methods, copy and modify what you need",,
+514086646023716864,cbg#7638,11/19/2018 4:57 PM,"Hello! I've started looking into DayZ modding with no prior experience except - well - coding for many years. I'm unsure about the process of setting up, testing and publishing a mod. Without official documentation, from the internet I basically gather 2 main approaches: 
+1) Creating a custom mission that can include code that overrides internal functions/classes 
+2) Changing scripts themselves and package them into .pbo files to get them back into the game (a rather obscure process for me still) 
+
+Can someone explain to me the differences between these approaches? What would be the preferred way to do it for mods heavily based on scripting and changing internal mechanics? As opposed to let's say more configuration based mods? Also it's not clear to me if changes have to be made on server side, client side or both and how these 2 relate to each other/are synced in general. Would appreciate any enlightment 😃",,
+241370201222938626,kegan.eth,11/19/2018 5:03 PM,@cbg  missions cannot override internal functions or classes,,
+241370201222938626,kegan.eth,11/19/2018 5:03 PM,it can only call them,,
+241370201222938626,kegan.eth,11/19/2018 5:05 PM,"For example, if I wanted to give the player a gun, I can just call some functions on the player from the mission.
+If I wanted to make it so their gun has no recoil, I would need to modify internal functions as no functionality is built for that. A mission cannot do this, only packed PBO mods",,
+241370201222938626,kegan.eth,11/19/2018 5:07 PM,"The client/server interection is actually a little more difficult to wrap minds around. When starting, the general rule of thumb I'd give out is that 9 times out of 10, the server is where the code needs to be. Trying to think of some client side stuff in BR, I think its entirely changes or tweaks to the clients UI logic at the moment.",,
+241370201222938626,kegan.eth,11/19/2018 5:08 PM,I hope that gives a bit of perspective 😄,,
+514086646023716864,cbg#7638,11/19/2018 5:21 PM,"Thx a lot Kegan! So PBO is the way to go?
+I got the other idea from looking at the structure of DayZCommunityOfflineMode which is based on a mission template. There is a folder ""patches"" which includes ""DebugMonitor.c"" and ""PluginLifespan.c"", containing classes DebugMonitorPatched and PluginLifespanPatched which apparently override part of the functionality of their parent classes (which seem to be internal). These patched versions get initialized in init.c and used from there. Am I misunderstanding something here?
+For the PBO case: Is there some information somewhere on how to correctly package scripts and how to get them into the game? I'd like to try out some things already but first I'd need to know how to even test my stuff ^^",,
+241370201222938626,kegan.eth,11/19/2018 5:35 PM,"@cbg  COM is a great showcase of the power of a mission file, but those tools will not work in multiplayer, that is why the authors are creating a new version CommunityOnlineTools, that will work in multiplayer. 
+With COM, it is not overriding the base game functionality, for those files you specified, they are actually created in the mission, and because COM is a mission file, it can choose to launch different functionality instead. 
+
+Further, with multiplayer, I don't think anyone has figured out how to make the mission file run code on the clients, if it even can. So with missions you would be limited to changing only server-sided code. So custom UI would not be possible.
+
+What you see in COM is the use of ""extended"" in the classes, which works just like any other Object Oriented language for the most part (Not entirely, there are weaknesses in DayZs version).
+With PBOs, you also get the ""modded"" tag for classes, which actually overwrite the base game code, causing all of DayZ, even the internal parts, to run your modded code over the original.
+
+I don't know of any tutorials specifically for DayZ yet, but there is a lot of information on this discord spread out that you can dig for! 😄",,
+241370201222938626,kegan.eth,11/19/2018 5:37 PM,"One last thing, mission files are good for small tweaks. Anything large may be more complex to do with a mission than with PBOs.",,
+241370201222938626,kegan.eth,11/19/2018 5:37 PM,"BR could probably be done with a mission for example, but we would still be in development 😄",,
+514086646023716864,cbg#7638,11/19/2018 5:43 PM,"@Kegan Thx for the clarification mate, very helpful. So I'll go look for some more info on PBOs... Let's see if I can get it running before some official documentation pops up.
+BR is something you're working on? = Battle Royale?",,
+241370201222938626,kegan.eth,11/19/2018 5:43 PM,Si DayZ Battle Royale,,
+241370201222938626,kegan.eth,11/19/2018 5:43 PM,we are the best mod in dayz,,
+241370201222938626,kegan.eth,11/19/2018 5:43 PM,🤣,,
+514086646023716864,cbg#7638,11/19/2018 5:43 PM,and the most humble!,,
+514086646023716864,cbg#7638,11/19/2018 5:44 PM,I'll check it out!,,
+295660175237447691,sentepu,11/19/2018 5:44 PM,lol check kegan video on youtube dayz modding environment youll get some good info,,
+241370201222938626,kegan.eth,11/19/2018 5:44 PM,"We are open source, https://gitlab.desolationredux.com/DayZ/BattleRoyale",,
+241370201222938626,kegan.eth,11/19/2018 5:45 PM,https://youtu.be/ZQaytVeEwKo,,
+241370201222938626,kegan.eth,11/19/2018 5:45 PM,There is the video he is on about,,
+241370201222938626,kegan.eth,11/19/2018 5:45 PM,"audio is shit, didnt have my audio card when I recorded it",,
+514086646023716864,cbg#7638,11/19/2018 5:46 PM,"👌 thx a bunch guys! will watch it later, after eating. so long...",,
+138422791358775296,bigben.,11/19/2018 5:46 PM,COM missed out on an opportunity to name the online version Community Online Controller.,,
+241370201222938626,kegan.eth,11/19/2018 5:48 PM,Ah the good good COC,,
+230061386888118273,.thurston,11/19/2018 5:50 PM,"also @cbg check out https://thurston.pw/Main_Page - it's the 'most documentation' we've got at the moment, although there isn't a lot, it's being regularly updated. I currently have 2 people working on the scripting section of things, so keep on checking back!",,
+108630700348968960,shortround,11/19/2018 5:51 PM,Reminds me.,,
+230061386888118273,.thurston,11/19/2018 5:51 PM,"yes, i'll give you editor now 😄",,
+108630700348968960,shortround,11/19/2018 5:51 PM,@thurston Toss me edit perms for I can put little info in terrai-,,
+108630700348968960,shortround,11/19/2018 5:51 PM,ok,,
+230061386888118273,.thurston,11/19/2018 5:51 PM,i forgot editor,,
+230061386888118273,.thurston,11/19/2018 5:51 PM,lmao,,
+230061386888118273,.thurston,11/19/2018 5:51 PM,**earlier,,
+108630700348968960,shortround,11/19/2018 5:51 PM,😄,,
+230061386888118273,.thurston,11/19/2018 5:52 PM,Done,,
+230061386888118273,.thurston,11/19/2018 5:52 PM,"You should be able to edit, now @Shortround",,
+108630700348968960,shortround,11/19/2018 5:52 PM,now i just need to learn how to format,,
+230061386888118273,.thurston,11/19/2018 5:52 PM,Have a look at Mikeros tools page,,
+230061386888118273,.thurston,11/19/2018 5:52 PM,"Just click the edit button, a lot of formatting is there",,
+230061386888118273,.thurston,11/19/2018 5:53 PM,"Obviously don't edit anything on that page though, lmao",,
+108630700348968960,shortround,11/19/2018 5:54 PM,ye,,
+456226577798135808,Deleted User,11/19/2018 8:43 PM,Did floodgate id change?,,
+456226577798135808,Deleted User,11/19/2018 8:43 PM,https://cdn.discordapp.com/attachments/514135080734687267/514161611347591208/unknown.png,,
+456226577798135808,Deleted User,11/19/2018 8:43 PM,https://cdn.discordapp.com/attachments/514135080734687267/514157806128070668/unknown.png,,
+108630700348968960,shortround,11/19/2018 8:45 PM,Yes.,,
+108630700348968960,shortround,11/19/2018 8:46 PM,"There's no ""Land_"" part anymore.",,
+108630700348968960,shortround,11/19/2018 8:46 PM,It's just Castle_Wall1_20,,
+108630700348968960,shortround,11/19/2018 8:46 PM,And so on.,,
+108630700348968960,shortround,11/19/2018 8:47 PM,"Actually, let me look at something.",,
+108630700348968960,shortround,11/19/2018 8:47 PM,"no nevermind ignore me, they did not change.",,
+456226577798135808,Deleted User,11/19/2018 9:07 PM,"```     <event name=""TrajectoryApple"">
+        <waves>0</waves>
+        <nominal>140</nominal>
+        <min>2</min>
+        <max>4</max>
+        <lifetime>180</lifetime>
+        <restock>0</restock>
+        <saferadius>25</saferadius>
+        <distanceradius>100</distanceradius>
+        <cleanupradius>25</cleanupradius>
+        <flags deletable=""0"" init_random=""0"" remove_damaged=""0"" sec_spawner=""0""/>
+        <position>player</position>
+        <limit>parent</limit>
+        <active>1</active>
+        <children>
+            <child lootmax=""0"" lootmin=""0"" max=""140"" min=""120"" type=""Apple""/>
+        </children>
+    </event> ```",,
+456226577798135808,Deleted User,11/19/2018 9:07 PM,Correct way to spawn apples?,,
+456226577798135808,Deleted User,11/19/2018 9:08 PM,"```child lootmax=""4"" lootmin=""4"" max=""140"" min=""120"" type=""Apple""/>```",,
+207328818203983872,notabanana,11/19/2018 9:18 PM,@Deleted User that code is completely irrelevant to the image?,,
+456226577798135808,Deleted User,11/19/2018 9:23 PM,if someone knows if im doing this is the correct way tell me please.,,
+456226577798135808,Deleted User,11/19/2018 9:26 PM,@Shortround @Not A Banana yeah they changed it from Land_Dam to just Dam,,
+108630700348968960,shortround,11/19/2018 9:27 PM,"Well, yes. The name of the model's .p3d",,
+108630700348968960,shortround,11/19/2018 9:27 PM,But mine is still Land_?,,
+108630700348968960,shortround,11/19/2018 9:27 PM,in the config,,
+108630700348968960,shortround,11/19/2018 9:27 PM,Weird.,,
+456226577798135808,Deleted User,11/19/2018 9:27 PM,in the init file to add in buildings,,
+456226577798135808,Deleted User,11/19/2018 9:27 PM,i had to remove Land_ from all of them,,
+456226577798135808,Deleted User,11/19/2018 9:27 PM,"then it worked, they wernt showing up before",,
+108630700348968960,shortround,11/19/2018 9:27 PM,"Weird, maybe my files are out of date.",,
+456226577798135808,Deleted User,11/19/2018 9:28 PM,idk,,
+456226577798135808,Deleted User,11/19/2018 9:28 PM,it was fine with Land_ before beta,,
+108630700348968960,shortround,11/19/2018 9:28 PM,Doesn't make sense why they would do that though.,,
+456226577798135808,Deleted User,11/19/2018 9:28 PM,"just added it in now, had to remove it, whatever though it works",,
+108630700348968960,shortround,11/19/2018 9:29 PM,🤷,,
+207328818203983872,notabanana,11/19/2018 9:29 PM,@Deleted User They did that a whiiile ago,,
+207328818203983872,notabanana,11/19/2018 9:29 PM,Before 'beta',,
+108630700348968960,shortround,11/19/2018 9:30 PM,@Hiki To answer your question on #generic-dayz just need a bit more clarification -..,,
+108630700348968960,shortround,11/19/2018 9:30 PM,Are you asking whether or not that .xml lists weapons or etc?,,
+103212714263867392,hiki69,11/19/2018 9:31 PM,"@Shortround wanted to use data in that xml for my own weapon spawn system, but there's nothing to identify if an item is a weapon or not in that list",,
+103212714263867392,hiki69,11/19/2018 9:31 PM,unless I check that an attachment is named ^Mag,,
+237377135235432450,astleynf,11/19/2018 9:31 PM,"hi can anybody help me with this please ```@echo off
+    cls
+    
+    set version=1.0
+    set wat=Dayz SA
+
+    title %wat% Watchdog
+    
+    cd C:\Users\Administrator\Desktop\DayZServer1
+    
+    :watchdog
+    echo (%time%) %wat% started.
+    start ""Dayz_SA"" /wait /affinity FF /high DZSALModServer.exe -config=serverDZ.cfg ""-profiles=C:\Users\Administrator\Desktop\DayZServer1\logs"" ""-BEPath=C:\Users\Administrator\Desktop\DayZServer1\battleye"" -port=2302 -cpuCount=4 -dologs -adminlog -netlog ""-mod=@UnlimitedStaminaMod;@Weapon Redux Pack;@SepticFalconMerch;@Night vision glasses""
+    echo (%time%) %wat% closed or crashed, restarting.
+    goto watchdog ```trying to get the server to launch with DZSA Launcher but when i try and connect it does not download the mods",,
+108630700348968960,shortround,11/19/2018 9:31 PM,Can you hastebin the xml? I don't actually have it on me. @Hiki,,
+103212714263867392,hiki69,11/19/2018 9:32 PM,https://hastebin.com/etopujipoy.xml,,
+108630700348968960,shortround,11/19/2018 9:33 PM,You would basically just have to look at each item and identify whether or not it is.,,
+108630700348968960,shortround,11/19/2018 9:33 PM,For example.,,
+108630700348968960,shortround,11/19/2018 9:33 PM,"There are in fact weapons in there, but they are listed by class name.",,
+108630700348968960,shortround,11/19/2018 9:34 PM,Such as UMP45.,,
+108630700348968960,shortround,11/19/2018 9:34 PM,MakarovIJ70,,
+230061386888118273,.thurston,11/19/2018 9:34 PM,"@Hiki weapons go in there (Just Ctrl + F and type in M4A1 or something), where it M4A1 in ``` <type name=""M4A1"">``` is the classname",,
+108630700348968960,shortround,11/19/2018 9:34 PM,and AKM.,,
+230061386888118273,.thurston,11/19/2018 9:34 PM,"You don't define what type of object it is, thats defined inside the actual object config, etc",,
+108630700348968960,shortround,11/19/2018 9:35 PM,@Hiki Even better.,,
+108630700348968960,shortround,11/19/2018 9:35 PM,Search for WEAPONS and you will find the entire section.,,
+108630700348968960,shortround,11/19/2018 9:35 PM,I'll even hastebin it for you.,,
+108630700348968960,shortround,11/19/2018 9:36 PM,@Hiki https://hastebin.com/dibosoyosi.bash,,
+108630700348968960,shortround,11/19/2018 9:36 PM,Enjoy.,,
+103212714263867392,hiki69,11/19/2018 9:37 PM,"There is, but it's a comment in xml, but I guess I can read it as text, pick out that part and load it as xml... 😃",,
+108630700348968960,shortround,11/19/2018 9:37 PM,What?,,
+188269899901042699,namco-4#8876,11/19/2018 9:40 PM,"@Hiki you can also take the weapon name, convert it from string to typename and use the isInherited method to check if it inherits from RifleBase",,
+87349760389844992,shu1738,11/19/2018 9:44 PM,Are there any public scripts to add the bridges to skalisty/prison island? see alot of servers with the same bridge,,
+108630700348968960,shortround,11/19/2018 9:44 PM,The builder mod provides the source code for it.,,
+103212714263867392,hiki69,11/19/2018 9:45 PM,"@namco-4 seems to be a reasonable way, do you know if there's any xml importer?",,
+87349760389844992,shu1738,11/19/2018 9:45 PM,@Shortround oh cool,,
+188269899901042699,namco-4#8876,11/19/2018 9:46 PM,@Hiki no idea,,
+332787795582124033,liquidkarak,11/19/2018 9:46 PM,"guys following question
+a have disabled  this now
+serverTimePersistent=0;         // Persistent Time (value 0-1)        // Actual server time is saved to storage, so when active, next server start will use saved time value.
+for loot respawn 😄
+but then the tents go like a week respawn
+away
+but what is wehn i to somthink
+Dayzstandalone/mpmissions/YOURMISSIONNAME/db/economy.xml
+i changet following
+default :
+´´´<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<economy>
+    <dynamic init=""1"" load=""1"" respawn=""1"" save=""1""/>
+    <animals init=""1"" load=""0"" respawn=""1"" save=""0""/>
+    <zombies init=""1"" load=""0"" respawn=""1"" save=""0""/>
+    <vehicles init=""1"" load=""1"" respawn=""1"" save=""1""/>
+    <randoms init=""0"" load=""0"" respawn=""1"" save=""0""/>
+    <custom init=""0"" load=""0"" respawn=""0"" save=""0""/>
+    <building init=""0"" load=""0"" respawn=""1"" save=""0""/>
+    <player init=""1"" load=""1"" respawn=""1"" save=""1""/>
+</economy>´´´
+but i changed that to this<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+´´´<economy>
+    <dynamic init=""1"" load=""1"" respawn=""1"" save=""1""/>
+    <animals init=""1"" load=""0"" respawn=""1"" save=""0""/>
+    <zombies init=""1"" load=""0"" respawn=""1"" save=""0""/>
+    <vehicles init=""1"" load=""1"" respawn=""1"" save=""1""/>
+    <randoms init=""0"" load=""0"" respawn=""1"" save=""0""/>
+    <custom init=""0"" load=""0"" respawn=""0"" save=""0""/>
+    <building init=""1"" load=""1"" respawn=""0"" save=""1""/>
+    <player init=""1"" load=""1"" respawn=""1"" save=""1""/>
+</economy>´´´
+´´´<building init=""1"" load=""1"" respawn=""0"" save=""1""/>´´´
+it means
+Tents,barrels Load
+load =1
+Save Tents,barrels
+save=1
+right ? than the tents and the barrels are never disaper
+is that rigth",,
+108630700348968960,shortround,11/19/2018 9:47 PM,"Tents and barrels will never disappear in a WORKING persistance. As of right now, there is a bug with persistance causing them to disappear after random times.",,
+332787795582124033,liquidkarak,11/19/2018 9:48 PM,can we take a call that i can demonstrade you that waht i mean,,
+207328818203983872,notabanana,11/19/2018 9:49 PM,@𝓛𝓘𝓠𝓤𝓘𝓓  𝓚𝓐𝓡𝓐𝓚 Tents and barrels disappearing isnt something you can fix,,
+207328818203983872,notabanana,11/19/2018 9:49 PM,It's a bug,,
+108630700348968960,shortround,11/19/2018 9:49 PM,"I'm not even experienced with the .xml files of servers, so I can't help either way.",,
+108630700348968960,shortround,11/19/2018 9:50 PM,I know a small bit.,,
+332787795582124033,liquidkarak,11/19/2018 9:50 PM,but how it is possible that the server THE VILLIGE have tents sice 1 month,,
+108630700348968960,shortround,11/19/2018 9:50 PM,"It's a bug, that's the whole point.",,
+108630700348968960,shortround,11/19/2018 9:50 PM,They randomly disappear,,
+332787795582124033,liquidkarak,11/19/2018 9:50 PM,and there is no fix ?,,
+108630700348968960,shortround,11/19/2018 9:50 PM,No known fix.,,
+332787795582124033,liquidkarak,11/19/2018 9:51 PM,ohh great -.- i think bohemia crasht again the game,,

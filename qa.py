@@ -21,12 +21,14 @@ if prompt := st.chat_input():
 #args = parser.parse_args()
 
 # Load the LangChain.
-index = faiss.read_index("docs.index")
+def search_and_answer(message: str) -> str:
+    index = faiss.read_index("docs.index")
 
-with open("faiss_store.pkl", "rb") as f:
-    store = pickle.load(f)
+    with open("faiss_store.pkl", "rb") as f:
+        store = pickle.load(f)
 
-store.index = index
-chain = RetrievalQAWithSourcesChain.from_chain_type(llm=ChatOpenAI(temperature=0), retriever=store.as_retriever())
-result = chain({"question": str(prompt)})
-st.chat_message("assistant").write(result['answer'])
+    store.index = index
+    chain = RetrievalQAWithSourcesChain.from_chain_type(llm=ChatOpenAI(temperature=0), retriever=store.as_retriever())
+    result = chain({"question": str(prompt)})
+    answer = str(result['answer'])
+    return answer

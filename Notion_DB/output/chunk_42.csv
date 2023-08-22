@@ -1,0 +1,1696 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+456226577798135808,Deleted User,10/23/2019 3:51 AM,"Ok, so sort of newb question but I need just a little direction.
+
+For my server, if I want to override something in `PlayerConstants.c`, would I be able to override the constant in my `init.c`?  Do I use the `override` like in the player spawn declaration?",,
+456226577798135808,Deleted User,10/23/2019 3:51 AM,"I don't have the code in front of me or I'd be more specific. However, I'm just looking to alter the hunger/thirst metabolisms",,
+231682498277408770,.elanc,10/23/2019 9:19 AM,@Funkdoc and?.. solution? 🙂,,
+231682498277408770,.elanc,10/23/2019 9:19 AM,maybe create site/wiki with snippets?,,
+427419739787362304,Funkdoc#1677,10/23/2019 1:17 PM,@elanc lol... it was just a mistake i made. last doors in the list were not opened because the max index was to low and i was at this doors and was thinking it didnt work. But i could hear the other doors opening...,,
+427419739787362304,Funkdoc#1677,10/23/2019 1:27 PM,"```        //Open all doors of mission building
+        Building Tenement = Building.Cast( MissionBuilding );
+        for (int i=0; i < 32; i++ )
+        {
+            if ( !Tenement.IsDoorOpen(i) ) Tenement.OpenDoor(i);
+        }```",,👍 (1)
+427419739787362304,Funkdoc#1677,10/23/2019 1:27 PM,i have to look for the index of each door... but this works for testing,,
+427419739787362304,Funkdoc#1677,10/23/2019 1:28 PM,Object = Tenement_Small,,
+427419739787362304,Funkdoc#1677,10/23/2019 1:28 PM,~32 doors,,
+427419739787362304,Funkdoc#1677,10/23/2019 1:32 PM,and dont forget to check for IsDoorOpen() or not... otherwise door states will be fucked up and doors are for infected unvisible,,
+456226577798135808,Deleted User,10/23/2019 2:57 PM,clyde bot was being derpy so Im passing this over here on behalf of Helkhiana,,
+456226577798135808,Deleted User,10/23/2019 2:57 PM,"i need some help understanding the order things are loaded.
+i have class:",,
+456226577798135808,Deleted User,10/23/2019 2:57 PM,"```
+class MyValues
+{
+    string g_name = ""MyName"";
+    float g_mynumber = 0;    
+
+    void SetIngredientOne(float myNumber)
+    {        
+        g_mynumber = myNumber;
+    }
+
+    void SetName(string name){
+        g_name = name;
+    }
+
+    void GetIngredientOne()
+    {        
+        return g_mynumber;
+    }
+
+    void GetName(){
+       return g_name;
+    }
+}
+``` in my 3 game",,
+456226577798135808,Deleted User,10/23/2019 2:57 PM,"then i add to RegisterRecipes()
+```
+        MyValues myValuesClass = new MyValues;
+        myValuesClass.SetIngredientOne(-20);
+        myValuesClass.SetName(""Minus"");            
+        RegisterRecipe(new CraftMyRecipe(myValuesClass));    
+```
+
+And create class CraftMyRecipe",,
+456226577798135808,Deleted User,10/23/2019 2:58 PM,"In this i add constructor and a variable
+```
+ref protected MyValues recipeValues = new MyValues;
+
+    void CraftMyRecipe(MyValues m_recipeValues){
+        recipeValues = m_recipeValues;
+        for(int i = 0; i < MAX_NUMBER_OF_INGREDIENTS; i++)
+        {
+            m_Ingredients[i] = new array<string>;
+            m_IngredientsSorted[i] = NULL;
+        }
+
+        m_NumberOfResults = 0;
+        
+        m_Name = recipeValues.g_name;
+        Init();
+    }
+    
+```",,
+456226577798135808,Deleted User,10/23/2019 2:58 PM,"in Init of the recipe i try to use the values from my class MyValues
+
+```
+override void Init()
+    {
+        Print(""this is myname: "" + recipeValues.g_name);        
+        Print(""this is myname: "" + recipeValues.GetName());
+        m_IsInstaRecipe = false;//should this recipe be performed instantly without animation
+        m_AnimationLength = 1;//animation length in relative time units
+        m_Specialty = 0.02;// value > 0 for roughness, value < 0 for precision
+        
+        
+        Print(""this is mynumber: "" + recipeValues.g_mynumber);        
+        Print(""this is mynumber: "" + recipeValues.GetIngredientOne());
+    /.... rest of stuff
+}
+```
+
+Even tho those variables do get updated...and they get reflected eventually in the recipe. i still get recipeValues.g_mynumber is null in my crashes log",,
+456226577798135808,Deleted User,10/23/2019 3:00 PM,`end message from Helkhiana`,,
+137658517615149056,helkhiana,10/23/2019 3:03 PM,:meow_sip: thanks clyde bot was being a bit weird,,
+137658517615149056,helkhiana,10/23/2019 4:27 PM,"well i went around the issue (idk if the best thing)
+in CraftMyRecipe i made a local variable
+myNumber = 0; giving it a default value then in constructor did myNumber = recipeValues.g_mynumber",,
+483945142424698881,nines9805,10/23/2019 5:33 PM,"@Jeremy i was thinking more along the lines of a clear up items script that removes items what are on ground,runs every 10 seconds or so",,
+483945142424698881,nines9805,10/23/2019 5:34 PM,"i know i could do that but again thats the longest method possible , best is proabbly editing the CE table witch also doesnt seem to do shit still tbh 😂",,
+463051926406430720,saltybob#3845,10/23/2019 7:43 PM,"anyone know how i can set the quantity (liquid container) of a spawned item?
+i have this which spawns the output and deletes the ingredients, i want to be able to vary the yield produced based on the method followed for making it. just not sure how to set the quantity here. i have a plan b but its a pain...
+
+```void AnalyseVirus()
+    {
+            AntiBodiesVial = GetGame().CreateObject(""AntiBodiesVial"", this.GetPosition() +""0 0 0.2"", false );
+            RagePathogenVial = GetGame().CreateObject(""RagePathogenVial"", this.GetPosition() +""0 0 0.3"", false );
+            DeleteRPRZBloodBagFull();
+            DeleteRPRZbrain_Mung();
+            DeleteRPRZCure_Petridish();
+    }```",,
+107560637399306240,cooltrain,10/23/2019 7:50 PM,"```4_world\static\liquid.c```
+```
+    static void FillContainer(ItemBase container, int liquid_type, float amount)
+    {
+        if(!CanFillContainer(container,liquid_type) )
+        {
+            return;
+        }
+        //filling
+        container.SetLiquidType(liquid_type);
+        container.AddQuantity(amount); 
+        
+    }
+```",,
+463051926406430720,saltybob#3845,10/23/2019 7:51 PM,is that for an action of filling a container?,,
+107560637399306240,cooltrain,10/23/2019 7:52 PM,Just go look through the file you will find what you need,,
+463051926406430720,saltybob#3845,10/23/2019 7:52 PM,"i want to spawn an item with a set quantity, i dont understand how i would apply that",,
+137658517615149056,helkhiana,10/23/2019 7:52 PM,just take the last 2 lines,,
+463051926406430720,saltybob#3845,10/23/2019 7:52 PM,ok cool will do,,
+137658517615149056,helkhiana,10/23/2019 7:53 PM,AntiBodiesVial.AddQuantity(100) should do,,
+107560637399306240,cooltrain,10/23/2019 7:53 PM,^^,,
+107560637399306240,cooltrain,10/23/2019 7:53 PM,If it doesn't work you might have to cast your object,,
+463051926406430720,saltybob#3845,10/23/2019 7:53 PM,ok thanks both of you i'll try it out,,
+355565030437289994,zysen,10/24/2019 3:15 AM,"Hello All,
+I am trying to lock some doors once the server starts up. If i override ActionOpenDoors in 4_World then i can lock,unlock,open,close the doors in that function call.
+But if i try and lookup the Building using the below code inside OnMissionStart, it crashes as soon as i call building.LockDoor(doorIndex);
+The door index definitely exists.
+Is there some timing issue i am unaware of ? Maybe this has to happen inside 4_World?
+Any help would be appreciated.
+```
+array<Object> objects = new array<Object>;
+array<CargoBase> cargo = new array<CargoBase>;
+GetGame().GetObjectsAtPosition(position, 1, objects, cargo);
+if(objects.Count()==1){
+    Building building;
+    if ( Class.CastTo(building, objects.Get(0)) )
+        {
+            building.LockDoor(doorIndex);
+        }
+}
+```",,
+561680015578759196,wrdg,10/24/2019 3:43 AM,Doors have to be closed before they can be locked.,,
+561680015578759196,wrdg,10/24/2019 3:44 AM,Using the engine method of locking doors still allows players to melee or shoot open the door. You're better off making your own locking mechanic.,,
+355565030437289994,zysen,10/24/2019 3:53 AM,"@Wardog Thanks for your reply. I think i have tried closing the door first, when i did building.CloseDoor also crashes.
+Is there anything wrong with doing this in MissionStart? I do plan on implementing my own locking system, and could easily by overriding the ActionDoorOpen, but then i still need to close some doors first, which right now i cant do until a player is looking at them.",,
+427419739787362304,Funkdoc#1677,10/24/2019 3:53 AM,your if condition... it doesnt work like that,,
+427419739787362304,Funkdoc#1677,10/24/2019 3:55 AM,there could ever be more objects that u get in a radius of 1m... btw if (objects.Count() == 1 )... what if wore objects found?,,
+427419739787362304,Funkdoc#1677,10/24/2019 3:56 AM,you need to make a for loop,,
+355565030437289994,zysen,10/24/2019 3:56 AM,"i stipped the actual code down to be succinct.  it does reach LockDoor as if i comment that out, the server doesnt crash",,
+561680015578759196,wrdg,10/24/2019 3:56 AM,"If you're wanting a building lock mod to come out on the workshop, you might want to wait for mine or if room service decides to release his.",,
+561680015578759196,wrdg,10/24/2019 3:57 AM,You're also better off using workbench to debug and setup break points,,
+355565030437289994,zysen,10/24/2019 3:57 AM,there was a IsBuilding check in there too,,
+355565030437289994,zysen,10/24/2019 3:58 AM,@Wardog this is more of a learning excercise,,
+355565030437289994,zysen,10/24/2019 3:58 AM,you're right i should be using the debugger,,
+427419739787362304,Funkdoc#1677,10/24/2019 3:59 AM,yeah what is your door index?,,
+427419739787362304,Funkdoc#1677,10/24/2019 3:59 AM,how do u getz this int?,,
+355565030437289994,zysen,10/24/2019 3:59 AM,have tried hardcoding to 0 and tested on a building with doors,,
+561680015578759196,wrdg,10/24/2019 4:00 AM,The way I'm doing it is saving the position of the building and the locked doors in an integer array.,,
+561680015578759196,wrdg,10/24/2019 4:00 AM,Then reading that file and looping through each building position and closing the doors that are saved to be locked,,
+355565030437289994,zysen,10/24/2019 4:00 AM,i have a map of building posiitons to a DoorState object,,
+355565030437289994,zysen,10/24/2019 4:01 AM,but for debugging i hardcoded the index for now,,
+355565030437289994,zysen,10/24/2019 4:02 AM,"i probably have some silly bug. What i really wanted to know was, is it crazy to attempt this in Mission due to some load order or dependency issue. It sounds like i should be able to do that.",,
+561680015578759196,wrdg,10/24/2019 4:03 AM,I do mine on mission start and it works just fine,,
+355565030437289994,zysen,10/24/2019 4:03 AM,thanks 🙂,,
+561680015578759196,wrdg,10/24/2019 4:03 AM,I'm not at my desk or I'd show you an example,,
+355565030437289994,zysen,10/24/2019 4:04 AM,"yeah im at work, which is why i couldnt copy my actual code :)
+i just spent an hour looking for enfusion examples of playing with doors",,
+355565030437289994,zysen,10/24/2019 4:05 AM,"DoorCodeLock is doing some similar things, but a whole bunch of other stuff i dont want.",,
+561680015578759196,wrdg,10/24/2019 4:05 AM,"That mod is a mess, it's a bit hard to read and understand",,
+561680015578759196,wrdg,10/24/2019 4:06 AM,My door locking mod is meant for my life mod,,
+355565030437289994,zysen,10/24/2019 4:07 AM,sounds interesting.,,
+355565030437289994,zysen,10/24/2019 4:07 AM,im mostly just playing around. But i would like to make an AdminLockPick that perma locks doors.,,
+154405947610103808,dumpgrah,10/24/2019 6:11 AM,"how does DayZ tell the server to despawn loot, is there a action or a pbo i should look into?",,🤷 (1)
+180757017432948736,tennesseetimmy,10/24/2019 4:20 PM,I think that is done by the Central economy,,
+180757017432948736,tennesseetimmy,10/24/2019 4:20 PM,Which is not scriptable,,
+105574798691680256,totallynotgrim,10/24/2019 4:21 PM,Kinda is,,
+171202472218591232,iamharry,10/24/2019 4:21 PM,"Hi All, I have a gamemode that will require the server to save a variable for each player. After their first spawn on the server or respawn after death the player will be able to change this variable. How can i save this varibale across server restarts and players leaving and joining?",,
+105574798691680256,totallynotgrim,10/24/2019 4:21 PM,,https://cdn.discordapp.com/attachments/492295576470290433/636932283877556224/unknown.png,
+171202472218591232,iamharry,10/24/2019 4:21 PM,Thanks Harry,,
+211779129924780032,hlynge,10/24/2019 5:28 PM,"With dynamic assignment of key's with: 
+
+    UAInput muteBind = GetUApi().GetInputByName(""UAToggleMute"");
+        
+    if(muteBind.LocalClick())
+        ....
+        
+How to I get at store globally the int key from this so  I can use it in a onkeypress function ?",,
+107560637399306240,cooltrain,10/24/2019 8:43 PM,Why do you need to?,,
+203212169108520961,fumll,10/24/2019 9:10 PM,hey everyone. Kinda getting into dayz Modding in general and wanted to do some stuff in dayz SA but i cant seem to find any documentation or anything like that to see what i can do with all that. I only found a couple video on youtube and a competly unfinished site that shows syntax but no description. Do you guys know of any starting point? I saw arma 3 kinda uses the same thing?,,
+561680015578759196,wrdg,10/24/2019 9:18 PM,"SQF and Enforce syntax is nothing alike, but if you're familiar with C style languages then Enforce should be easy to pick up. There really isn't too much documentation behind Enforce, but the basic guides start here:
+
+Syntax:
+<https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax>
+
+Modding Basics:
+<https://community.bistudio.com/wiki/DayZ:Modding_Basics>
+
+Game Data Extraction & Workbench Debugging:
+<https://community.bistudio.com/wiki/DayZ:Workbench_Script_Debugging>
+
+
+I'd suggest using a text editor like VSCode, Sublime, or Atom while you're scripting, the workbench isn't always reliable and sometimes crashes, leaving your unsaved work in the garbage. Most of your learning is going to be coming from the unpacked game data, which some of the scripting has documentation, and the rest is just a bit of learning from what's written and understanding code flow. You're welcome to ask questions here once you get started, it's what most do.",,
+203212169108520961,fumll,10/24/2019 9:20 PM,"thanks for the rather indepth reply! yes I do have intermediate knowledge of C# so the scripting I have done so far is not that different indeed. But basically what you are saying is, looking at the code that the game already provides and going off of that?#",,
+561680015578759196,wrdg,10/24/2019 9:22 PM,"pretty much, i usually learn something new every day by just messing around and reading through the hierarchy. with modding you're not going to have an exact entry point, but it will be with what ever you're looking to override and add on to",,
+137658517615149056,helkhiana,10/24/2019 9:23 PM,how does one get index of an item in a cargo inventory?:thonk:,,
+137658517615149056,helkhiana,10/24/2019 9:24 PM,@Daniel studying other mods also helps..that's how i've done it. i'm happy to share mine,,
+203212169108520961,fumll,10/24/2019 9:24 PM,sure I'll take what i can get haha,,
+137658517615149056,helkhiana,10/24/2019 9:25 PM,is it ok to share here a github repo?,,
+561680015578759196,wrdg,10/24/2019 9:25 PM,you have to get the cargo container before you can get the index,,
+561680015578759196,wrdg,10/24/2019 9:25 PM,yes @Helkhiana,,
+137658517615149056,helkhiana,10/24/2019 9:25 PM,```GetInventory().GetCargo()``` ?,,
+137658517615149056,helkhiana,10/24/2019 9:26 PM,"might be easier if i paste the whole thing i'm trying to do
+```
+void DestroyCargo()
+    {
+        int item_count = 0;
+        ItemBase item;
+        
+        if ( GetInventory().GetCargo() != NULL )
+        {
+            item_count = GetInventory().GetCargo().GetItemCount();    
+            Print(""Cargo count is: "" + item_count);
+            for ( int i = 0; i < item_count; i++ )
+            {
+                Print(""Attempting to empty: "" + i + ""/"" + item_count);
+                //item = ItemBase.Cast(GetInventory().GetCargoFromIndex(i));
+                Class.CastTo(item, GetInventory().GetCargoFromIndex(i).GetItem(i));
+                if(item){
+                    Print(""Attempting to empty trash item:"" + item.GetType());
+                    InventoryLocation myInvLoc = new InventoryLocation;
+                    if (item.GetInventory().GetCurrentInventoryLocation(myInvLoc))
+                    {
+                        GetGame().ObjectDelete(myInvLoc.GetItem());        
+                    }
+                }
+            }
+        }
+    }
+```",,
+137658517615149056,helkhiana,10/24/2019 9:26 PM,@Daniel https://github.com/helkhiana/MuchDecos one of my WIP mods. i've refactored a lot of stuff i've seen on other mods,,
+137658517615149056,helkhiana,10/24/2019 9:27 PM,"so logic of this function is:
+Get cargo, find each item and delete it",,
+203212169108520961,fumll,10/24/2019 9:28 PM,@Helkhiana thanks!,,
+137658517615149056,helkhiana,10/24/2019 9:31 PM,"i have an action triggering this function. logs show:
+```
+SCRIPT       : Cargo count is: 6
+SCRIPT       : Attempting to empty: 0/6
+SCRIPT       : Attempting to empty trash item:Shovel
+SCRIPT       : Attempting to empty: 1/6
+SCRIPT       : Attempting to empty trash item:UMP45
+SCRIPT       : Attempting to empty: 2/6
+SCRIPT       : Attempting to empty trash item:AviatorGlasses
+SCRIPT       : Attempting to empty: 3/6
+SCRIPT       : Attempting to empty: 4/6
+SCRIPT       : Attempting to empty: 5/6
+```
+it seems to always do 3 then stop. do you think it's something to do with my function or maybe the action is too short?",,
+207328818203983872,notabanana,10/24/2019 9:34 PM,Best documentation:,https://cdn.discordapp.com/attachments/492295576470290433/637010922791239713/17cb69b936f9f5a7cbb0be1ce0cd0bbd.png,
+107560637399306240,cooltrain,10/24/2019 9:35 PM,^^,,
+107560637399306240,cooltrain,10/24/2019 9:36 PM,"Notepad++ for searching in files, and doing configs ^^",,
+211779129924780032,hlynge,10/24/2019 10:05 PM,@Cooltrain  - I wanted to make it possible for players to configure there own key settings,,
+561680015578759196,wrdg,10/24/2019 10:13 PM,setup modded inputs then,,
+207096016237887488,idont_car3,10/25/2019 12:56 AM,Has anyone played around with Continuous Actions? I am trying to speed up the ActionLoadMagazine but cant seem to get it working.,,
+207328818203983872,notabanana,10/25/2019 1:00 AM,What are you trying to do and how is it not working?,,
+207096016237887488,idont_car3,10/25/2019 1:03 AM,I am trying to make the MagReload faster.,,
+207096016237887488,idont_car3,10/25/2019 1:07 AM,"i found this Action: ActionLoadMagazine in there there is a Variable that Defines TimeSpent but if i modfiy it. It Only affects the Circular Progressbar, The actiual Action to Load one single bullet into the mag still takes the same time.",,
+207096016237887488,idont_car3,10/25/2019 1:09 AM,"```class ActionLoadMagazineCB : ActionContinuousBaseCB
+{
+    override void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousRepeat(UATimeSpent.MAG_EMPTY);
+    }
+};``` If i Modify ""UATimeSpent.MAG_EMPTY"" it only affects the Visual Progressbar not the actual animation/action",,
+199213081170149377,zeroy99,10/25/2019 1:11 AM,@IDoNt_CaR3 in Continuous action you can just change the time,,
+199213081170149377,zeroy99,10/25/2019 1:11 AM,"```
+    void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousTime(Math.RandomInt( 3,10 ));
+```",,
+199213081170149377,zeroy99,10/25/2019 1:11 AM,this would be a time between 3 and 10 seconds,,
+199213081170149377,zeroy99,10/25/2019 1:12 AM,but otherwise just change UATimeSpent.MAG_EMPTY with a number of seconds,,
+199213081170149377,zeroy99,10/25/2019 1:12 AM,"for reference
+```
+    const float MAG_EMPTY = 0.5;
+    const float MAG_LOAD = 0.5;
+```",,
+561680015578759196,wrdg,10/25/2019 1:15 AM,Would random work for continuous action times? Thought that value had to be synced,,
+199213081170149377,zeroy99,10/25/2019 1:20 AM,I use it,,
+199213081170149377,zeroy99,10/25/2019 1:20 AM,and it works,,
+207096016237887488,idont_car3,10/25/2019 1:21 AM,@ZeRoY When i change the  UATimeSpent.MAG_EMPTY it only affects the visual Progressbar. The Ammo is loaded in to the Mag in the old unchanged speed,,
+561680015578759196,wrdg,10/25/2019 1:23 AM,You can't change animation time,,
+199213081170149377,zeroy99,10/25/2019 1:23 AM,oh yeah,,
+199213081170149377,zeroy99,10/25/2019 1:23 AM,true,,
+561680015578759196,wrdg,10/25/2019 1:24 AM,"It's going to be the same speed, but changing that value in the action callback will change how long it takes for that action to complete.",,
+207096016237887488,idont_car3,10/25/2019 1:26 AM,so basically no way to increase loading the mag. Is it possible to remove the animation or switch it to a faster one?,,
+561680015578759196,wrdg,10/25/2019 1:27 AM,Just change it to 0.01,,
+561680015578759196,wrdg,10/25/2019 1:27 AM,The animation doesn't govern completion time.,,
+561680015578759196,wrdg,10/25/2019 1:28 AM,"```csharp
+class ActionLoadMagazineCB : ActionContinuousBaseCB
+{
+    override void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousRepeat(0.01);
+    }
+};
+```",,
+207096016237887488,idont_car3,10/25/2019 1:29 AM,"i had it on 0.1 gimme a sec, but i think this still does only affect the progress indicator and the actual inserting of the bullet is tied to the animation",,
+561680015578759196,wrdg,10/25/2019 1:30 AM,Change it to 10 seconds then and get back to me.,,
+561680015578759196,wrdg,10/25/2019 1:32 AM,"If the animation is blocking the the reload time then check out the action, is it loading the ammunition for the client/server variant OnProgressComplete or OnEnd or OnStart",,
+561680015578759196,wrdg,10/25/2019 1:35 AM,Looks like it's doing it OnExecuteServer,,
+561680015578759196,wrdg,10/25/2019 1:42 AM,"Could probably get away with something like this, sorry I'm on my phone so this is a tad difficult to do",,
+561680015578759196,wrdg,10/25/2019 1:42 AM,"```csharp
+modded class ActionLoadMagazineCB
+{
+    override void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousRepeat(0.01);
+    }
+}
+
+modded class ActionLoadMagazine
+{
+	override void OnExecuteServer(ActionData action_data) {}
+	
+	override void OnFinishProgressServer(ActionData action_data)
+	{
+		Magazine trg;
+		Magazine itm;
+		if (Class.CastTo(trg, action_data.m_Target.GetObject()) && Class.CastTo(itm, action_data.m_MainItem))
+		{
+			float dmg;
+			string ammoType;
+			
+			if (trg.ServerAcquireCartridge(dmg,ammoType))
+			{
+				if (!itm.ServerStoreCartridge(dmg,ammoType) 
+					)		
+				{	
+					trg.ServerStoreCartridge(dmg,ammoType);
+				}
+				else
+				{
+					itm.ApplyManipulationDamage();
+				}
+			}
+		}
+		
+		trg.SetSynchDirty();
+		itm.SetSynchDirty();
+	}
+}
+```",,
+561680015578759196,wrdg,10/25/2019 1:44 AM,"Could probably even get simplier with this 
+```csharp
+modded class ActionLoadMagazineCB
+{
+    override void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousRepeat(0.01);
+    }
+}
+
+modded class ActionLoadMagazine
+{
+	override void OnExecuteServer(ActionData action_data) {}
+	
+	override void OnFinishProgressServer(ActionData action_data)
+	{
+		super.OnExecuteServer(action_data);
+	}
+}
+```",,
+207096016237887488,idont_car3,10/25/2019 1:46 AM,Thank you alot gonna try that. Whats the difference between the two? The Time the Server executes the command?,,
+561680015578759196,wrdg,10/25/2019 1:47 AM,"If you look at the base classes for actions, it'll make more sense than me trying to explain",,
+561680015578759196,wrdg,10/25/2019 1:47 AM,"OnFinishProgress, just executes after the progress bar is complete",,
+207096016237887488,idont_car3,10/25/2019 1:50 AM,"How are you looking at the Baseclass, sry if i ask dumb questions lol. I found ActionContinuousbase.c and in there this: ```    protected void OnFinishProgressServer( ActionData action_data )
+    {
+    }``` did not get any mor info from that. What am i doing wrong",,
+231682498277408770,.elanc,10/25/2019 3:19 PM,"How I can catch when player try to move something from clothing slot, eg armband?",,
+246705956837130250,cookies3210,10/25/2019 4:53 PM,Does anyone know how I can get coordinates of a certain place on the map?,,
+231682498277408770,.elanc,10/25/2019 8:53 PM,@Cookies what do you mean?,,
+246705956837130250,cookies3210,10/25/2019 8:54 PM,trying to define a position on the map by coordinates,,
+231682498277408770,.elanc,10/25/2019 8:55 PM,wat?! plz example of situation..,,
+246705956837130250,cookies3210,10/25/2019 8:57 PM,yeah sorry,,
+246705956837130250,cookies3210,10/25/2019 8:57 PM,trying to teleport players to a town,,
+246705956837130250,cookies3210,10/25/2019 8:58 PM,but I need the coordinates of the town for that,,
+268003379328974848,smasht,10/25/2019 9:09 PM,https://dayz.ginfo.gg/,,
+246705956837130250,cookies3210,10/25/2019 9:16 PM,tyty,,
+246705956837130250,cookies3210,10/25/2019 9:16 PM,will check it out,,
+144633441554530304,MypowerFreak#5276,10/26/2019 3:02 PM,"I am currently writing about the CURLContext data to my content management system to pass or just to get this via a GET request, I understand the documentation so that you have to adjust the CURLCallback at a GET request, so I wrote it as follows.",,
+144633441554530304,MypowerFreak#5276,10/26/2019 3:03 PM,"```
+class HumanityCURLCallback extends CURLCallback
+{
+    ref HumanityDatabasePlayerModel humanityModel;
+    string error;
+    private const string PrintPrefix = ""[CURL-Humanity-Callback]"";
+    
+    override void OnSuccess( string data, int dataSize )
+    {
+        Print(PrintPrefix + ""::OnSuccess"");
+        JsonSerializer.ReadFromString(humanityModel, data, error);
+        if(m_CFDebug)
+        {
+            Print(""=========================================================================================="");
+            Print(PrintPrefix + data);
+            Print(""=========================================================================================="");
+        }
+    }
+    
+    ref HumanityDatabasePlayerModel GetHumanity()
+    {
+        if(humanityModel) return humanityModel;
+        return NULL;
+    }
+}
+
+```",,
+144633441554530304,MypowerFreak#5276,10/26/2019 3:04 PM,"now i have the problem that i cant access HumanityDatabasePlayerModel because it is on another script module, is there a way how i can access the HumanityDatabasePlayerModel from both script modules?",,
+456226577798135808,Deleted User,10/26/2019 6:17 PM,"OnClientRespawnEvent applies only to fresh spawned players, or to those who just connect to the server?",,
+181864632216977408,arkensor,10/26/2019 6:38 PM,@MypowerFreak you mean it does not compile because it is unknown there?,,
+144633441554530304,MypowerFreak#5276,10/26/2019 6:39 PM,@Arkensor yes,,
+164508088559337472,d3xt0r#9041,10/26/2019 9:04 PM,Having an issue modifying the Megaphone,https://cdn.discordapp.com/attachments/492295576470290433/637728159625904181/unknown.png,
+164508088559337472,d3xt0r#9041,10/26/2019 9:04 PM,"```c
+requiredAddons[]=
+        {
+            ""DZ_Data"",
+            ""DZ_Scripts"",
+            ""DZ_Characters"",
+            ""DZ_Gear_Consumables"",
+            ""DZ_Gear_Camping"",
+            ""DZ_Gear_Crafting"",
+            ""DZ_Gear_Food"",
+            ""DZ_Gear_Radio"",
+            ""DZ_Gear_Tools""
+}```",,
+444901154732769300,cj187,10/27/2019 12:36 AM,"Can someone help me out please???
+
+All the time I've using a script to change the weight of an item in special case.
+
+But since Patch 1.05 this script doesn't work anymore :'(",,
+444901154732769300,cj187,10/27/2019 12:36 AM,,https://cdn.discordapp.com/attachments/492295576470290433/637781731486990357/GasMask.c,
+444901154732769300,cj187,10/27/2019 12:37 AM,I want nerving the player stamina when wearing gas masks.,,
+444901154732769300,cj187,10/27/2019 12:39 AM,"This was the easiest way for me to increase the weight of the gas mask when it was wearing on the mask slot.
+
+Original it weights between 1 and 1.5 kg.
+And with this script the weight was increased up to 30kg",,
+444901154732769300,cj187,10/27/2019 12:40 AM,"I know, it is not perfect, but the player stamina was reduced about 50% and that is what I want again",,
+444901154732769300,cj187,10/27/2019 12:40 AM,So please,,
+444901154732769300,cj187,10/27/2019 12:40 AM,Can someone please help me out,,
+444901154732769300,cj187,10/27/2019 12:40 AM,😭,,
+137658517615149056,helkhiana,10/27/2019 1:19 AM,does it error? how doesn't it work?,,
+137658517615149056,helkhiana,10/27/2019 1:19 AM,@🇩🇪 CJ187,,
+91680680676720640,roomservice,10/27/2019 3:16 AM,you change item weight in the config.cpp for the item,,
+91680680676720640,roomservice,10/27/2019 3:16 AM,Not in script,,
+91680680676720640,roomservice,10/27/2019 3:17 AM,"```    class GasMask: Clothing
+    {
+        scope=2;
+        displayName=""$STR_CfgVehicles_GasMask0"";
+        descriptionShort=""$STR_CfgVehicles_GasMask1"";
+        model=""\DZ\characters\masks\GasMask_g.p3d"";
+        inventorySlot=""Mask"";
+        itemInfo[]=
+        {
+            ""Clothing"",
+            ""Mask""
+        };
+        rotationFlags=2;
+        weight=730;
+```",,
+137658517615149056,helkhiana,10/27/2019 3:26 AM,@RoomService he wants dynamic weight,,
+137658517615149056,helkhiana,10/27/2019 3:27 AM,"if it's in inventory cargo, have weight small. if it's attached on head increase weight",,
+91680680676720640,roomservice,10/27/2019 3:27 AM,oh,,
+137658517615149056,helkhiana,10/27/2019 3:45 AM,"found this function in building.c and i'm trying to understand if it's possible for  me to call/have it in another class. i tried just pasting it but says function not linked
+```
+    proto native vector GetDoorSoundPos(int index);
+```
+how do i link it exactly?",,
+91680680676720640,roomservice,10/27/2019 3:58 AM,what other class would you need it in?,,
+137658517615149056,helkhiana,10/27/2019 4:02 AM,making custom hybrid of container_base and housenodestruct,,
+137658517615149056,helkhiana,10/27/2019 4:02 AM,"made it work but i don't feel it's ""elegant"" enough",,
+137658517615149056,helkhiana,10/27/2019 4:03 AM,at the moment only works with buildings that have 1 door,,
+91680680676720640,roomservice,10/27/2019 4:04 AM,I'm not exactly sure what you're doing tbh. If it's a building can't you just cast whatever it is as a building then call the function at whatever door index?,,
+137658517615149056,helkhiana,10/27/2019 4:05 AM,the building is a container_base atm,,
+137658517615149056,helkhiana,10/27/2019 4:05 AM,not sure if the cast would just work,,
+137658517615149056,helkhiana,10/27/2019 4:06 AM,i've tried about 1k things i can't remember if simply cast works rn,,
+91680680676720640,roomservice,10/27/2019 4:06 AM,if it doesn't inherit the building class then no,,
+561680015578759196,wrdg,10/27/2019 4:06 AM,Sounds are handled in the config,,
+137658517615149056,helkhiana,10/27/2019 4:06 AM,it doesn't inherit building class,,
+91680680676720640,roomservice,10/27/2019 4:07 AM,"yeah then nah, you can't cast. I always forget about the config lol. wardog probably has a good solution",,
+137658517615149056,helkhiana,10/27/2019 4:07 AM,that is just one example of a function. i'd need all of them from teh building class,,
+561680015578759196,wrdg,10/27/2019 4:07 AM,"Still sounds are handled in the config, I'm pretty sure you can cheat off of the barrel to see how sounds are handled",,
+561680015578759196,wrdg,10/27/2019 4:07 AM,For open/close,,
+561680015578759196,wrdg,10/27/2019 4:08 AM,"Maybe, I'm not exactly sure, I've yet to make my own item that has animation for a door",,
+561680015578759196,wrdg,10/27/2019 4:08 AM,Just check the config and scripting class for the barrel,,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,i can put soundsets the way the barrel does but the sounds doors have are not in a soundset. i can make my own soundset which is fine,,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,like i said,,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,it works,,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,"i can open, close, have sounds, can access inventory",,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,"but if i can use these
+```
+proto native void OpenDoor(int index);
+    proto native void CloseDoor(int index);
+    proto native void LockDoor(int index);
+    proto native void UnlockDoor(int index);
+```
+would be cleaner",,
+137658517615149056,helkhiana,10/27/2019 4:09 AM,i just want to understand how these work,,
+561680015578759196,wrdg,10/27/2019 4:09 AM,"The building class is odd, because most of it is all managed by the engine",,
+91680680676720640,roomservice,10/27/2019 4:09 AM,well you can't understand how they work because they're not exposed,,
+207328818203983872,notabanana,10/27/2019 4:10 AM,IF you want to use those just inherit from building? Why do you need container base?,,
+137658517615149056,helkhiana,10/27/2019 4:10 AM,to have inventory?,,
+207328818203983872,notabanana,10/27/2019 4:10 AM,You dont need container base for inv,,
+137658517615149056,helkhiana,10/27/2019 4:11 AM,"i've been experimenting with a lot. found a recent function ""IsInventoryVisible"" but haven't tried that with inheriting from building",,
+561680015578759196,wrdg,10/27/2019 4:11 AM,I don't think CE saves things derived from building,,
+137658517615149056,helkhiana,10/27/2019 4:11 AM,"simple inherit from building in script, HND in config with a cargo class doesn't work",,
+207328818203983872,notabanana,10/27/2019 4:11 AM,"Different ways you could accomplish it, a seperate item that creates itself at same place as building, theres the stuff for proxy inventory they fixed in 1.05 too",,
+207328818203983872,notabanana,10/27/2019 4:12 AM,Though now I think about it @Wardog might be right and those still dont save,,
+137658517615149056,helkhiana,10/27/2019 4:13 AM,if those native functions can't be linked then it's fine,,
+561680015578759196,wrdg,10/27/2019 4:13 AM,Those functions only work if your object inherits it,,
+137658517615149056,helkhiana,10/27/2019 4:15 AM,sucks. i'll just play around it then,,
+137658517615149056,helkhiana,10/27/2019 4:16 AM,thanks,,
+561680015578759196,wrdg,10/27/2019 4:17 AM,There's quite a handful of things that are managed by the engine that we'd love to have access to in scripting,,
+207328818203983872,notabanana,10/27/2019 4:17 AM,I want to disable the absolutely awful melee doors to pick lock mechanic,,
+207328818203983872,notabanana,10/27/2019 4:17 AM,Its *so* dumb,,
+561680015578759196,wrdg,10/27/2019 4:54 AM,"Room service has done a custom locking mechanic. I've also mimicked the idea, I still allow locking of doors via lockpick, but I have a kit you can use on doors to apply a secure lock, that can't be beaten down",,
+561680015578759196,wrdg,10/27/2019 4:54 AM,"Also requires a key, which you can lose lol",,
+137658517615149056,helkhiana,10/27/2019 4:57 AM,how does the key work?,,
+561680015578759196,wrdg,10/27/2019 4:58 AM,"The building position and door index is saved to the key with CE, and is checked with a custom action for opening doors",,
+137658517615149056,helkhiana,10/27/2019 5:02 AM,that's neat,,
+137658517615149056,helkhiana,10/27/2019 5:02 AM,you released this?,,
+561680015578759196,wrdg,10/27/2019 5:03 AM,Not yet,,
+561680015578759196,wrdg,10/27/2019 5:04 AM,"I won't be releasing it as a mod, it'll be part of my Life project.",,
+137658517615149056,helkhiana,10/27/2019 5:07 AM,whats that,,
+561680015578759196,wrdg,10/27/2019 5:12 AM,Just bringing my own taste of Arma Life to DayZ,,
+167659450142818306,original_six,10/27/2019 6:48 AM,👀,,
+444901154732769300,cj187,10/27/2019 9:37 AM,Does anyone have an idea how to fix my problem with gas mask weight?,,
+444901154732769300,cj187,10/27/2019 9:37 AM,😭,,
+444901154732769300,cj187,10/27/2019 9:38 AM,Or is there a function to reduce the stamina via script?,,
+558719861463842852,glutenfreevapes,10/27/2019 12:49 PM,yyes there is,,
+558719861463842852,glutenfreevapes,10/27/2019 12:49 PM,But make sure you run it both on client and server,,
+558719861463842852,glutenfreevapes,10/27/2019 12:50 PM,"```c
+
+            DepleteStamina(EStaminaModifiers.HOLD_BREATH);
+```",,
+182546595194208257,pr9inichek,10/27/2019 1:12 PM,"Hi guys
+
+Sorry for my bad english :(
+
+In my opinion, if we get more positive votes, something is change
+
+Please, check this thread
+https://www.reddit.com/r/dayz/comments/dns78r/todevs_modders_need_this_tool_loot_spawn_point/",,
+180757017432948736,tennesseetimmy,10/27/2019 1:57 PM,🤦,,🤔 (2)
+451262086392184832,saljam,10/27/2019 7:34 PM,"Does anyone know if the lifetime in types definitely applies to an item spawned in via a .c file? For example, if i spawn in a dry bag with a gun in it via init.c, it doesnt seem to despawn according to its lifetime in types.
+I though about trying a heli crash type system, but I want to randomly spawn in a set of items. IE  first server start put item 1 at x and item 2 at y, then at next restart put item 3 at z and item 4 at y, but despawn items 1 and 2.
+Thanks for any possible assistance.",,
+207328818203983872,notabanana,10/27/2019 7:34 PM,"Definitely does, yes",,
+207328818203983872,notabanana,10/27/2019 7:35 PM,Keep in mind things wont despawn while youre looking at them if thats how you tested it,,
+451262086392184832,saljam,10/27/2019 7:37 PM,"OK. I must have messed the types up then. 
+I have been testing by going to the item, tping to the other side of the map, waiting 600 seconds + some for luck (item is set to 600s) and then tping back, but the item is still there. I am creating the item from the base item 'Paper' and have also tried to reduce that as a test.
+Thank you for confirming though, I guess im the problem lol. Ill have another look to see what im doing wrong.",,
+402438795825381376,namalsksurvivor,10/27/2019 7:58 PM,"CE passes take some time, so make sure you add 30 - 60 seconds before going back - CE wont remove the item if there is a player nearby
+also, if in doubt, you can use script to get actual lifetime on any item registered in CE",,
+561680015578759196,wrdg,10/27/2019 8:10 PM,"I wish notes were back, so paper could be more useful than just fire starter",,
+207328818203983872,notabanana,10/27/2019 8:20 PM,1.06 pls give notes,,
+451262086392184832,saljam,10/27/2019 8:31 PM,Thanks Sum. Ill look into that if it doesnt work still.,,
+91680680676720640,roomservice,10/27/2019 8:39 PM,"notes seem ez to mod in, no?",,
+456226577798135808,Deleted User,10/27/2019 8:42 PM,lord knows paper is persistent .. that crap is everywhere,,
+207328818203983872,notabanana,10/27/2019 8:42 PM,Yeah @RoomService,,
+268003379328974848,smasht,10/27/2019 10:00 PM,"Is “nearby” defined somewhere for CE, wondering if the distance could be increased  to prevent loot cycling?",,
+402438795825381376,namalsksurvivor,10/27/2019 10:03 PM,"yes, that is CleanupAvoidance (in meters) in globals.xml @SmashT",,
+268003379328974848,smasht,10/27/2019 10:03 PM,thanks,,
+207328818203983872,notabanana,10/27/2019 10:12 PM,"Oh neat, I always assumed it was hardcoded, nice to know",,
+558719861463842852,glutenfreevapes,10/27/2019 11:47 PM,Thanks @Sumrak,,
+558719861463842852,glutenfreevapes,10/27/2019 11:47 PM,good info to have,,
+379379312442474500,f1lthysancho,10/28/2019 3:07 PM,"hey guys
+quick question. I know how to spawn my buildings and created bases on the map with loot an zombies and the whole circus.
+with the COM editor it is quite easy to do with the //Spawn helper function.
+within the editor there is the possibility to despawn items that are already on the map, so it should be possible to add a //DeSpawn helper function as well?
+anyone any idea?",,
+558719861463842852,glutenfreevapes,10/28/2019 6:31 PM,not all items can be despawned to my knowledge,,
+561680015578759196,wrdg,10/28/2019 7:20 PM,"It's possible to delete map objects, but you're going to have to deal with syncing the deleted object to all clients within it's network bubble",,
+207328818203983872,notabanana,10/28/2019 7:24 PM,"just re-delete every tick, ez",,
+207328818203983872,notabanana,10/28/2019 7:24 PM,(this is a joke. dont do that),,OmegaPog (1)
+99298225999056896,cashewsan,10/28/2019 9:28 PM,"hello, am new to moddingh",,
+99298225999056896,cashewsan,10/28/2019 9:28 PM,how do custom recipes,,
+137658517615149056,helkhiana,10/28/2019 9:37 PM,2 items or more?,,
+99298225999056896,cashewsan,10/28/2019 9:38 PM,hmmmmm multiple to make it easy,,
+561680015578759196,wrdg,10/28/2019 9:39 PM,#proximitycrafting,,
+207328818203983872,notabanana,10/28/2019 9:39 PM,He means two or more *required* items,,
+99298225999056896,cashewsan,10/28/2019 9:39 PM,oh god so many typing,,
+207328818203983872,notabanana,10/28/2019 9:39 PM,not two or more *possible*,,
+137658517615149056,helkhiana,10/28/2019 9:39 PM,if you want to combine 3 or more items you'll need to make a workbench or do multiple step crafting,,
+99298225999056896,cashewsan,10/28/2019 9:39 PM,"hmmmmmm, I like the workbench idea",,
+207328818203983872,notabanana,10/28/2019 9:39 PM,""" to make it easy"" = he means multiple possible tools or w/e",,
+207328818203983872,notabanana,10/28/2019 9:39 PM,oh nvm,,
+561680015578759196,wrdg,10/28/2019 9:40 PM,"You don't need a workbench, you can just do proximity crafting",,
+137658517615149056,helkhiana,10/28/2019 9:40 PM,you can but i find it cleaner to have all items inside an inventory,,
+99298225999056896,cashewsan,10/28/2019 9:41 PM,"okay, well, let's go with just 1 on 1 crafting then go from there",,
+99298225999056896,cashewsan,10/28/2019 9:41 PM,wait,,
+99298225999056896,cashewsan,10/28/2019 9:41 PM,"I've LITERALLY made a recipe before in my mod, I'm dumb",,
+561680015578759196,wrdg,10/28/2019 9:41 PM,I want to craft a trebuchet but I can't fit the barrel in the workbench,,
+137658517615149056,helkhiana,10/28/2019 9:42 PM,"1-to-1 crafting is different than workbench, but you're free to take any code from my WIP mod. i have workbench, crafting recipes (refactored recipes too)",,
+107560637399306240,cooltrain,10/28/2019 9:42 PM,Did you know a trebuchet can launch a 90kg projectile over 300m!?,,
+561680015578759196,wrdg,10/28/2019 9:43 PM,Yeah they're a superior siege weapon,,
+137658517615149056,helkhiana,10/28/2019 9:43 PM,i made a generic crafting recipe. then you call that with the right values and items you want in register recipes,,
+137658517615149056,helkhiana,10/28/2019 9:43 PM,instead of writing same thing over and over again,,
+107560637399306240,cooltrain,10/28/2019 9:43 PM,not like those lame ~~catapults~~ inferior siege weapon,,
+137658517615149056,helkhiana,10/28/2019 9:43 PM,depends how many recipes you need,,
+561680015578759196,wrdg,10/28/2019 9:43 PM,You said the forbidden C word,,
+207328818203983872,notabanana,10/28/2019 9:44 PM,"@Wardog are there recipes in game that use proximity for crafting, or is that just something you're saying he can write?",,
+99298225999056896,cashewsan,10/28/2019 9:44 PM,"It's setting up painting recipes, so for each gun, 5 different possibilities",,
+207328818203983872,notabanana,10/28/2019 9:44 PM,"For painting just look at vanilla painting recipes for guns, dont need to make anything custom @CashewSan",,
+99298225999056896,cashewsan,10/28/2019 9:44 PM,and the ability to reverse as well :MonkaS:,,
+561680015578759196,wrdg,10/28/2019 9:45 PM,"You can do the lame one on one crafting, or you can create a system to check items within your proximity to craft with.",,
+99298225999056896,cashewsan,10/28/2019 9:45 PM,How hard is it to do the proximity crafting?,,
+107560637399306240,cooltrain,10/28/2019 9:47 PM,That would be a good framework mod,,
+561680015578759196,wrdg,10/28/2019 9:47 PM,"It requires a bit more scripting than usual, also there isn't any examples lol. But basically you're storing recipes in a dictionary and pulling items within a 3D or, if you want a 2D radius, when you have a crafting tool out.",,
+99298225999056896,cashewsan,10/28/2019 9:48 PM,"oh, so it's not something that's already implemented in DayZ?",,
+561680015578759196,wrdg,10/28/2019 9:48 PM,"No, sadly not lol",,
+99298225999056896,cashewsan,10/28/2019 9:48 PM,"hmmmmm, I'll have to pass 😦 me no good at script",,
+99298225999056896,cashewsan,10/28/2019 9:48 PM,Maybe in the future :pegaHmm:,,
+137658517615149056,helkhiana,10/28/2019 9:49 PM,feel free to take any code you need https://github.com/helkhiana/MuchDecos,,
+561680015578759196,wrdg,10/28/2019 9:49 PM,DjCtavia was working on some kind of multi stage crafting mod,,
+561680015578759196,wrdg,10/28/2019 9:49 PM,It was all UI based,,
+137658517615149056,helkhiana,10/28/2019 9:50 PM,"i got a question now. what am i doing wrong here?
+```
+            int length = slot_name.Length();
+            Print(""slot name length: "" + length);
+            string num_str = slot_name.Substring(9,length);
+            Print(""num_str for slot is "" + num_str);
+```
+
+
+```
+SCRIPT       : slot_name SeedBase_12
+SCRIPT       : slot name length: 11
+SCRIPT    (E): Wrong parameter value
+Class:      'Land_MD_Polytunnel'
+Entity id:2956344
+
+Function: 'GetSlotBySlotName'
+Stack trace:
+MuchDecos/Scripts/4_World/base classes\md_gardenbase.c:571
+MuchDecos/Scripts/4_World/base classes\md_gardenbase.c:305
+MuchDecos/Scripts/4_World/base classes\md_gardenbase.c:272
+SCRIPT       : num_str for slot is 12
+```",,
+561680015578759196,wrdg,10/28/2019 9:52 PM,https://media.discordapp.net/attachments/492295610586759188/605613074388615179/UI-enhanced-Error.png,,
+137658517615149056,helkhiana,10/28/2019 9:54 PM,it's basically saying line 571 where i get the substring has wrong parameter value?? but then it still gets my substring and i can print it,,
+99298225999056896,cashewsan,10/28/2019 9:59 PM,"I have to register the recipe, yes?",,
+137658517615149056,helkhiana,10/28/2019 9:59 PM,yes,,
+99298225999056896,cashewsan,10/28/2019 9:59 PM,How do?,,
+137658517615149056,helkhiana,10/28/2019 10:00 PM,"```
+modded class PluginRecipesManager 
+{
+
+     override void RegisterRecipies()
+    {
+        super.RegisterRecipies();
+        RegisterRecipe(new CraftDisItem);            
+    }            
+}
+```",,
+137658517615149056,helkhiana,10/28/2019 10:00 PM,add a new RegisterRecipe for every new recipe,,
+99298225999056896,cashewsan,10/28/2019 10:01 PM,"gotcha. So, how would I make multiple recipes in one script file? Or do I have to do a new script file each recipe?",,
+137658517615149056,helkhiana,10/28/2019 10:01 PM,normally you'd have to make a new recipe file for each recipe,,
+137658517615149056,helkhiana,10/28/2019 10:02 PM,if you want i can explain  my generic recipe tho,,
+99298225999056896,cashewsan,10/28/2019 10:02 PM,so I couldn't have two `override void Init()` in one script file?,,
+137658517615149056,helkhiana,10/28/2019 10:02 PM,nope,,
+99298225999056896,cashewsan,10/28/2019 10:03 PM,"hm, alrighty. So would this be correct or do I need more at the end?",https://cdn.discordapp.com/attachments/492295576470290433/638483080436252716/paintACR.c,
+99298225999056896,cashewsan,10/28/2019 10:04 PM,"like, how some recipes have ```override bool CanDo(ItemBase ingredients[], PlayerBase player)``` and ```override void Do(ItemBase ingredients[], PlayerBase player,array<ItemBase> results, float specialty_weight)``` at the end",,
+137658517615149056,helkhiana,10/28/2019 10:05 PM,i have those at the end of mine,,
+137658517615149056,helkhiana,10/28/2019 10:05 PM,i havent looked more into it,,
+137658517615149056,helkhiana,10/28/2019 10:05 PM,i have assumed that in the parent class those will do something we don't want to do,,
+137658517615149056,helkhiana,10/28/2019 10:05 PM,that's why we override them,,
+99298225999056896,cashewsan,10/28/2019 10:05 PM,"hm, I'm probably just gonna go with ""yes"" then lol",,
+137658517615149056,helkhiana,10/28/2019 10:06 PM,m_ResultToInventory[0] = 1 i'd say to change this,,
+137658517615149056,helkhiana,10/28/2019 10:06 PM,-2 for putting it on ground,,
+137658517615149056,helkhiana,10/28/2019 10:06 PM,and you can destroy ingredient 1,,
+137658517615149056,helkhiana,10/28/2019 10:07 PM,generally looks okay just depends how you want it to work,,
+137658517615149056,helkhiana,10/28/2019 10:07 PM,what if the gun has attachments,,
+137658517615149056,helkhiana,10/28/2019 10:07 PM,will those be gone,,
+137658517615149056,helkhiana,10/28/2019 10:07 PM,?,,
+99298225999056896,cashewsan,10/28/2019 10:08 PM,uhhhhh guess we'll figure out :^),,
+99298225999056896,cashewsan,10/28/2019 10:08 PM,also,https://cdn.discordapp.com/attachments/492295576470290433/638484184612208640/Screenshot_976.png,
+137658517615149056,helkhiana,10/28/2019 10:08 PM,send the class? and you sure you don't have another manager right,,
+99298225999056896,cashewsan,10/28/2019 10:08 PM,"oh nvm, I think I realized my mistake",,
+137658517615149056,helkhiana,10/28/2019 10:09 PM,ok,,
+207328818203983872,notabanana,10/28/2019 10:09 PM,You are basing your recipe on the paint recipe right?,,
+207328818203983872,notabanana,10/28/2019 10:09 PM,Not just making a random recipe?,,
+137658517615149056,helkhiana,10/28/2019 10:09 PM,think he is. which means the recipe is correct,,
+99298225999056896,cashewsan,10/28/2019 10:10 PM,Basing it on the AK101 paint recipe,,
+207328818203983872,notabanana,10/28/2019 10:11 PM,"Good, that way you dont delete attachments and shit",,
+99298225999056896,cashewsan,10/28/2019 10:13 PM,"hm, recipe didn't work :PepeHands:",,
+137658517615149056,helkhiana,10/28/2019 10:13 PM,it doesn't show up?,,
+137658517615149056,helkhiana,10/28/2019 10:13 PM,hold the can in your hands and put gun on ground?,,
+99298225999056896,cashewsan,10/28/2019 10:14 PM,"the recipe shows, just doesn't come out with the right thing",,
+99298225999056896,cashewsan,10/28/2019 10:14 PM,weapon stays the same,,
+207328818203983872,notabanana,10/28/2019 10:14 PM,"Do you have MyGun_Green with color=""green""; in config?",,
+99298225999056896,cashewsan,10/28/2019 10:15 PM,does it need to have that?,,
+207328818203983872,notabanana,10/28/2019 10:15 PM,Yes,,
+207328818203983872,notabanana,10/28/2019 10:15 PM,And of course make sure MyGun_Green is actually green when spawned,,
+99298225999056896,cashewsan,10/28/2019 10:16 PM,"wait so I didn't have to make a custom texture for it? Not sure what the purpose of `color=""green""` is",,
+207328818203983872,notabanana,10/28/2019 10:17 PM,tells the game what color that class is,,
+207328818203983872,notabanana,10/28/2019 10:17 PM,You do need custom texture,,
+207328818203983872,notabanana,10/28/2019 10:18 PM,and material if you want to go all the way but I dont think even BI does that,,
+207328818203983872,notabanana,10/28/2019 10:19 PM,"```c
+    static void Paint(ItemBase item_tool, ItemBase item_target, string base_name, PlayerBase player, float specialty_weight = 0)
+    {
+        string spray_color = item_tool.ConfigGetString(""color"");
+        string item_color = item_target.ConfigGetString(""color"");
+```",,
+99298225999056896,cashewsan,10/28/2019 10:21 PM,"Hmmm, the AK101 config doesn't have that :hmMmm:",,
+99298225999056896,cashewsan,10/28/2019 10:22 PM,neither does M4,,
+207328818203983872,notabanana,10/28/2019 10:22 PM,yes they do?,,
+207328818203983872,notabanana,10/28/2019 10:23 PM,"```cpp
+    class AK101_Green: AK101
+    {
+        scope=2;
+        color=""Green"";
+        hiddenSelectionsTextures[]=
+        {
+            ""#(argb,8,8,3)color(0.35,0.36,0.28,1.0,CO)""
+        };
+    };
+```",,
+207328818203983872,notabanana,10/28/2019 10:23 PM,"```cpp
+    class M4A1_Green: M4A1
+    {
+        scope=2;
+        color=""Green"";
+        hiddenSelectionsTextures[]=
+        {
+            ""dz\weapons\firearms\m4\data\m4_body_green_co.paa""
+        };
+        hiddenSelectionsMaterials[]=
+        {
+            ""dz\weapons\firearms\m4\data\m4_body_camo.rvmat""
+        };
+    };
+```",,
+207328818203983872,notabanana,10/28/2019 10:23 PM,:thonk:,,
+99298225999056896,cashewsan,10/28/2019 10:24 PM,i meant the recipe script,,
+99298225999056896,cashewsan,10/28/2019 10:24 PM,doesn't have what you posted,,
+207328818203983872,notabanana,10/28/2019 10:24 PM,"```c
+    override void Do(ItemBase ingredients[], PlayerBase player,array<ItemBase> results, float specialty_weight)
+    {
+        PaintItem.Paint(ingredients[0], ingredients[1], ""AK101"", player, specialty_weight);
+    }
+```",,
+207328818203983872,notabanana,10/28/2019 10:25 PM,I just posted that to show you why the color config is needed,,
+207328818203983872,notabanana,10/28/2019 10:25 PM,Thats the script getting called in the block right here ^,,
+207328818203983872,notabanana,10/28/2019 10:25 PM,`PaintItem.Paint`,,
+99298225999056896,cashewsan,10/28/2019 10:26 PM,"Okay, how would I go about making more colors for the the spraycan's to call to?",,
+99298225999056896,cashewsan,10/28/2019 10:26 PM,"like, for say, Tan",,
+207328818203983872,notabanana,10/28/2019 10:27 PM,"Make a new spray can using the others as reference, and make sure it has the right color config entry, then do the same for your gun",,
+99298225999056896,cashewsan,10/28/2019 10:27 PM,"Ah, gotcha",,
+99298225999056896,cashewsan,10/28/2019 10:28 PM,"Seems like an odd way to do, but I guess it is a lot quicker",,
+99298225999056896,cashewsan,10/28/2019 10:28 PM,Or just odd to me,,
+99298225999056896,cashewsan,10/28/2019 10:29 PM,"hm, still didn't work :hmMmm:",,
+99298225999056896,cashewsan,10/28/2019 10:31 PM,"And for reference, how would I do like, if I wanted to add black to a green to get a camo, would this recipe cover that as well or will that require a new recipe?",,
+137658517615149056,helkhiana,10/28/2019 10:31 PM,isn't there a mod which paints guns already?,,
+99298225999056896,cashewsan,10/28/2019 10:32 PM,"yeah, but, I have something special for my weapons so I gotta do it myself",,
+207328818203983872,notabanana,10/28/2019 10:34 PM,"can grab current color of item, if black or green = paint camo",,
+137658517615149056,helkhiana,10/28/2019 10:35 PM,@Not A Banana any idea about my error i posted earlier? it makes no sense to me,,
+99298225999056896,cashewsan,10/29/2019 2:11 AM,"@Not A Banana so, the theory for the spraycan works for the base M4A1, but it creates two M4's (also I can't get it to work with my weapons)",,
+99298225999056896,cashewsan,10/29/2019 2:11 AM,Maybe they don't have it implemented for a reason..?,,
+207328818203983872,notabanana,10/29/2019 2:12 AM,"One sec, I'll make a sample mod for you",,
+99298225999056896,cashewsan,10/29/2019 2:12 AM,what a babe ❤,,
+99298225999056896,cashewsan,10/29/2019 2:14 AM,"because I'm doing exactly what you've been saying and even copied it straight from the M4 config, but like??? No work for my guns",,
+99298225999056896,cashewsan,10/29/2019 2:18 AM,"Well, I made it turn into a green M4, but not the green ACR :monkaHmm:",,
+207328818203983872,notabanana,10/29/2019 2:19 AM,"oh I didnt think of that, yeah if youre still inheriting from vanilla guns that might be an issue",,
+207328818203983872,notabanana,10/29/2019 2:21 AM,"Wait no, that shouldnt happen as the paint m4 recipe is disabled",,
+99298225999056896,cashewsan,10/29/2019 2:21 AM,So I would need to do all my weapons on `Rifle_Base` for it to work?,,
+207328818203983872,notabanana,10/29/2019 2:22 AM,"You should move to doing that anyway yes, but nevermind what I said, shouldnt turn into an m4 as the paint m4 recipe is disabled",,
+99298225999056896,cashewsan,10/29/2019 2:23 AM,"I enabled it for testing, but I believe the way I got that was through 
+```
+    override void Do(ItemBase ingredients[], PlayerBase player,array<ItemBase> results, float specialty_weight)
+    {
+        PaintItem.Paint(ingredients[0], ingredients[1], ""M4A1"", player, specialty_weight);
+    }
+```",,
+207328818203983872,notabanana,10/29/2019 2:23 AM,:LUL:,,
+99298225999056896,cashewsan,10/29/2019 2:23 AM,"where `M4A1` should've been WE_ACR, but even changing it, it doesn't change the color of the ACR",,
+99298225999056896,cashewsan,10/29/2019 2:24 AM,I'm guessing Expansion utilizes this way of painting weapons? That's probably why it works lol,,
+207328818203983872,notabanana,10/29/2019 2:24 AM,I havent set up painting anything,,
+207328818203983872,notabanana,10/29/2019 2:25 AM,Not for expansion that is,,
+207328818203983872,notabanana,10/29/2019 2:25 AM,Are you sure your ACR is set up properly? You can spawn in your painted version right?,,
+99298225999056896,cashewsan,10/29/2019 2:25 AM,Yuppers,,
+99298225999056896,cashewsan,10/29/2019 2:26 AM,"```
+    class WE_ACR_Olive: WE_ACR
+    {
+        color=""Green"";
+        hiddenSelections[]=
+        {
+            ""recolor""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""WeaponExpansion\ACR\ACR_Olive_co.paa""
+        };
+        hiddenSelectionsMaterials[]=
+        {
+            ""WeaponExpansion\ACR\ACR.rvmat""
+        };
+    };
+```
+Directly based off the original ACR class, unless I'm overlooking something",,
+99298225999056896,cashewsan,10/29/2019 2:26 AM,or just doing it wrong,,
+207328818203983872,notabanana,10/29/2019 2:27 AM,,https://cdn.discordapp.com/attachments/492295576470290433/638549494174187520/PaintWeapon.rar,
+207328818203983872,notabanana,10/29/2019 2:28 AM,_olive is the issue lol,,
+207328818203983872,notabanana,10/29/2019 2:28 AM,needs to be _green,,
+207328818203983872,notabanana,10/29/2019 2:29 AM,"This is what paint does: ```c
+    static void Paint(ItemBase item_tool, ItemBase item_target, string base_name, PlayerBase player, float specialty_weight = 0)
+    {
+        string spray_color = item_tool.ConfigGetString(""color"");
+        string item_color = item_target.ConfigGetString(""color"");
+
+        string new_class_name = base_name + ""_"" + spray_color;
+        PaintItem.SwitchItems(item_target, new_class_name, player);
+    }
+```",,
+99298225999056896,cashewsan,10/29/2019 2:29 AM,is that really the issue?,,
+99298225999056896,cashewsan,10/29/2019 2:29 AM,time to create a new spraycan to avoid changing all of that :^),,
+99298225999056896,cashewsan,10/29/2019 2:29 AM,"also, with the one sent, you have no result, is that not needed?",,
+207328818203983872,notabanana,10/29/2019 2:29 AM,"Yeah you can just change ""Green"" in config to Olive and make an olive spray can",,
+207328818203983872,notabanana,10/29/2019 2:30 AM,but thats not very considerate of players time,,
+99298225999056896,cashewsan,10/29/2019 2:30 AM,"Not like the Spraycan's are in anyways, lul",,
+207328818203983872,notabanana,10/29/2019 2:30 AM,They are in several servers + probably coming soon to vanilla,,
+99298225999056896,cashewsan,10/29/2019 2:30 AM,heck,,
+207328818203983872,notabanana,10/29/2019 2:31 AM,"All you need to do is add this to your config: 
+```
+class WE_ACR_Green: WE_ACR_Olive
+{
+};
+```",,
+207328818203983872,notabanana,10/29/2019 2:32 AM,"And phase out _olive from xml files you provide, alert server owners to use _green instead",,
+207328818203983872,notabanana,10/29/2019 2:32 AM,"Then in an update or two, remove that empty green one and change the olive class name to green",,
+99298225999056896,cashewsan,10/29/2019 2:33 AM,I'm not pushing this till 1.06 anyways when all the server's reset,,
+99298225999056896,cashewsan,10/29/2019 2:34 AM,"unless I'm just like, missing an entire point. Olive wasn't even in with last update anyways so",,
+207328818203983872,notabanana,10/29/2019 2:34 AM,"or if you want to do it a 10000iq way, lmao, mod paintitem so that it checks if base_name = WE_ACR, new_class_name = WE_ACR_Olive 😂",,
+99298225999056896,cashewsan,10/29/2019 2:35 AM,"nah, I'll stick vanilla. That's mostly the goal of WE, thanks for all the help though!!! But also, the recipe to sent me doesn't have a result in it, is that on purpose or?",,
+207328818203983872,notabanana,10/29/2019 2:36 AM,"Yeah that was a joke, dont do that lol",,
+207328818203983872,notabanana,10/29/2019 2:36 AM,"It doesnt need a result, paint handles that",,
+207328818203983872,notabanana,10/29/2019 2:37 AM,"""Do"" runs on completion",,
+99298225999056896,cashewsan,10/29/2019 2:38 AM,"Ah, gotcha. Will test and report back",,
+99298225999056896,cashewsan,10/29/2019 2:40 AM,"Works, thank you!!",,
+99298225999056896,cashewsan,10/29/2019 2:40 AM,Time to make so... many... recipes... ugh,,
+99298225999056896,cashewsan,10/29/2019 2:41 AM,"Also, question, what's the benefit of basing it on `Rifle_Base` vs a Vanilla Weapon?",,
+99298225999056896,cashewsan,10/29/2019 2:41 AM,More flexibility?,,
+207328818203983872,notabanana,10/29/2019 2:42 AM,You dont have to worry about shit that doesnt belong being attached to your weapon,,
+233710144330924032,terro90,10/29/2019 11:58 AM,"Hi, does anyone have an idea how to add an armband to have it on both the left and right arm?",,
+137658517615149056,helkhiana,10/29/2019 12:01 PM,I think mass made double armband,,
+233710144330924032,terro90,10/29/2019 12:09 PM,Could you explain yourself better?,,
+463051926406430720,saltybob#3845,10/29/2019 12:14 PM,Does anyone have a working method for adding an agent to water? I’ve managed to add it to eating and single bites as custom actions but despite a lot of trial and error I’m not able to do it successfully with liquids,,
+463051926406430720,saltybob#3845,10/29/2019 12:16 PM,To clarify it is a custom agent that I want to add to a water container either using crafting or on object creation/ consumption,,
+137658517615149056,helkhiana,10/29/2019 12:17 PM,@[D.M.O.K.] Terro  mass's many item overhaul might have already implemented a double armand. I cant remember if it was mass or MSFC. But you can check their code?,,
+233710144330924032,terro90,10/29/2019 12:25 PM,@Helkhiana I checked and neither added it,,
+137658517615149056,helkhiana,10/29/2019 12:34 PM,Pffs. Im sure it is. You can craft a double armband,,
+137658517615149056,helkhiana,10/29/2019 12:35 PM,Im at work now and cant check,,
+137658517615149056,helkhiana,10/29/2019 12:35 PM,Ill find it when i get home if ure still stuck,,
+233710144330924032,terro90,10/29/2019 12:47 PM,ok thank a lot,,
+542253391632400384,akimbo_polygone,10/29/2019 3:20 PM,"Hey fellas, I hope this is the right place. I have created a custom radio (Diff,Normal.Spec already media), based on simulation=""itemTransmitter""; It works fine, I can put a 9v or a 12v car battery in, the energymanager also works. Now I want to step a little further and supply power though a wired battery like the spotlight or the xmas lights. I lurked though the 4_world scripts and found the corresponding .c files for the spotlight. I just don't know where to get started. Any help is appreciated.",,
+463051926406430720,saltybob#3845,10/29/2019 3:37 PM,@AkimbO by wired battery do you mean power from a generator? There is no battery typically in that setup... I’m at work at the moment but dm me if you don’t get an answer and I can send you example code for hooking stuff up to cable reel and generator,,
+456226577798135808,Deleted User,10/29/2019 3:38 PM,"did youuu know saltybob, you can actually connect a battery to a spotlight without a generator. a player showed me this a few weeks back and I was like wHAAAT!?",,
+542253391632400384,akimbo_polygone,10/29/2019 3:39 PM,"@saltybob - hooking stuff to a generator is actually fine too! but you can also supply the spotlight with power from a car battery where you put a regular wire in. (Put a wire in a car battery first, then place it on the ground, take a spotlight into your hands and look at the wired battery)",,
+561680015578759196,wrdg,10/29/2019 3:41 PM,Same with Christmas lights,,
+542253391632400384,akimbo_polygone,10/29/2019 3:42 PM,Has anyone an idea how to realize this into a custom radio mod?,,
+226007936546111498,ctlaltdelammo,10/29/2019 3:43 PM,look at ActionPlugIn,,
+226007936546111498,ctlaltdelammo,10/29/2019 3:43 PM,etc,,
+542253391632400384,akimbo_polygone,10/29/2019 3:53 PM,"@[DUG] Ammo I did, but I have to say, I am quite new at adding scripts to my pbo, all my previous mods where just simple reference based extensions - right now I just have an empty file placed at scripts/4_world/carradio.c in my mod folder. It's kinda hard to find references and ressources for dayz modding, even if I am familiar with c, c# and c++ code. Do I need to create a whole script for a transmitter or do I only have to add the plugin feature?",,
+221686644497973260,jlk,10/29/2019 3:54 PM,I have a some models for a bordered up window which I need someone to make craftable! Anyone have any experience and could possibly do this? 🙂,,
+137658517615149056,helkhiana,10/29/2019 4:03 PM,I can try making them for you craftables. You got a p3d? What is it attaching to exactly?,,
+463051926406430720,saltybob#3845,10/29/2019 4:12 PM,@Deleted User @AkimbO ah my bad! I’ve always done it from a generator 😃 I’d guess that code wise essentially it’s the same just the power source is different. If you’re stuck still later dm me and I’ll send you some working examples for the power stuff I use,,
+106867714374569984,dave_p.,10/29/2019 11:02 PM,any way to change what items can be used to repair items?,,
+137658517615149056,helkhiana,10/29/2019 11:08 PM,yes in config,,
+137658517615149056,helkhiana,10/29/2019 11:10 PM,"Put on the item to repair
+```
+repairableWithKits[]={5,4};
+```
+And this to make an item a kit to repair the item you set above
+```
+repairKitType=4;
+```",,
+106867714374569984,dave_p.,10/29/2019 11:11 PM,perfect thanks for the help,,
+99298225999056896,cashewsan,10/29/2019 11:42 PM,"@Not A Banana so with the paint script, I notice it doesn't go back (ie, from tan to back to the original). Would I have to make a new recipe to do so or?",,
+207328818203983872,notabanana,10/29/2019 11:52 PM,"I think there might already be one, but if not it'd be pretty easy to make one",,
+207328818203983872,notabanana,10/29/2019 11:53 PM,"But don't make individual recipes for each other weapon, make one that cleans paint off any weapon, similar to how the paint weapon one works",,
+99298225999056896,cashewsan,10/29/2019 11:56 PM,"I made one for paint-thinner that turns it into a snow camo, but I made a recipe that does the combo to make a camo, and it works but two items come out of the recipe instead of one",,
+456226577798135808,Deleted User,10/30/2019 3:21 AM,"how would I go about creating particle effects at certain coords on the server? Like color smoke that, ideally stays there continuously.",,
+207328818203983872,notabanana,10/30/2019 3:24 AM,Look at how smoke grenades and such spawn the particles + make your own particle,,
+207328818203983872,notabanana,10/30/2019 3:24 AM,using workbench,,
+456226577798135808,Deleted User,10/30/2019 3:42 AM,"ok, thanks for the response. I come from dayz mod, and have spent the last couple months configuring and adding mods to Standalone. So I am at a loss how to break ground on this project, where to start. I'll look into Workbench for starters.",,
+542253391632400384,akimbo_polygone,10/30/2019 4:14 AM,"With the help of saltybob, I managed to get the radio working with a generator. I can also turn the radio on, if power is available. I just dont hear static sound and do not see the frequency in the hud, even if I can switch channels. any idea?",,
+228312873619816448,britto,10/30/2019 9:34 PM,How to unlink the original layout? I'm trying to remove the DayZ logo but it's not working ...,,
+228312873619816448,britto,10/30/2019 9:35 PM,"Original: 
+```c
+class LoadingMenu extends UIScriptedMenu
+{
+    void LoadingMenu()
+    {
+    }
+
+    void ~LoadingMenu()
+    {
+    }
+    
+    override Widget Init()
+    {
+        layoutRoot = GetGame().GetWorkspace().CreateWidgets(""gui/layouts/loading.layout"");
+        
+        m_label = TextWidget.Cast( layoutRoot.FindAnyWidget(""TextWidget"") );
+        m_progressBar = ProgressBarWidget.Cast( layoutRoot.FindAnyWidget(""ProgressBarWidget"") );
+        m_image = ImageWidget.Cast( layoutRoot.FindAnyWidget(""ImageBackground"") );
+        
+        m_image.LoadImageFile( 0, GetRandomLoadingBackground() );
+        
+        return layoutRoot;
+    }
+
+    TextWidget m_label;
+    ProgressBarWidget m_progressBar;
+    ImageWidget m_image;
+}
+```",,
+228312873619816448,britto,10/30/2019 9:35 PM,"How I tried ...
+```c
+modded class LoadingMenu extends UIScriptedMenu
+{
+    void LoadingMenu()
+    {
+    }
+
+    void ~LoadingMenu()
+    {
+        layoutRoot.Unlink();
+    }
+    
+    override Widget Init()
+    {
+        layoutRoot = GetGame().GetWorkspace().CreateWidgets(""Quarentena/quarentena_layouts/loading.layout"");
+        
+        m_label = TextWidget.Cast( layoutRoot.FindAnyWidget(""TextWidget"") );
+        m_progressBar = ProgressBarWidget.Cast( layoutRoot.FindAnyWidget(""ProgressBarWidget"") );
+        m_image = ImageWidget.Cast( layoutRoot.FindAnyWidget(""ImageBackground"") );
+        
+        m_image.LoadImageFile( 0, GetRandomLoadingBackground() );
+        
+        return layoutRoot;
+    }
+
+    TextWidget m_label;
+    ProgressBarWidget m_progressBar;
+    ImageWidget m_image;
+}
+```",,
+235718406492520448,niirozz,10/30/2019 9:53 PM,"IF you override the init, it should not spawn the vanilla one anymore",,
+235718406492520448,niirozz,10/30/2019 9:53 PM,that's why it's inside function,,
+228312873619816448,britto,10/30/2019 10:01 PM,I already changed the default layout that is inside init to my which removes the logo but it doesn't work.,,
+228312873619816448,britto,10/30/2019 10:02 PM,I texted Movax and he said he has to use Unlink but I don't quite know how to use it.,,
+561680015578759196,wrdg,10/30/2019 11:39 PM,Don't use it in the deconstructor...,,
+542253391632400384,akimbo_polygone,10/30/2019 11:52 PM,"If I want to create custom actions, should I keep the dayz folder structure or can I just put them in my mod/scripts folder?",,
+542253391632400384,akimbo_polygone,10/30/2019 11:52 PM,"""mod/scripts/4_world/customaction.c"" for example",,
+542253391632400384,akimbo_polygone,10/30/2019 11:54 PM,"I have just created a variation of the transmitterbase class and need to get the (turn on, turn off, changefrequency) actions without the reference to transmitterbase but to my variation",,
+239201186933112833,da0ne_,10/31/2019 2:22 AM,File structure does not matter at all,,
+239201186933112833,da0ne_,10/31/2019 2:22 AM,As long as your modCfg points each module to the correct folder,,
+239201186933112833,da0ne_,10/31/2019 2:22 AM,worldModule gameModule missionModule,,
+239201186933112833,da0ne_,10/31/2019 2:22 AM,Etc,,
+239201186933112833,da0ne_,10/31/2019 2:23 AM,The order that they load in is important,,
+239201186933112833,da0ne_,10/31/2019 2:23 AM,Can’t have a script in the mission module load in the world module,,
+239201186933112833,da0ne_,10/31/2019 2:23 AM,As the load order is different,,
+105574798691680256,totallynotgrim,10/31/2019 3:23 AM,:GWsetmyxPeepoWeird:,,
+105574798691680256,totallynotgrim,10/31/2019 3:24 AM,"Core -> GameLib -> Game -> World -> Mission 
+Mission can access references from all modules. While GameLib can only access refs from Core and GameLib",,
+542253391632400384,akimbo_polygone,10/31/2019 3:10 PM,"Thank you! I write some sort of dayz modding background guide and added this information there. Now I just have to find out, why my custom activity with a replaced base class reference doesn't do anything 🙂 at least it compiles and executes :S",,
+542253391632400384,akimbo_polygone,10/31/2019 3:11 PM,"if anyone wants to take a look, iam talking about ""actiontunefrequency.c""  and replaced the ""TransmitterBase"" reference with my own ""CarRadioBase""",,
+137658517615149056,helkhiana,10/31/2019 5:31 PM,did you put modded in front of it if you're replacing it,,
+314837788614721536,benchi,10/31/2019 5:34 PM,Hey I have a question how elaborate it would be to develop a script that only makes the contents of a backpack appear when you have not put it on and you should not be able to use or stow items as long as you have it on,,
+561680015578759196,wrdg,10/31/2019 5:36 PM,"so you want a backpack that can't store items, unless it's on the ground or in your hands?",,
+314837788614721536,benchi,10/31/2019 5:38 PM,yes only that the script works with all backpacks that are made compatible in a classname list,,
+314837788614721536,benchi,10/31/2019 5:40 PM,no new backpack a new feature for existing backpacks,,
+542253391632400384,akimbo_polygone,10/31/2019 5:46 PM,@Helkhiana Do you mean infront of the activity class or the CarRadioBase class?,,
+137658517615149056,helkhiana,10/31/2019 5:48 PM,you made new CarRadioBase to replace TransmitterBase?,,
+542253391632400384,akimbo_polygone,10/31/2019 5:49 PM,"Oh no, I want to keep TransmitterBase and add CarRadioBase as a slightly variated instance of TransmitterBase",,
+137658517615149056,helkhiana,10/31/2019 5:50 PM,is your class inheriting from TransmitterBase?,,
+137658517615149056,helkhiana,10/31/2019 5:51 PM,if it doesn't then you either have to mod actiontunefrequency to accept your CarRadioBase or make new action,,
+542253391632400384,akimbo_polygone,10/31/2019 5:54 PM,"My class is inheriting from ItemTransmitter, ah I see, I already have a new action called actiontunefrequencyradio, let me see if it works",,
+137658517615149056,helkhiana,10/31/2019 5:55 PM,your new action needs to be added to the carradiobase and actionconstructor,,
+561680015578759196,wrdg,10/31/2019 6:04 PM,"can anyone else not get `#define` and `#ifdef/#endif` to work in scripting? say i'm using mod load order to define a conditional that addon is loaded with `#define MODNAME` and in another addon i use to check if that conditional is present with `#ifdef MODNAME`. essentially what i'm wanting to do is to have the compiler only compile certain parts if a definition is present, so that i can have compatibility with other mods without having them be a strict dependency.
+
+`AddonOne/Scripts/3_Game/Definition.c`
+```csharp
+#define TESTMOD
+```
+
+`AddonTwo/Scripts/4_World/ActionConstructor.c`
+```csharp
+modded class ActionConstructor
+{
+    override void RegisterActions(TTypenameArray actions)
+    {
+        super.RegisterActions(actions);
+
+#ifdef TESTMOD
+        actions.Insert(ActionAcquireClassname);
+#endif
+    }
+}
+```
+
+i feel bad for directly mentioning someone, but i'm genuinely curious since both of y'all are quite more experienced and have been messing around with Enforce far longer than i have, it's only a soft mention, so don't kill me :feelsGunMan: 
+@Jacob_Mango @thurston",,
+542253391632400384,akimbo_polygone,10/31/2019 6:05 PM,"@Helkhiana  I think this is the problem. In carradiobase the actions are mentioned in ""override void SetActions()"" But I have not added them to the actionconstructor 🙂  - How should I manage that? Is it enough to add a modded class to my code?",,
+137658517615149056,helkhiana,10/31/2019 6:08 PM,"```
+modded class ActionConstructor 
+{
+
+    override void RegisterActions(TTypenameArray actions)
+    {
+        super.RegisterActions(actions);
+        actions.Insert(MyNewactiontunefrequencyradio);
+    }
+}
+```",,
+542253391632400384,akimbo_polygone,10/31/2019 6:37 PM,I think the action is now working 🙂 thank you Helkhiana 🙂,,
+542253391632400384,akimbo_polygone,10/31/2019 6:37 PM,But I still don't have the current frequency shown in the HUD,,
+542253391632400384,akimbo_polygone,10/31/2019 6:37 PM,https://ibb.co/5TrVvtH,,
+542253391632400384,akimbo_polygone,10/31/2019 6:39 PM,"I thought the custom tunefrequencyradioCar will add an constant update of the current frequency, but I may be wrong here",,
+207328818203983872,notabanana,10/31/2019 6:54 PM,@Benchi pretty easy,,
+137658517615149056,helkhiana,10/31/2019 6:57 PM,@AkimbO that's a different bag of worms. i had same issue getting a new lock to work,,
+542253391632400384,akimbo_polygone,10/31/2019 7:03 PM,"@Helkhiana oh snap, I feared this. Do you have some advice? I do not even know where to start. I inspected all transmitter files right now, with no current reference to the hud, only some old deprecated commands in the comments (that would do things much easier, if they where still usable)",,
+314837788614721536,benchi,10/31/2019 7:29 PM,@Not A Banana  I have send  u a DM 🙂,,
+230061386888118273,.thurston,10/31/2019 7:29 PM,https://github.com/Thurston00/DayZSAEnfScript/commit/61dbf2f8399d1aa038d7481a67037cde100a0a86,,
+230061386888118273,.thurston,10/31/2019 7:30 PM,1.05 -> 1.06 exp,,
+230061386888118273,.thurston,10/31/2019 7:31 PM,@0x346e3730 @Wardog @Happy ^,,
+230061386888118273,.thurston,10/31/2019 7:31 PM,@Jacob_Mango,,
+167370568893464576,0x346e3730,10/31/2019 7:31 PM,:ok_hand:,,
+167370568893464576,0x346e3730,10/31/2019 7:31 PM,reading right now,,
+167370568893464576,0x346e3730,10/31/2019 7:31 PM,thank you mr thurston,,
+230061386888118273,.thurston,10/31/2019 7:31 PM,❤,,
+561680015578759196,wrdg,10/31/2019 7:32 PM,thanks \:),,
+107560637399306240,cooltrain,10/31/2019 7:32 PM,Thats what I was waiting for,,
+107560637399306240,cooltrain,10/31/2019 7:32 PM,good stuff,,
+561680015578759196,wrdg,10/31/2019 7:34 PM,yeah looks like the colored wrecked vehicles are just separate models,,
+561680015578759196,wrdg,10/31/2019 7:34 PM,knew it would turn out that way :/,,
+230061386888118273,.thurston,10/31/2019 7:34 PM,"I would've rather had selections, with randomly generated colours",,
+207328818203983872,notabanana,10/31/2019 7:34 PM,reeeee,,
+207328818203983872,notabanana,10/31/2019 7:35 PM,@Wardog you already checked the base model to make sure they didnt add them?,,
+561680015578759196,wrdg,10/31/2019 7:35 PM,i'll check real quik,,
+561680015578759196,wrdg,10/31/2019 7:35 PM,gotta reinstall exp,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,I have it + it's extracted,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,hold on,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,what's the path?,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,GROSTON,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,@0x346e3730,,
+207328818203983872,notabanana,10/31/2019 7:36 PM,P:\DZ\vehicles\wheeled\offroadhatchback,,
+207328818203983872,notabanana,10/31/2019 7:36 PM,@thurston,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,https://thurston.pw/i/v5e20.png,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,@0x346e3730,,
+230061386888118273,.thurston,10/31/2019 7:36 PM,@0x346e3730,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,https://thurston.pw/i/3zcgb.png,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,uhhh... huh,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,"@mikero, is this an issue with eliteness on my end, or updated p3d version?",,
+561680015578759196,wrdg,10/31/2019 7:37 PM,THANK FUCKING GOD,,
+167370568893464576,0x346e3730,10/31/2019 7:37 PM,PRAISE,,
+167370568893464576,0x346e3730,10/31/2019 7:37 PM,WHOEVER AT BOHEMIA DID THIS,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,I LOVE THEM,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,TOO,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,DON'T WORRY,,
+230061386888118273,.thurston,10/31/2019 7:37 PM,I WILL GIVE THEM MANY SUCCS,,
+107560637399306240,cooltrain,10/31/2019 7:37 PM,Sweeeet,,
+230061386888118273,.thurston,10/31/2019 7:38 PM,SWEEET HEADERS BOYS,,
+561680015578759196,wrdg,10/31/2019 7:38 PM,i'm actually rather happy about this,,
+230061386888118273,.thurston,10/31/2019 7:38 PM,Me too.,,
+167370568893464576,0x346e3730,10/31/2019 7:39 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639533964104826891/unknown.png,
+167370568893464576,0x346e3730,10/31/2019 7:39 PM,Better mod management incoming with Livonia ?,,
+230061386888118273,.thurston,10/31/2019 7:39 PM,"Yeah, I just saw that",,
+107560637399306240,cooltrain,10/31/2019 7:40 PM,DLC counts as a mod then?,,
+230061386888118273,.thurston,10/31/2019 7:40 PM,"Yeah, it does",,
+167370568893464576,0x346e3730,10/31/2019 7:40 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639534222901772338/unknown.png,
+167370568893464576,0x346e3730,10/31/2019 7:40 PM,:eyesshaking:,,
+167370568893464576,0x346e3730,10/31/2019 7:40 PM,now this sounds interesting,,
+230061386888118273,.thurston,10/31/2019 7:40 PM,It does indeed.,,
+167370568893464576,0x346e3730,10/31/2019 7:41 PM,The DLC system lets think that more are thinked about,,
+167370568893464576,0x346e3730,10/31/2019 7:41 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639534459083030533/unknown.png,
+167370568893464576,0x346e3730,10/31/2019 7:41 PM,"Cars will despawn if under water I guess, good to have when they fly",,
+561680015578759196,wrdg,10/31/2019 7:41 PM,"too bad it's only content type headers though, nothing too special",,
+561680015578759196,wrdg,10/31/2019 7:42 PM,would be great if we could set our own headers,,
+107560637399306240,cooltrain,10/31/2019 7:42 PM,better than not having them,,
+230061386888118273,.thurston,10/31/2019 7:42 PM,"It seems as if they've changed the p3d version, @mikero, it would be amazing if you could confirm this.",,
+561680015578759196,wrdg,10/31/2019 7:42 PM,i'm sure they'll eventually expand upon cURL still,,
+167370568893464576,0x346e3730,10/31/2019 7:42 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639534727367229453/unknown.png,
+167370568893464576,0x346e3730,10/31/2019 7:42 PM,???????????????????????????????????????????????,,
+167370568893464576,0x346e3730,10/31/2019 7:42 PM,I saw tree sound changes,,
+167370568893464576,0x346e3730,10/31/2019 7:42 PM,"I was like ""meh, okay""",,
+167370568893464576,0x346e3730,10/31/2019 7:42 PM,now WHAT THE FUCK IS MINING WOOD,,
+561680015578759196,wrdg,10/31/2019 7:43 PM,punch trees bro,,
+230061386888118273,.thurston,10/31/2019 7:43 PM,Minecraft bro,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639535070385930255/unknown.png,
+561680015578759196,wrdg,10/31/2019 7:44 PM,also looks like they're setting up whitelising natively,,
+107560637399306240,cooltrain,10/31/2019 7:44 PM,they've made some tree's/bushes have diffrent hardness / cutting speed,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,"Saw lot of ""mouseAndKeyboard"" stuff",,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,Wonder if it's for consoles only,,
+107560637399306240,cooltrain,10/31/2019 7:44 PM,some of its commented console only ^^,,
+561680015578759196,wrdg,10/31/2019 7:44 PM,mouse and keyboard restrictions is for console,,
+561680015578759196,wrdg,10/31/2019 7:44 PM,so that server owners can restrict players from using mouse and keyboard on their servers,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,btw,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,https://twitter.com/GrosTon1337/status/1189973986387615745,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,pls make some noise,,
+167370568893464576,0x346e3730,10/31/2019 7:44 PM,ty,,
+207328818203983872,notabanana,10/31/2019 7:45 PM,@Wardog they have selections,,
+207328818203983872,notabanana,10/31/2019 7:45 PM,Theres colored variants you can drive,,
+207328818203983872,notabanana,10/31/2019 7:45 PM,"```    class OffroadHatchback_Blue: OffroadHatchback
+    {
+        hiddenSelectionsMaterials[]=
+        {
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\offroadhatchback\data\offroadhatchback_lights.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat"",
+            ""dz\vehicles\wheeled\OffroadHatchback\data\blue\niva_body.rvmat""
+        };```",,
+107560637399306240,cooltrain,10/31/2019 7:45 PM,Oh snap,,
+167370568893464576,0x346e3730,10/31/2019 7:45 PM,this means,,
+235718406492520448,niirozz,10/31/2019 7:45 PM,where did you saw changes about whitelisting @Wardog ?,,
+167370568893464576,0x346e3730,10/31/2019 7:45 PM,HELLO KITTY CAR,,
+207328818203983872,notabanana,10/31/2019 7:45 PM,custom cars bois,,
+561680015578759196,wrdg,10/31/2019 7:46 PM,noice,,
+230061386888118273,.thurston,10/31/2019 7:46 PM,HELLO KITTYYYY,,
+207328818203983872,notabanana,10/31/2019 7:46 PM,aka the fucking pale horse,,
+207328818203983872,notabanana,10/31/2019 7:46 PM,Hello kitty car is the bringer of death,,
+561680015578759196,wrdg,10/31/2019 7:46 PM,first saw whitelist in `scripts/3_Game/Services/BiosLobbyService.c `,,
+107560637399306240,cooltrain,10/31/2019 7:46 PM,Always remember,https://cdn.discordapp.com/attachments/492295576470290433/639535719232307210/9A9E370B748B582889E2123E6B6B0BA8357BB61A.png,
+230061386888118273,.thurston,10/31/2019 7:46 PM,I miss the A2 days,,
+167370568893464576,0x346e3730,10/31/2019 7:46 PM,who want to start the hello kitty crew,,
+230061386888118273,.thurston,10/31/2019 7:46 PM,But am I glad I don't have to play with 2 fps,,
+167370568893464576,0x346e3730,10/31/2019 7:46 PM,everyone takes 1 car,,
+230061386888118273,.thurston,10/31/2019 7:46 PM,and clunky movement,,
+167370568893464576,0x346e3730,10/31/2019 7:46 PM,to retexture,,
+167370568893464576,0x346e3730,10/31/2019 7:47 PM,still need to test V3S,,
+167370568893464576,0x346e3730,10/31/2019 7:47 PM,do cars work in offline ?,,
+230061386888118273,.thurston,10/31/2019 7:47 PM,https://thurston.pw/i/t5dv2.png,,
+230061386888118273,.thurston,10/31/2019 7:47 PM,Spectator has some changes,,
+230061386888118273,.thurston,10/31/2019 7:47 PM,Well... a change,,
+167370568893464576,0x346e3730,10/31/2019 7:48 PM,I have a three day week end and want to spend it all on modding rofl,,
+230061386888118273,.thurston,10/31/2019 7:48 PM,same,,
+207328818203983872,notabanana,10/31/2019 7:48 PM,@0x346e3730 v3s doesnt work,,
+207328818203983872,notabanana,10/31/2019 7:48 PM,no change,,
+207328818203983872,notabanana,10/31/2019 7:48 PM,They even removed the parts for it from the game,,
+207328818203983872,notabanana,10/31/2019 7:48 PM,the glow plug and radiator that is,,
+230061386888118273,.thurston,10/31/2019 7:48 PM,Will there be a DayZ Tools update?,,
+230061386888118273,.thurston,10/31/2019 7:48 PM,does anyone know,,
+235718406492520448,niirozz,10/31/2019 7:51 PM,GetBandagingEffectivity,,
+235718406492520448,niirozz,10/31/2019 7:51 PM,new function,,
+230061386888118273,.thurston,10/31/2019 7:51 PM,https://thurston.pw/i/pdl4v.png,,
+230061386888118273,.thurston,10/31/2019 7:51 PM,New feature,,
+167370568893464576,0x346e3730,10/31/2019 7:51 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639537033177595945/unknown.png,
+235718406492520448,niirozz,10/31/2019 7:51 PM,"sounds like, now bandage not have same efectivity",,
+167370568893464576,0x346e3730,10/31/2019 7:51 PM,time to rewrite RealWeather,,
+167370568893464576,0x346e3730,10/31/2019 7:52 PM,wait a minute,,
+167370568893464576,0x346e3730,10/31/2019 7:52 PM,???????????,https://cdn.discordapp.com/attachments/492295576470290433/639537253525487626/unknown.png,
+235718406492520448,niirozz,10/31/2019 7:52 PM,Yeah,,
+230061386888118273,.thurston,10/31/2019 7:52 PM,Yeah,,
+235718406492520448,niirozz,10/31/2019 7:52 PM,Sumrak said this will be possible in 1.06,,
+230061386888118273,.thurston,10/31/2019 7:52 PM,Livonia was originally called Enoch,,
+235718406492520448,niirozz,10/31/2019 7:53 PM,so we can mod class and detect weather changes,,
+235718406492520448,niirozz,10/31/2019 7:53 PM,Enoch is the project name,,
+235718406492520448,niirozz,10/31/2019 7:53 PM,of Liviona,,
+230061386888118273,.thurston,10/31/2019 7:53 PM,Wait,,
+230061386888118273,.thurston,10/31/2019 7:53 PM,New chat channel,,
+230061386888118273,.thurston,10/31/2019 7:53 PM,``CCBattlEye``,,
+235718406492520448,niirozz,10/31/2019 7:53 PM,Like you can detect if it's starting to rain,,
+235718406492520448,niirozz,10/31/2019 7:53 PM,...,,
+235718406492520448,niirozz,10/31/2019 7:54 PM,Yeah bandage effectivity is here now,,
+235718406492520448,niirozz,10/31/2019 7:54 PM,That's cool,,
+230061386888118273,.thurston,10/31/2019 7:54 PM,"yeah, i saw",,
+230061386888118273,.thurston,10/31/2019 7:54 PM,looks very cool,,
+235718406492520448,niirozz,10/31/2019 7:54 PM,finished to see players only cutting,,
+235718406492520448,niirozz,10/31/2019 7:55 PM,tshirt for rags,,
+235718406492520448,niirozz,10/31/2019 7:55 PM,Real bandage will be more rare,,
+235718406492520448,niirozz,10/31/2019 7:55 PM,"and it's would be cool, if you rags you, you can have infection, if the rags is not pristine",,
+235718406492520448,niirozz,10/31/2019 7:55 PM,same with bandage,,
+561680015578759196,wrdg,10/31/2019 7:55 PM,`ActionPullBodyFromTransport`,,
+561680015578759196,wrdg,10/31/2019 7:55 PM,finally,,
+167370568893464576,0x346e3730,10/31/2019 7:55 PM,Kasthan can mount on SVD,,
+107560637399306240,cooltrain,10/31/2019 7:55 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639538071737729024/unknown.png,
+107560637399306240,cooltrain,10/31/2019 7:56 PM,Just saw it too,,
+167370568893464576,0x346e3730,10/31/2019 7:56 PM,thank god,,
+235718406492520448,niirozz,10/31/2019 7:56 PM,PlayAttachmentDropSound,,
+235718406492520448,niirozz,10/31/2019 7:56 PM,https://gyazo.com/815597e0e302f920d50b293a36e63263,,
+235718406492520448,niirozz,10/31/2019 7:56 PM,one of next feature,,
+167370568893464576,0x346e3730,10/31/2019 7:57 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639538349807370260/unknown.png,
+107560637399306240,cooltrain,10/31/2019 7:57 PM,Also locking the player inv when getting in and out now,,
+107560637399306240,cooltrain,10/31/2019 7:57 PM,Oh snap,,
+107560637399306240,cooltrain,10/31/2019 7:57 PM,Gotta get those chrismas clothes working early,,
+230061386888118273,.thurston,10/31/2019 7:57 PM,https://thurston.pw/i/lrkh9.png,,
+207328818203983872,notabanana,10/31/2019 7:57 PM,Its last update of year so they need christmas stuff mostly working,,
+230061386888118273,.thurston,10/31/2019 7:57 PM,Time to set ``GetIsDLC`` to true for Expansion :pepelaughers:,,
+105574798691680256,totallynotgrim,10/31/2019 7:58 PM,:hmm:,,
+105574798691680256,totallynotgrim,10/31/2019 7:58 PM,Are inventory proxies in?,,
+230061386888118273,.thurston,10/31/2019 7:58 PM,uhhh,,
+230061386888118273,.thurston,10/31/2019 7:58 PM,idk,,
+105574798691680256,totallynotgrim,10/31/2019 7:58 PM,Is PlayerIdentity fixed?,,
+105574798691680256,totallynotgrim,10/31/2019 7:58 PM,:hmm:,,
+230061386888118273,.thurston,10/31/2019 7:58 PM,Possibly,,
+167370568893464576,0x346e3730,10/31/2019 7:58 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639538799902326786/unknown.png,
+230061386888118273,.thurston,10/31/2019 7:59 PM,probably bullet speed,,
+167370568893464576,0x346e3730,10/31/2019 7:59 PM,yes it is,,
+561680015578759196,wrdg,10/31/2019 7:59 PM,they've also added explosives handling for items,,
+230061386888118273,.thurston,10/31/2019 7:59 PM,i wonder,,
+230061386888118273,.thurston,10/31/2019 7:59 PM,if your char is moving,,
+230061386888118273,.thurston,10/31/2019 7:59 PM,does that add to the bullet speed?,,
+561680015578759196,wrdg,10/31/2019 7:59 PM,so if they're in cargos...,,thisisfine (1)
+561680015578759196,wrdg,10/31/2019 8:00 PM,they've also added a player loaded boolean in playerbase,,
+105574798691680256,totallynotgrim,10/31/2019 8:01 PM,Does that just get set in OnPlayerSelected?,,
+167370568893464576,0x346e3730,10/31/2019 8:01 PM,no,,
+167370568893464576,0x346e3730,10/31/2019 8:01 PM,in OnPlayerLoaded,,
+167370568893464576,0x346e3730,10/31/2019 8:01 PM,at the very end,,
+107560637399306240,cooltrain,10/31/2019 8:02 PM,Gas masks are applying a ~~~mute~~~ voice distortion to the player,,
+167370568893464576,0x346e3730,10/31/2019 8:02 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639539819550343168/unknown.png,
+230061386888118273,.thurston,10/31/2019 8:03 PM,The exact error for @mikero - https://thurston.pw/i/yzmzk.png,,
+167370568893464576,0x346e3730,10/31/2019 8:03 PM,Looks like keyboard & mouse support is coming with 1.06,,
+167370568893464576,0x346e3730,10/31/2019 8:03 PM,for consoles,,
+207328818203983872,notabanana,10/31/2019 8:03 PM,oh wow,,
+207328818203983872,notabanana,10/31/2019 8:03 PM,I knew it was coming but not that soon,,
+107560637399306240,cooltrain,10/31/2019 8:03 PM,would explain the server option to allow/disallow keyboard and mouse,,
+207328818203983872,notabanana,10/31/2019 8:04 PM,If only MS and sony didnt suck for smaller studios they could do crossplay,,
+230061386888118273,.thurston,10/31/2019 8:05 PM,"Yeah, but console people would be at an extreme disadvantage",,
+167370568893464576,0x346e3730,10/31/2019 8:05 PM,"I see a lot of things such as ""server mods""",,
+167370568893464576,0x346e3730,10/31/2019 8:05 PM,but idk if it's only for Livonia or not,,
+207328818203983872,notabanana,10/31/2019 8:06 PM,Why would they @thurston,,
+167370568893464576,0x346e3730,10/31/2019 8:06 PM,gotta check that in depth,https://cdn.discordapp.com/attachments/492295576470290433/639540773188141086/unknown.png,
+230061386888118273,.thurston,10/31/2019 8:06 PM,"No aim assist, looting is significantly slower and so is getting your gun out, etc.",,
+207328818203983872,notabanana,10/31/2019 8:06 PM,scroll up 😄,,
+105031327861977088,thedimin,10/31/2019 8:06 PM,@0x346e3730 where can I find that GitHub were you are showing screenshots of ?,,
+167370568893464576,0x346e3730,10/31/2019 8:06 PM,https://github.com/Thurston00/DayZSAEnfScript/commit/61dbf2f8399d1aa038d7481a67037cde100a0a86,,
+230061386888118273,.thurston,10/31/2019 8:07 PM,"No, I know @Not A Banana",,
+167370568893464576,0x346e3730,10/31/2019 8:07 PM,"and say ""thank you mr thurston""",,
+207328818203983872,notabanana,10/31/2019 8:07 PM,The context was console having mouse and keyboard @thurston,,
+105031327861977088,thedimin,10/31/2019 8:07 PM,Thanks sir,,
+105031327861977088,thedimin,10/31/2019 8:07 PM,:),,
+207328818203983872,notabanana,10/31/2019 8:07 PM,And crossplay would be based on control scheme,,
+207328818203983872,notabanana,10/31/2019 8:07 PM,Thats how other games do it,,
+230061386888118273,.thurston,10/31/2019 8:07 PM,But crossplay should/would allow console/m&k together.,,
+230061386888118273,.thurston,10/31/2019 8:08 PM,MW allows both console/m&k,,
+105031327861977088,thedimin,10/31/2019 8:08 PM,Seems to be the best documentation on how to work with enfuse script,,
+207328818203983872,notabanana,10/31/2019 8:08 PM,"MW has ranking that will sort you by skill anyway. The way Fortnite does it is theres different servers, controller servers, and mouse and keyboard servers",,
+167370568893464576,0x346e3730,10/31/2019 8:09 PM,,https://cdn.discordapp.com/attachments/492295576470290433/639541471266996236/unknown.png,
+167370568893464576,0x346e3730,10/31/2019 8:09 PM,Better moddability of items names & descriptions,,
+207328818203983872,notabanana,10/31/2019 8:10 PM,nice,,
+167370568893464576,0x346e3730,10/31/2019 8:13 PM,scripts/4_World/Classes/UserActionsComponent/ActionComponents/CAContinuousMineWood.c,,
+167370568893464576,0x346e3730,10/31/2019 8:13 PM,woops,,
+167370568893464576,0x346e3730,10/31/2019 8:13 PM,https://github.com/Thurston00/DayZSAEnfScript/commit/61dbf2f8399d1aa038d7481a67037cde100a0a86#diff-d88bd0cb749dd94e1b6cf0264f23cd59,,
+167370568893464576,0x346e3730,10/31/2019 8:13 PM,really intrigued by this,,
+167370568893464576,0x346e3730,10/31/2019 8:14 PM,indeed,,
+235718406492520448,niirozz,10/31/2019 8:15 PM,This sounds like a more realistic way,,
+167370568893464576,0x346e3730,10/31/2019 8:15 PM,https://github.com/Thurston00/DayZSAEnfScript/blob/61dbf2f8399d1aa038d7481a67037cde100a0a86/scripts/4_World/Classes/UserActionsComponent/ActionComponents/CAContinuousMineWood.c,,
+235718406492520448,niirozz,10/31/2019 8:15 PM,you have more chance to drop with items,,
+235718406492520448,niirozz,10/31/2019 8:15 PM,than hands,,
+235718406492520448,niirozz,10/31/2019 8:16 PM,And have more chances to loot primary items than secondary items,,
+107560637399306240,cooltrain,10/31/2019 8:16 PM,It also will apply cuts to the hands unless you have gloves,,
+167370568893464576,0x346e3730,10/31/2019 8:17 PM,So far very interesting update,,
+230061386888118273,.thurston,10/31/2019 8:17 PM,It's not over yet,,
+167370568893464576,0x346e3730,10/31/2019 8:17 PM,Waiting to see what's coming next,,
+230061386888118273,.thurston,10/31/2019 8:17 PM,Still more to come,,
+167370568893464576,0x346e3730,10/31/2019 8:17 PM,yes,,
+230061386888118273,.thurston,10/31/2019 8:17 PM,Especially modding side,,
+167370568893464576,0x346e3730,10/31/2019 8:17 PM,that's the more interesting part,,
+230061386888118273,.thurston,10/31/2019 8:17 PM,"So far, we only have cURL headers",,
+207328818203983872,notabanana,10/31/2019 8:21 PM,wdym more to come? this is full 1.06,,
+167370568893464576,0x346e3730,10/31/2019 8:22 PM,nah,,
+207328818203983872,notabanana,10/31/2019 8:22 PM,"`In addition to featuring the idyllic environment of Livonia, all upcoming platform content from the Update 1.06 will be available, `",,
+207328818203983872,notabanana,10/31/2019 8:22 PM,Pretty sure this is everything. On the 4th exp goes down and stable updates,,
+167370568893464576,0x346e3730,10/31/2019 8:23 PM,obviously not,,
+167370568893464576,0x346e3730,10/31/2019 8:23 PM,they will treat the feedbacks,,
+167370568893464576,0x346e3730,10/31/2019 8:23 PM,they still have stuff to fix,,
+167370568893464576,0x346e3730,10/31/2019 8:23 PM,and more to fix incoming,,
+207328818203983872,notabanana,10/31/2019 8:23 PM,😂,,
+207328818203983872,notabanana,10/31/2019 8:23 PM,Yeah just like they did last patch,,
+167370568893464576,0x346e3730,10/31/2019 8:24 PM,This is the last update of the year,,
+207328818203983872,notabanana,10/31/2019 8:24 PM,They usually just push to stable,,
+167370568893464576,0x346e3730,10/31/2019 8:24 PM,There's still two months to go,,
+207328818203983872,notabanana,10/31/2019 8:24 PM,Update dropping to stable next week lines up with last update of year,,
+107560637399306240,cooltrain,10/31/2019 8:45 PM,I think the way the office works alot of people (as expected) are off over December so its just 4 weeks of November,,
+230061386888118273,.thurston,10/31/2019 8:50 PM,https://thurston.pw/i/g3tfj.png - this is why; not yet = more to be done,,
+207328818203983872,notabanana,10/31/2019 8:53 PM,@thurston that doesnt mean theres more coming lol,,
+207328818203983872,notabanana,10/31/2019 8:53 PM,that means the changelog is missing a list of changes,,
+230061386888118273,.thurston,10/31/2019 8:53 PM,"To me, it means stuff is still in works",,
+542253391632400384,akimbo_polygone,11/01/2019 3:58 AM,"Does anyone know a way to check the ""cordLength"" of the ""EnergyManager"" in realtime? It seems that it only checks the coordlength if the item is placed on the ground or put in the inventory?",,
+107560637399306240,cooltrain,11/01/2019 2:49 PM,I might be captain obvious but I assume you've tried GetCordLength()?,,
+235718406492520448,niirozz,11/01/2019 4:35 PM,"Anyone know, this is possible to have a ID for a object, that we sure it's unique ?",,
+235718406492520448,niirozz,11/01/2019 4:37 PM,"GetPersistentID sounds like perfect for me, but I'm not sure if I can use it client side",,
+561680015578759196,wrdg,11/01/2019 5:53 PM,You can get it from the server and store it as a netsync int,,
+106867714374569984,dave_p.,11/01/2019 11:07 PM,anyone know anything about the new weather.c format?,,
+542253391632400384,akimbo_polygone,11/01/2019 11:37 PM,"@Cooltrain yes, there is even OnItemLocationChanged() that checks the whole cordlength but the problem is I just got sort of OnStart() OnStop() in my script but no function that is called each few seconds, or continous",,
+427419739787362304,Funkdoc#1677,11/02/2019 10:47 AM,@NiiRoZz i remember objects already have unique ID's. just print the the obj var and u will see the object type and a hex value.,,
+235718406492520448,niirozz,11/02/2019 10:48 AM,"Hex value, is the memory pointer of the class",,
+235718406492520448,niirozz,11/02/2019 10:48 AM,But will do my own system anyway,,
+561680015578759196,wrdg,11/02/2019 10:49 AM,I use GetPersistentID for my bounty tags,,
+235718406492520448,niirozz,11/02/2019 10:49 AM,"I used it, but was returning me always 0",,
+561680015578759196,wrdg,11/02/2019 10:50 AM,It'll only return if it's executed by the server,,
+235718406492520448,niirozz,11/02/2019 10:50 AM,I have currently a problem with netsyncvariables,,
+235718406492520448,niirozz,11/02/2019 10:50 AM,and that's more important than current persistent ID,,
+235718406492520448,niirozz,11/02/2019 10:50 AM,Do you sum all bits returned by GetPersistentID ?,,
+561680015578759196,wrdg,11/02/2019 10:51 AM,Yeah all 4,,
+561680015578759196,wrdg,11/02/2019 10:51 AM,I haven't had an issue with net synched variables,,
+561680015578759196,wrdg,11/02/2019 10:52 AM,Let me get on my desktop and show you what I have going,,
+235718406492520448,niirozz,11/02/2019 11:08 AM,That's sounds a bug from my setup of my item,,
+235718406492520448,niirozz,11/02/2019 11:08 AM,Because never had issue before with net sync variables,,
+235718406492520448,niirozz,11/02/2019 11:08 AM,"But today, it is, and can't find why",,
+561680015578759196,wrdg,11/02/2019 11:23 AM,,https://cdn.discordapp.com/attachments/492295576470290433/640133838449803284/unknown.png,
+561680015578759196,wrdg,11/02/2019 11:23 AM,"```csharp
+class UniqueItem extends ItemBase
+{
+    private int _i1, _i2, _i3, _i4;
+    protected int m_UniqueID = 0;
+
+    void UniqueItem()
+    {
+        RegisterNetSyncVariableInt(""m_UniqueID"");
+    }
+
+    override string GetDisplayName()
+    {
+        if (m_UniqueID != 0)
+        {
+            return m_UniqueID.ToString();
+        }
+
+        return ConfigGetString(""displayName"");
+    }
+
+    override void OnStoreSave(ParamsWriteContext ctx)
+    {
+        super.OnStoreSave(ctx);
+        ctx.Write(m_UniqueID);
+    }
+
+    override bool OnStoreLoad(ParamsReadContext ctx, int version)
+    {
+        if (!super.OnStoreLoad(ctx, version))
+            return false;
+
+        if (!ctx.Read(m_UniqueID))
+            return false;
+
+        return true;
+    }
+
+    override void EOnInit(IEntity other, int extra)
+    {
+        super.EOnInit(other, extra);
+
+        GetPersistentID(_i1, _i2, _i3, _i4);
+        m_UniqueID = _i1 + _i2 + _i3 + _i4;
+        SetSynchDirty();
+    }
+
+    int GetUniqueID()
+    {
+        return m_UniqueID;
+    }
+}
+```",,
+561680015578759196,wrdg,11/02/2019 11:24 AM,@NiiRoZz,,
+235718406492520448,niirozz,11/02/2019 11:32 AM,Thanks god @Wardog,,
+235718406492520448,niirozz,11/02/2019 11:33 AM,"Worked, was setting my variable in constructor instead EOnInit",,
+235718406492520448,niirozz,11/02/2019 11:33 AM,"That's why, it's was not working",,
+561680015578759196,wrdg,11/02/2019 11:34 AM,😄,,
+239201186933112833,da0ne_,11/02/2019 12:53 PM,:HMM: that DB ID changes from me for some odd reason,,
+239201186933112833,da0ne_,11/02/2019 12:54 PM,it is always a unique combo (after restarts),,
+561680015578759196,wrdg,11/02/2019 12:55 PM,it's never changed for me :p,,
+239201186933112833,da0ne_,11/02/2019 12:56 PM,"nvm, i tried it on non inventory base stuff",,
+239201186933112833,da0ne_,11/02/2019 12:57 PM,or it was not in types.xml to save 🤔,,
+561680015578759196,wrdg,11/02/2019 12:58 PM,i'm currently using it with players in my bounty mod 👀,,
+561680015578759196,wrdg,11/02/2019 12:58 PM,it was the only way i could do character life based bounties,,
+230061386888118273,.thurston,11/02/2019 2:00 PM,@DaOne(Mark) the item we're using isn't in the types.xml,,
+230061386888118273,.thurston,11/02/2019 2:00 PM,And it works fine,,
+561680015578759196,wrdg,11/02/2019 2:03 PM,"i can't seem to prevent an attachment slot from being shown. i've added a custom attachment slot to dayz player. and am unable to hide it. https://gfycat.com/DizzyNimbleDogwoodclubgall
+
+`PlayerBase.c`
+```csharp
+override bool CanDisplayAttachmentSlot(string slot_name)
+{
+    if (slot_name == ""IdentifierTag"")
+        return false;
+
+    return super.CanDisplayAttachmentSlot(slot_name);
+}
+```",,
+235718406492520448,niirozz,11/02/2019 2:37 PM,Print slot_name,,
+235718406492520448,niirozz,11/02/2019 2:37 PM,to be sure that's correct,,
+235718406492520448,niirozz,11/02/2019 2:38 PM,Maybe because the string is Slot_IdentifierTag,,
+235718406492520448,niirozz,11/02/2019 2:38 PM,"I hate this, because all this functions is not unified",,
+235718406492520448,niirozz,11/02/2019 2:38 PM,sometimes you need Slot_xxx and sometimes xxx,,
+463051926406430720,saltybob#3845,11/02/2019 3:43 PM,"is there something i can use other than IsKindOf in this example? the action im using cant tell the difference between two different classes, one that inherits from the other when in the same attachment slot. is there something more specific i can use other than IsKindOf?
+```ItemBase item_IB = ItemBase.Cast( item );
+        
+        if ( item_IB.IsKindOf(""Cure_Petridish"") )
+        {
+            m_Cure_Petridish = NULL;
+            if ( !GetGame().IsServer()  ||  !GetGame().IsMultiplayer() )
+            {
+                SEffectManager.PlaySound(MICROSCOPE_DETACH_SOUND, GetPosition() );
+            }
+        }```",,
+105031327861977088,thedimin,11/02/2019 3:58 PM,is there a language server for Enforce script in vsCode ?,,
+561680015578759196,wrdg,11/02/2019 4:07 PM,Not yet. But soon.,,
+105031327861977088,thedimin,11/02/2019 4:08 PM,"any ""fast"" way to use it atm then ?",,
+105031327861977088,thedimin,11/02/2019 4:08 PM,i want to pick this up kinda hard without it,,
+105031327861977088,thedimin,11/02/2019 4:09 PM,a other code editor would be fine aswell tbh,,
+561680015578759196,wrdg,11/02/2019 4:10 PM,I'm not setting up intellisense till sometime early next year. But I should be releasing the proper Enforce syntax before the end of the year.,,👌 (1)
+561680015578759196,wrdg,11/02/2019 4:11 PM,You can use C#'s syntax for decent highlighting,,
+561680015578759196,wrdg,11/02/2019 4:13 PM,"Setting up intellisense for enforce is going to be a time consuming effort, as there currently isn't any others who are experienced with creating vscode addons",,
+105031327861977088,thedimin,11/02/2019 4:13 PM,i see,,
+105031327861977088,thedimin,11/02/2019 4:13 PM,you planning on making it a open source effort ?,,
+561680015578759196,wrdg,11/02/2019 4:14 PM,"It'll definitely be open source when I decide to get to it, I'm currently busy with other projects of my own and life, so I don't always have all the time in the world",,
+105031327861977088,thedimin,11/02/2019 4:15 PM,ah yeah same here.,,
+105031327861977088,thedimin,11/02/2019 4:15 PM,"i never got into sqf, went straight to unreal, looked a little bit into enforce this week and want to give it a good shot now 🙂",,
+561680015578759196,wrdg,11/02/2019 4:16 PM,But currently how most people learn is just by unpacking the game and reading through the scripts and understanding the hierarchy. Enforce is very similar to C# in terms of syntax.,,
+561680015578759196,wrdg,11/02/2019 4:17 PM,It absolutely trumps sqf in terms of modding a bi game,,
+105031327861977088,thedimin,11/02/2019 4:17 PM,yeah i have been doing that this week,,
+105031327861977088,thedimin,11/02/2019 4:17 PM,i like how all the things work,,
+105031327861977088,thedimin,11/02/2019 4:18 PM,just trying to get moving and make something is hard without it,,
+561680015578759196,wrdg,11/02/2019 4:21 PM,"I think workbench has some basic intellisense built in, but I'm not a fan of the UI and also don't like how often workbench crashes.",,
+105031327861977088,thedimin,11/02/2019 4:22 PM,it feels to clutterd imo,,
+105031327861977088,thedimin,11/02/2019 4:22 PM,70% for code 30% for garbage,,
+561680015578759196,wrdg,11/02/2019 4:23 PM,"It's supposed to help with debugging, but sometimes I don't want all that clutter sometimes, and usually like how simplified vscode is and how easy I can navigate and use git.",,
+561680015578759196,wrdg,11/02/2019 4:24 PM,I'll keep you in the loop though when I decide to continue with the vscode extensions for the Enforce language,,
+105031327861977088,thedimin,11/02/2019 4:24 PM,👌,,
+105031327861977088,thedimin,11/02/2019 4:25 PM,"other thing , where can i see things i print?",,
+105031327861977088,thedimin,11/02/2019 4:25 PM,unless i just failed and my mod isn't loaded,,
+105031327861977088,thedimin,11/02/2019 4:25 PM,im not seeing anything on my screen,,
+561680015578759196,wrdg,11/02/2019 4:29 PM,"Depending on execution, on client you can find it in `%localappdata%/DayZ/` in your latest script log. On server, you'll find it in the server profile folder in the latest script log.",,
+105031327861977088,thedimin,11/02/2019 4:30 PM,thanks man,,
+107560637399306240,cooltrain,11/02/2019 5:02 PM,I use workbench alot and can confirm? (at least for me) it doesn't crash ^^,,
+99298225999056896,cashewsan,11/02/2019 9:04 PM,anyone able to tell me why this creates two `WE_ACR_Woodland`'s when the recipe is complete?? I'm so lost,https://cdn.discordapp.com/attachments/492295576470290433/640280171425038346/paintACRWoodland1.c,
+137658517615149056,helkhiana,11/02/2019 9:10 PM,@CashewSan try replacing m_ResultToInventory[0] = -1;  with m_ResultToInventory[0] = 1; ?,,
+137658517615149056,helkhiana,11/02/2019 9:11 PM,to replace the item 1(acr_green) position,,
+99298225999056896,cashewsan,11/02/2019 9:11 PM,what do you mean by replace the position?,,
+99298225999056896,cashewsan,11/02/2019 9:11 PM,oh nvm,,
+99298225999056896,cashewsan,11/02/2019 9:12 PM,isee what you mean,,
+137658517615149056,helkhiana,11/02/2019 9:12 PM,i don't really see anything wrong with the recipe itself tbh,,
+99298225999056896,cashewsan,11/02/2019 9:15 PM,"@Helkhiana nope, still created two",,
+99298225999056896,cashewsan,11/02/2019 9:17 PM,I'm even using a vanilla recipe as a template,,
+99298225999056896,cashewsan,11/02/2019 9:17 PM,and like,,
+99298225999056896,cashewsan,11/02/2019 9:18 PM,still creates two,,
+137658517615149056,helkhiana,11/02/2019 9:21 PM,do you have this recipe registered twice by any chance,,
+99298225999056896,cashewsan,11/02/2019 9:23 PM,nope,,
+99298225999056896,cashewsan,11/02/2019 9:28 PM,I'm so lost :FeelsBadMan:,,
+105031327861977088,thedimin,11/02/2019 9:52 PM,how do i know if a script is executed on the server or client ?,,
+99298225999056896,cashewsan,11/02/2019 11:14 PM,oh my fucking god,,
+99298225999056896,cashewsan,11/02/2019 11:14 PM,this whole time @Helkhiana I had been updating the recipe to the wrong,,
+99298225999056896,cashewsan,11/02/2019 11:14 PM,folder,,
+99298225999056896,cashewsan,11/02/2019 11:14 PM,im gonna scxream,,
+137658517615149056,helkhiana,11/02/2019 11:15 PM,haha it's always something like that,,
+99298225999056896,cashewsan,11/02/2019 11:17 PM,"I had switched over to EXP to test and see if anything was broken, and I forgot to change the output folder",,
+137658517615149056,helkhiana,11/02/2019 11:28 PM,btw @CashewSan the 1.06 will change how trees work. might want to have a look at it for your fixed stacking mod,,
+137658517615149056,helkhiana,11/02/2019 11:29 PM,think they fixed it now and all trees are of a specific type. no more TreeHard/Soft on the map,,
+99298225999056896,cashewsan,11/02/2019 11:29 PM,oh boy :monkaASS:,,
+99298225999056896,cashewsan,11/02/2019 11:30 PM,mod is kinda dead tbh so not sure if i'll worry about,,
+137658517615149056,helkhiana,11/02/2019 11:30 PM,people don't use it?,,
+99298225999056896,cashewsan,11/02/2019 11:30 PM,may if I have time,,
+99298225999056896,cashewsan,11/02/2019 11:30 PM,"nope, not really",,
+561680015578759196,wrdg,11/02/2019 11:30 PM,No more hard wood? ;(,,
+137658517615149056,helkhiana,11/02/2019 11:30 PM,TreeHard is just parent class now from what i've seen,,
+137658517615149056,helkhiana,11/02/2019 11:31 PM,"found a treehard, but it's a fallen tree",,
+137658517615149056,helkhiana,11/02/2019 11:31 PM,XD,,
+137658517615149056,helkhiana,11/03/2019 2:49 AM,missionserver.c gets loaded only on a server? how  does it work? it doesn't seem it's loading on my offline mode,,
+239201186933112833,da0ne_,11/03/2019 2:51 AM,yes thats why its called missionserver,,
+239201186933112833,da0ne_,11/03/2019 2:51 AM,missiongameplay is only loaded for client,,
+105031327861977088,thedimin,11/03/2019 4:22 AM,"OH MY, i was trying to add my own playerstat with id 420. it wasn't working just found out that its saved as a array behind the scenes -_- . so i had to search for index 10 instead of 420",,
+105031327861977088,thedimin,11/03/2019 4:22 AM,rip 2 hours,,
+105031327861977088,thedimin,11/03/2019 4:52 AM,is there a Dictionary container?,,
+105031327861977088,thedimin,11/03/2019 4:55 AM,found it (a map),,
+542253391632400384,akimbo_polygone,11/03/2019 8:55 AM,"I want to call a function in my base class each x seconds - Basically I want to check if  a cordlength is over the maximal length, but I fear this sort of calculation, based on a timer (thats why it is not implemented in the standard models, that use electricity right now), will hit the performance too hard. Do you know the most efficient way to realize this, or is it something that is not possible right now?",,
+219169312584237056,tercertipo,11/03/2019 9:12 AM,"Hello, idk if this is the correct channel to ask this. Is it possible to make a permanent running generator, like the fire barrel from the trader mod? If so, any tips/help on how to? Thanks!",,
+542253391632400384,akimbo_polygone,11/03/2019 9:16 AM,"@Tercertipo Maybe you asked the same question as I did, can you explain the difference between the regular firebarrel and the one from the trader mod?",,
+137658517615149056,helkhiana,11/03/2019 9:17 AM,the one at trader keeps checking if its on or something like that,,
+137658517615149056,helkhiana,11/03/2019 9:17 AM,and updates it every 5 seconds or so,,
+137658517615149056,helkhiana,11/03/2019 9:17 AM,the way i've made forever burning campfire was to not consume any fuel,,
+542253391632400384,akimbo_polygone,11/03/2019 9:19 AM,"My current state of information is, that we need to create some sort of MissionScriptThread",,
+137658517615149056,helkhiana,11/03/2019 9:19 AM,for what,,
+542253391632400384,akimbo_polygone,11/03/2019 9:21 AM,"oh sorry, I have misinterpreted Outsider, he means the power generator, I thought about a particle generator or some sort of permanent running function",,
+219169312584237056,tercertipo,11/03/2019 9:22 AM,"Yes, the generator.",,
+542253391632400384,akimbo_polygone,11/03/2019 9:24 AM,You find the power_generator in: DZ\gear\camping,,
+137658517615149056,helkhiana,11/03/2019 9:25 AM,"think you'll just have to make sure m_FuelPercentage is always a set amount, not using the Energy manager",,
+542253391632400384,akimbo_polygone,11/03/2019 9:26 AM,"or you go in the energymananger from: ""energyUsagePerSecond=0.28;"" to ""energyUsagePerSecond=0.0;""",,
+542253391632400384,akimbo_polygone,11/03/2019 9:26 AM,(config.cpp),,
+137658517615149056,helkhiana,11/03/2019 9:33 AM,guess yeah that could work. have you ever had that for an item? i'm always worried to make something 0,,
+219169312584237056,tercertipo,11/03/2019 9:37 AM,"I have 0 modding experience or scripting, i was guessing it might be easy, since theres already a fire barrel with that mechanic",,
+137658517615149056,helkhiana,11/03/2019 9:40 AM,"it's easy, just gotta try out different methods",,
+542253391632400384,akimbo_polygone,11/03/2019 9:44 AM,@Tercertipo how much is 0 experience? You never did it before? do you know where to start?,,
+542253391632400384,akimbo_polygone,11/03/2019 9:47 AM,"I mean, I can help you getting a simple overview and create your first mod, just pm me",,
+219169312584237056,tercertipo,11/03/2019 9:50 AM,I did some mods but for No mans sky. But that is just text editing.,,
+542253391632400384,akimbo_polygone,11/03/2019 9:50 AM,then pm me 😄,,
+542253391632400384,akimbo_polygone,11/03/2019 10:03 AM,@Helkhiana do you have a clue how to call a function in a base class each 5 seconds?,,
+137658517615149056,helkhiana,11/03/2019 10:05 AM,"nope but you can look at trader, pvez and other mods which do that",,
+137658517615149056,helkhiana,11/03/2019 12:11 PM,does anyone know where to look to see how a fence is giving items back from dismantle? i'm looking specifically to change the class of the items,,
+105031327861977088,thedimin,11/03/2019 1:52 PM,@AkimbO why would you want to do it every x seconds ?. are there no events triggerd that causes one of the 2 items to move ?,,
+542253391632400384,akimbo_polygone,11/03/2019 1:53 PM,"@TheDimin  if I pick up the battery and run away, or pick up the reciever they are still connected after miles",,
+542253391632400384,akimbo_polygone,11/03/2019 1:53 PM,GravityWolf helped me to solve this problem,,
+542253391632400384,akimbo_polygone,11/03/2019 1:54 PM,he recommended me the timer solution and it works like a charm,,
+105031327861977088,thedimin,11/03/2019 1:54 PM,i hope you only start and stop that timer when somebody has it picked up,,
+542253391632400384,akimbo_polygone,11/03/2019 1:56 PM,"yes, but is it such a performance killer, if I let the timer run until they are plugged out? I think timer calls are expensive",,
+105031327861977088,thedimin,11/03/2019 1:57 PM,im not sure how expensive timers are. but im more thinking about how it would scale with 100 players,,
+542253391632400384,akimbo_polygone,11/03/2019 1:59 PM,I will take a look and test it,,
+542253391632400384,akimbo_polygone,11/03/2019 1:59 PM,so I have to option to let the timer run while it is in hands,,
+542253391632400384,akimbo_polygone,11/03/2019 2:00 PM,I will keep it in mind,,
+542253391632400384,akimbo_polygone,11/03/2019 2:00 PM,🙂,,
+105031327861977088,thedimin,11/03/2019 2:02 PM,👌,,
+105031327861977088,thedimin,11/03/2019 6:40 PM,how can i attach a mag to a gun,,
+236255854427504641,fiivemacs,11/03/2019 8:13 PM,"Would it be a better idea to have multiple types.xml files and have them call each other like appletrees do, or to have 1 big one like it currently is?",,
+236255854427504641,fiivemacs,11/03/2019 8:13 PM,or does it matter,,
+164872154154795008,zelik,11/03/2019 8:19 PM,Whichever makes more sense to you. I prefer multiple for organization.,,
+105031327861977088,thedimin,11/03/2019 10:07 PM,"ahhhh, anyone able to tell me how i can attach mag to a gun ?. still stuck",,
+236255854427504641,fiivemacs,11/03/2019 10:25 PM,"what do you mean attach a mag to a gun? under what circumstances?  when it spawns, when you have two items in your bag, at a trader?",,
+236255854427504641,fiivemacs,11/03/2019 10:25 PM,@TheDimin,,
+105031327861977088,thedimin,11/03/2019 10:27 PM,"i added a gun into the players hands , now i try to attach a mag",,
+236255854427504641,fiivemacs,11/03/2019 10:28 PM,so freshspawn gets weapon and you want mag to auto attach?,,
+105031327861977088,thedimin,11/03/2019 10:29 PM,"but it seems like something else is going wrong. i attempted to add a item to the players inventory in the CreateCharacter function. but its not being added, when i do it onjump it does add the item",,
+105031327861977088,thedimin,11/03/2019 10:30 PM,yes i want to add it to a gun i gave a freshspawn (note i am trying to make a other gamemode),,
+105031327861977088,thedimin,11/03/2019 10:37 PM,@xPosed do you know howto ?,,
+105031327861977088,thedimin,11/03/2019 10:37 PM,i have the mag in the inventory,,
+105031327861977088,thedimin,11/03/2019 10:37 PM,i would prefer if i can skip the load animation as well.,,
+236255854427504641,fiivemacs,11/03/2019 10:41 PM,"I dont know if its possible to have the mag auto load as such, i believe you always have to hold R to load on startup. at least it always breaks for me regardless of how i do it",,
+236255854427504641,fiivemacs,11/03/2019 10:41 PM,"so no, i have no idea 🙂",,
+105031327861977088,thedimin,11/03/2019 10:41 PM,okay,,
+105031327861977088,thedimin,11/03/2019 10:41 PM,gues i will break the weaponmanager class then,,
+105031327861977088,thedimin,11/03/2019 10:42 PM,"i hate how weapons work. other then that i like this framework.
+if anyone can help me out pls @ me or pm me (wont be around tommorow)",,
+561680015578759196,wrdg,11/03/2019 11:26 PM,"Loading magazines has to be handled on both client and server, should ask mark how he does it for his DM mod",,
+239201186933112833,da0ne_,11/03/2019 11:30 PM,Just automate the same code that gets executed when you hold R :peepoOkay:,,
+239201186933112833,da0ne_,11/03/2019 11:31 PM,"It loads every gun in the game, no matter what it is as long as you have ammo/mag in the inventory already",,
+105031327861977088,thedimin,11/03/2019 11:35 PM,@Wardog yeah I figured out as much.,,
+105031327861977088,thedimin,11/03/2019 11:35 PM,Ohh dang I totally didn't think about looking for that thanks ! Gotta get used having access to 90% of the code,,
+105031327861977088,thedimin,11/03/2019 11:36 PM,Thanks both of you,,
+137658517615149056,helkhiana,11/04/2019 12:17 PM,does anyone know how to get the orientation of an object?,,
+207328818203983872,notabanana,11/04/2019 12:36 PM,GetOrientation,,"omegaROLL (1),🇳 (1),🇴 (1),👈 (1),Pepega (1),🇾 (1),🇪 (1),🇸 (1)"
+137658517615149056,helkhiana,11/04/2019 12:42 PM,"Object has GetSelectionPositionMS and i've seen this used everywhere to get the position of  a component, it also has GetSelectionPositionWS and GetSelectionPositionLS which idk what they mean",,
+137658517615149056,helkhiana,11/04/2019 12:44 PM,"i guess MS = model selection, LS = local selection, WS = world selection?",,
+105574798691680256,totallynotgrim,11/04/2019 12:48 PM,S is Space,,
+105574798691680256,totallynotgrim,11/04/2019 12:48 PM,Model Space Local Space World Space,,
+137658517615149056,helkhiana,11/04/2019 12:49 PM,thanks,,
+137658517615149056,helkhiana,11/04/2019 12:51 PM,and i was looking at get pos and orientation the wrong way. seems GetOrientation was all i needed. thanks @Not A Banana,,
+105031327861977088,thedimin,11/04/2019 8:47 PM,"can i ""mod"" client sided classes, without the user having to download a mod ?",,
+561680015578759196,wrdg,11/04/2019 8:50 PM,nope,,
+143518784043352066,Scenic#6395,11/04/2019 8:50 PM,I thought `GetInventory().CreateInInventory()` was supposed to give max quantity of the provided arg? or am I wrong? how would one give max quantity of a provided item class?,,
+105031327861977088,thedimin,11/04/2019 8:52 PM,@Wardog is there a way to let a user download a mission file ? and then call a rpc from server to the client,,
+105031327861977088,thedimin,11/04/2019 8:53 PM,if possible i would perfer users not having to download a mod,,
+561680015578759196,wrdg,11/04/2019 8:53 PM,"if you're manipulating anything on the client, the client must have those files",,
+105031327861977088,thedimin,11/04/2019 8:56 PM,yeah i get that part. I am just wondering if there is a way to make it so a player joins the server with vanila files and then downloads mission file + client sided edits.,,
+105031327861977088,thedimin,11/04/2019 8:57 PM,i assume not,,
+105031327861977088,thedimin,11/04/2019 9:26 PM,can we enable #ifdef's ?,,
+561680015578759196,wrdg,11/04/2019 9:36 PM,"you can use them, but i've been having issues with defining based on load order",,
+561680015578759196,wrdg,11/04/2019 9:37 PM,"i tried to get a discussion going before
+https://discordapp.com/channels/452035973786632194/492295576470290433/639510022984040461",,
+105031327861977088,thedimin,11/04/2019 9:44 PM,hmm i see what you are trying to do,,
+105031327861977088,thedimin,11/04/2019 9:44 PM,"(no clue how it works , i joined last weekend :P)",,
+105031327861977088,thedimin,11/04/2019 9:45 PM,i am trying to enable INV_DEBUG,,
+105031327861977088,thedimin,11/04/2019 9:45 PM,still trying to attach a mag to the players weapon. but i don't want to send a rpc to the client to tell him to combine mags. i am missing something,,
+106867714374569984,dave_p.,11/04/2019 11:16 PM,is there a way to disable the smoke from heli crashes placed in a custom build?,,
+241851235412475905,casis,11/05/2019 7:00 PM,Is there any way to get the message that a player types in?,,
+105031327861977088,thedimin,11/05/2019 7:24 PM,@Casis this game has side chat ? (I honnestly don't know),,
+105031327861977088,thedimin,11/05/2019 7:24 PM,If it does I could take a look for you,,
+241851235412475905,casis,11/05/2019 7:26 PM,@TheDimin Im trying to make a mod where I need specific player messages which I want to read out and use,,
+105031327861977088,thedimin,11/05/2019 7:41 PM,Did you write the messaging system or is it from dayz self ? I am home in 10 minutes. Can take a look in the class if it's part from dayz,,
+105031327861977088,thedimin,11/05/2019 7:41 PM,"In theory you should be able to mod a ""onmessage"" function",,
+105031327861977088,thedimin,11/05/2019 7:44 PM,I did that yesterday with the onrpc function (send a message from server to client or the other way around),,
+105031327861977088,thedimin,11/05/2019 8:49 PM,"@Casis take a look in chat.c add and AddInternal. the chat.c instance is made in missionGameplay.c, ChatLine.c also contains a few intresting things. also some native function calls going on i don't have time to test this stuff atm, maybe this helps you a bit",,
+241851235412475905,casis,11/05/2019 9:24 PM,Can I dm u @TheDimin,,
+105031327861977088,thedimin,11/05/2019 9:51 PM,go for it,,
+561680015578759196,wrdg,11/05/2019 10:54 PM,"@TheDimin coming from #feedback-tracker-dayz, try CF's RPCs",,
+105031327861977088,thedimin,11/05/2019 10:55 PM,where can i find those ?,,
+561680015578759196,wrdg,11/05/2019 10:57 PM,<CF>,,
+561680015578759196,wrdg,11/05/2019 10:57 PM,oh. forgot lol my bot isn't here,,
+561680015578759196,wrdg,11/05/2019 10:57 PM,https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036,,
+561680015578759196,wrdg,11/05/2019 10:58 PM,<https://github.com/Jacob-Mango/DayZ-Community-Framework/blob/master/README.md>,,
+561680015578759196,wrdg,11/05/2019 10:58 PM,it's exactly what you're looking for,,
+105031327861977088,thedimin,11/05/2019 11:08 PM,"i don't want to be greedy, but does it more ? 😮",,
+561680015578759196,wrdg,11/05/2019 11:09 PM,"CF is just RPCs at the moment, you're welcome to contribute as it's a community project",,
+105031327861977088,thedimin,11/05/2019 11:10 PM,"would be nice to have a way to bind a key to a function, but maybe i missed that",,
+561680015578759196,wrdg,11/05/2019 11:10 PM,I need to pass what I have for server/client configs to Jacob eventually to put into CF.,,
+561680015578759196,wrdg,11/05/2019 11:11 PM,You can bind keys with keypress events or custom inputs,,
+107560637399306240,cooltrain,11/05/2019 11:12 PM,"```modded class MissionGameplay extends MissionBase
+{    
+    override void OnKeyPress(int key)
+    {
+        super.OnKeyPress(key);
+        m_Hud.KeyPress(key);
+        
+        if(key == KeyCode.KC_L)
+        {
+            Print(""Yay! L Key!"");
+        }
+    }
+};```",,
+105031327861977088,thedimin,11/05/2019 11:13 PM,oh sick,,
+107560637399306240,cooltrain,11/05/2019 11:13 PM,quick and simple ^^,,
+105031327861977088,thedimin,11/05/2019 11:13 PM,"still wouldn't hurt to have a function that allows me to say: Input.bind(key,function)",,
+105031327861977088,thedimin,11/05/2019 11:13 PM,this works nice for 1 or 2 keys 😛,,
+105031327861977088,thedimin,11/05/2019 11:14 PM,but when you get a lot meh,,
+105031327861977088,thedimin,11/05/2019 11:14 PM,thanks tho !,,
+105031327861977088,thedimin,11/05/2019 11:14 PM,"i aw one but the keycodes they used were action keys, and not the keycodes themself",,
+105031327861977088,thedimin,11/05/2019 11:15 PM,"thanks guys :), next up loading a gun without animation 😛",,
+107560637399306240,cooltrain,11/05/2019 11:15 PM,You can also create keys you can rebind ingame look into the UAInput and how it does binds ^^,,
+105031327861977088,thedimin,11/05/2019 11:16 PM,"i looked a bit into that one , seems like a pain",,
+107560637399306240,cooltrain,11/05/2019 11:16 PM,Its what you would want to use for a finished mod for people to use ^^,,
+105031327861977088,thedimin,11/05/2019 11:16 PM,so they can rebind them i assume,,
+107560637399306240,cooltrain,11/05/2019 11:16 PM,yes,,
+105031327861977088,thedimin,11/05/2019 11:17 PM,luckly i only need a keybinding to test stuff 😛,,
+105031327861977088,thedimin,11/05/2019 11:17 PM,can't test weapon reloading onjump 🙂,,
+107560637399306240,cooltrain,11/05/2019 11:17 PM,^^,,
+107560637399306240,cooltrain,11/05/2019 11:17 PM,what about a dance pad?,,
+561680015578759196,wrdg,11/05/2019 11:17 PM,"```xml
+<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes"" ?>
+<modded_inputs>
+    <inputs>
+        <actions>
+            <input name=""UAToggleAutoRun"" loc=""Toggle Autorun"" />
+        </actions>
+    </inputs>
+    <preset>
+        <input name=""UAToggleAutoRun"">
+            <btn name=""kP"" />
+        </input>
+    </preset>
+</modded_inputs>
+```
+```csharp
+modded class MissionGameplay
+{
+    override void OnUpdate(float timeslice)
+    {
+        super.OnUpdate(timeslice);
+
+        if (input.LocalPress(""UAToggleAutoRun"", true))
+        {
+            HandleAutoRun();
+            return;
+        }
+    }
+}
+```",,
+107560637399306240,cooltrain,11/05/2019 11:17 PM,^^,,
+105031327861977088,thedimin,11/05/2019 11:17 PM,this is the correct way i assume ?,,
+105031327861977088,thedimin,11/05/2019 11:18 PM,is there anytype of wiki for all this stuff yet ?,,
+107560637399306240,cooltrain,11/05/2019 11:18 PM,just search through the game,,
+107560637399306240,cooltrain,11/05/2019 11:18 PM,where most of us picked it up from,,
+561680015578759196,wrdg,11/05/2019 11:19 PM,"not exactly, documentation isn't exactly all there, you mainly just have to go through the hierarchy and understand it yourself if it isn't commented",,
+105031327861977088,thedimin,11/05/2019 11:19 PM,yeah thats what i am doing. i set everything up last friday. almost got a MVP for a gungame mod,,
+105031327861977088,thedimin,11/05/2019 11:20 PM,"not new to the world of undocumented, but it would be nice to search a wiki instead of finding everything from scratch everytime",,
+105031327861977088,thedimin,11/05/2019 11:20 PM,can we write wiki's on dayz's thing ?,,
+561680015578759196,wrdg,11/05/2019 11:20 PM,"what i posted is one way to handle keybinds, and you can change the key in the option menu",,
+561680015578759196,wrdg,11/05/2019 11:20 PM,you can write a wiki if you'd like,,
+561680015578759196,wrdg,11/05/2019 11:20 PM,"others have thought of the idea, but haven't actually completed one",,
+561680015578759196,wrdg,11/05/2019 11:21 PM,it's just a lot of work,,
+105031327861977088,thedimin,11/05/2019 11:21 PM,"yeah writing documentation sucks , i have to do it all week at internship",,
+105031327861977088,thedimin,11/05/2019 11:22 PM,"but its nice to have, even just as little as what you send is a ""okay start""compared to nothing",,
+561680015578759196,wrdg,11/05/2019 11:28 PM,i'd probably use something like sharpDox for a decent output documentation,,
+105031327861977088,thedimin,11/05/2019 11:28 PM,"managed to do something intresting yesterday, instead of loading a mag it drops it on the ground",,
+105031327861977088,thedimin,11/05/2019 11:28 PM,"that wouldn't be a bad tool tbh , intresting to look into once i got some time",,
+561680015578759196,wrdg,11/05/2019 11:30 PM,,https://cdn.discordapp.com/attachments/492295576470290433/641404082665422871/unknown.png,
+561680015578759196,wrdg,11/05/2019 11:31 PM,a friend of mine showed it to me when he was developing software years ago,,
+105031327861977088,thedimin,11/05/2019 11:32 PM,thats not bad,,
+561680015578759196,wrdg,11/05/2019 11:32 PM,it's neat and looks great. but i don't think it would really work for documenting dayz's enforce script,,
+105031327861977088,thedimin,11/05/2019 11:32 PM,i do kinda like how arma's wikis work,,
+561680015578759196,wrdg,11/05/2019 11:32 PM,it's a nuget package for C#,,
+105031327861977088,thedimin,11/05/2019 11:32 PM,yeah i looked it up and swa it 😛,,
+561680015578759196,wrdg,11/05/2019 11:32 PM,but it exports great formats,,

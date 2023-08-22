@@ -1,0 +1,2274 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+196845794513518592,shaggoth,05/14/2023 5:00 PM,"There is extremely little official information, most of us learn from other mods and vanilla game",,🙌 (1)
+84665468828254208,podrivo,05/14/2023 9:01 PM,"damn, I was afraid of that… Thank you!",,
+296905878630694912,rexxenexx,05/14/2023 9:18 PM,"Can someone point me in the right direction to localization for mods? The closest thing I've found is Stringtable.xml which works, but wipes every other string in the game not defined.",,
+296905878630694912,rexxenexx,05/14/2023 9:42 PM,"NM, stringtable.csv is what I was looking for. 👍",,
+399744798703091713,urisaurius,05/14/2023 10:16 PM,Take a look at other ghillie mods on workshop. That’s the best way to correct your errors.,,
+84665468828254208,podrivo,05/14/2023 10:22 PM,"I'm trying to trigger an emote animation, but not sure why it's not working:
+
+```
+override void Init()
+    {
+        super.Init();
+        TestEmote();
+    };
+    
+    private void TestEmote()
+    {
+        Print(""print TestEmote"");
+         GetEmoteManager().PlayEmote(EmoteConstants.ID_EMOTE_LYINGDOWN);
+    }
+```
+
+If I try `CreateEmoteCBFromMenu` instead of `PlayEmote` the emote works. why is that?",,
+84665468828254208,podrivo,05/14/2023 10:35 PM,so it's not possible to trigger emotes right after init? do I have to wait for something to finish loading or a similar thing?,,
+84665468828254208,podrivo,05/14/2023 11:09 PM,"I was able to use `PlayEmote` if called after using `OnPlayerLoaded`
+
+```
+override void OnPlayerLoaded()
+    {
+        super.OnPlayerLoaded();
+        Print(""loaded"");
+        TestEmote();
+    }
+```",,
+84665468828254208,podrivo,05/14/2023 11:10 PM,ChatGPT can be pretty handy as a documentation,,
+384850738355896321,ragtyson,05/14/2023 11:16 PM,I will wait for the 1.21 launch and see all the mods break then 😄,,
+561680015578759196,wrdg,05/14/2023 11:19 PM,the line above it is more important,,
+196845794513518592,shaggoth,05/14/2023 11:20 PM,"hey we need to fix what we can, before something else breaks in 1.21.. including those fixes",,
+196845794513518592,shaggoth,05/14/2023 11:20 PM,no time to loose!,,
+384850738355896321,ragtyson,05/14/2023 11:20 PM,it's the same in 1.20 though,,
+561680015578759196,wrdg,05/14/2023 11:20 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1107417229622001824/image.png,
+561680015578759196,wrdg,05/14/2023 11:21 PM,`ProjectionBasedOnParent` is probably not returning anything or an improper type,,
+384850738355896321,ragtyson,05/14/2023 11:21 PM,"```c
+    override string ProjectionBasedOnParent()
+    {
+        ItemBase item_in_hands = ItemBase.Cast(m_Player.GetHumanInventory().GetEntityInHands());    
+        
+        if (item_in_hands.IsInherited(rag_beehive_kit))
+            return ""rag_beehive"";
+
+        return super.ProjectionBasedOnParent();
+    }
+```",,
+384850738355896321,ragtyson,05/14/2023 11:22 PM,it works in 1.20 and not in 1.21 though,,
+384850738355896321,ragtyson,05/14/2023 11:22 PM,so the return is correct,,
+561680015578759196,wrdg,05/14/2023 11:22 PM,don't do it in script,,
+384850738355896321,ragtyson,05/14/2023 11:23 PM,"this error also appears on many many mods btw, i'm shocked that nobody found that yet",,
+384850738355896321,ragtyson,05/14/2023 11:23 PM,"MSP, BBP, atleast 4 of my mods...",,
+561680015578759196,wrdg,05/14/2023 11:23 PM,"do this instead of your script override
+```cs
+class CfgVehicles
+{
+    class rag_beehive_kit
+    {
+        projectionTypename = ""rag_beehive"";
+    };
+};
+```",,
+561680015578759196,wrdg,05/14/2023 11:23 PM,as this is the proper way,,
+384850738355896321,ragtyson,05/14/2023 11:24 PM,is this new?,,
+561680015578759196,wrdg,05/14/2023 11:24 PM,no,,
+561680015578759196,wrdg,05/14/2023 11:24 PM,it's been around forever,,
+384850738355896321,ragtyson,05/14/2023 11:24 PM,:Bruh:,,
+384850738355896321,ragtyson,05/14/2023 11:28 PM,still crashing,,
+561680015578759196,wrdg,05/14/2023 11:29 PM,crashing server or client?,,
+384850738355896321,ragtyson,05/14/2023 11:29 PM,client,,
+384850738355896321,ragtyson,05/14/2023 11:29 PM,server never crashed,,
+384850738355896321,ragtyson,05/14/2023 11:29 PM,i also don't get any error on client logs sadly.,,
+561680015578759196,wrdg,05/14/2023 11:30 PM,"no line that states
+`Cannot create hologram entity from config class`",,
+384850738355896321,ragtyson,05/14/2023 11:30 PM,nope,,
+561680015578759196,wrdg,05/14/2023 11:30 PM,"this is when workbench comes in handy, you can setup breakpoints and step through to see where you're getting an error",,
+384850738355896321,ragtyson,05/14/2023 11:31 PM,"yeah, haven't setup workbench with experimental",,
+384850738355896321,ragtyson,05/14/2023 11:31 PM,diag doesnt work on experimental (please dont ask me why),,
+561680015578759196,wrdg,05/14/2023 11:32 PM,you have to set your dayz tools to a different branch,,
+561680015578759196,wrdg,05/14/2023 11:32 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1107420230701023292/image.png,
+384850738355896321,ragtyson,05/14/2023 11:33 PM,no i mean i literally can not use the diag exe to start the exp server,,
+561680015578759196,wrdg,05/14/2023 11:34 PM,"strange, because that's where i'm currently working",,
+384850738355896321,ragtyson,05/14/2023 11:34 PM,let me try again and send the error message,,
+384850738355896321,ragtyson,05/14/2023 11:34 PM,oh i just see the diag exe didn't update,,
+384850738355896321,ragtyson,05/14/2023 11:34 PM,its still from october 2022,,
+561680015578759196,wrdg,05/14/2023 11:35 PM,"yeah so thing is, it's better to not copy and paste the diag exe to the DayZServer folder",,
+561680015578759196,wrdg,05/14/2023 11:35 PM,just launch it from your DayZ Exp folder instead,,
+384850738355896321,ragtyson,05/14/2023 11:35 PM,"true, i split it up in 1.20 or 1.19 because that's where the diag exe broke",,
+561680015578759196,wrdg,05/14/2023 11:38 PM,"a think to note, you have to setup the vanilla scripts folder for filepatching in order to debug it",,
+561680015578759196,wrdg,05/14/2023 11:39 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1107421930480488579/image.png,
+561680015578759196,wrdg,05/14/2023 11:39 PM,i use junction links to quickly link these from my P drive,,
+295995523658285066,truedolphin,05/14/2023 11:40 PM,^,,
+384850738355896321,ragtyson,05/14/2023 11:41 PM,"okay thanks, will setup workbench for exp now then",,
+561680015578759196,wrdg,05/14/2023 11:43 PM,"these are the breakpoints i would set, then check the Watch tab to see if `projectionEntity` is null",https://cdn.discordapp.com/attachments/492295576470290433/1107422927961468970/image.png,
+384850738355896321,ragtyson,05/14/2023 11:43 PM,but have you experienced client crashes aswell after trying to place something with a hologram?,,
+561680015578759196,wrdg,05/14/2023 11:44 PM,haven't been working on mods that use placements,,
+561680015578759196,wrdg,05/14/2023 11:44 PM,would also do these here as well,,
+561680015578759196,wrdg,05/14/2023 11:45 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1107423360889139280/image.png,
+384850738355896321,ragtyson,05/14/2023 11:46 PM,and how do you use experimental scripts in workbench you said?,,
+384850738355896321,ragtyson,05/14/2023 11:46 PM,because i add paths to dayz.gproj usually,,
+561680015578759196,wrdg,05/14/2023 11:47 PM,i use `workbench.exe -mod=@Mod1;@Mod2;@Mod3`,,
+561680015578759196,wrdg,05/14/2023 11:47 PM,gproj is too tedious,,
+384850738355896321,ragtyson,05/14/2023 11:49 PM,but wouldn't that debug the packed mod instead of your build you're working on?,,
+561680015578759196,wrdg,05/14/2023 11:49 PM,no because of filepatching :widebork:,,
+561680015578759196,wrdg,05/14/2023 11:50 PM,"as long as you have junction links to your dayz root of the source mod folders, you're good to do anything you want. especially without having to repack before you launch",,
+384850738355896321,ragtyson,05/14/2023 11:50 PM,so i still need the correct paths in the gproj file yes?,,
+561680015578759196,wrdg,05/14/2023 11:51 PM,"if you use -mod, gproj is irrelevant",,
+384850738355896321,ragtyson,05/14/2023 11:51 PM,"i think i would need to see what you mean, i'm not sure if i understand what to do",,
+561680015578759196,wrdg,05/14/2023 11:54 PM,"```
+""E:\SteamLibrary\steamapps\common\DayZ Tools\Bin\Workbench\workbenchApp.exe"" -noPause -filePatching -newErrorsAreWarnings=1 ""-mod=E:\DayZProject\ModsGreyMan\@CF;E:\DayZProject\ModsGreyMan\@Community-Online-Tools;E:\DayZProject\ModsGreyMan\@Dabs-Framework;E:\DayZProject\ModsGreyMan\@DayZ-Expansion-Core;E:\DayZProject\ModsGreyMan\@DayZ-Expansion-Market;E:\DayZProject\ModsGreyMan\@DNA-Keycards;E:\DayZProject\ModsGreyMan\@Grey-ManZ"" -dologs -scriptDebug=true
+```",,
+561680015578759196,wrdg,05/14/2023 11:54 PM,there is no gproj when doing this,,
+384850738355896321,ragtyson,05/14/2023 11:55 PM,and how does workbench know where your source files of the mod are?,,
+561680015578759196,wrdg,05/14/2023 11:56 PM,because filepatching,,
+561680015578759196,wrdg,05/14/2023 11:56 PM,"what happens when dayz or worbench launches with a packed mod, it's put into a virtual file system",,
+561680015578759196,wrdg,05/14/2023 11:57 PM,so the prefix that you set in your P drive is exactly how it should look in your root directory,,
+384850738355896321,ragtyson,05/14/2023 11:58 PM,okay i understand now,,
+384850738355896321,ragtyson,05/14/2023 11:58 PM,thank you,,
+561680015578759196,wrdg,05/14/2023 11:59 PM,"you can path to your source directory too if you'd like, but for simplicity sake i use the packed paths",,
+561680015578759196,wrdg,05/14/2023 11:59 PM,only time i need to repack is when i add a new pbo/addon (aka config.cpp),,
+561680015578759196,wrdg,05/15/2023 12:00 AM,make sure to not repack if you have workbench open when using -mod,,
+561680015578759196,wrdg,05/15/2023 12:00 AM,because it has those files open,,
+561680015578759196,wrdg,05/15/2023 12:00 AM,this will get you into the habit of just stopping and starting the game to test your changes,,
+561680015578759196,wrdg,05/15/2023 12:03 AM,"i'm working on a toolset that'll change your workflow for the better, making modding a breeze.",,
+526470800572809227,progger,05/15/2023 12:03 AM,"client crash, confirmed-",,
+561680015578759196,wrdg,05/15/2023 12:03 AM,vanilla?,,
+526470800572809227,progger,05/15/2023 12:03 AM,vanilla seems stable like a truck.,,
+561680015578759196,wrdg,05/15/2023 12:03 AM,what are you doing different from vanilla for your placements?,,
+526470800572809227,progger,05/15/2023 12:04 AM,"defacto, same script like Tyson.
+https://discord.com/channels/452035973786632194/492295576470290433/1107417518127206523",,
+384850738355896321,ragtyson,05/15/2023 12:05 AM,that's why i said let's wait until the shitshow begins when 1.21 releases 😄,,
+384850738355896321,ragtyson,05/15/2023 12:05 AM,because everyone and their grandma is using the same script basically,,
+384850738355896321,ragtyson,05/15/2023 12:06 AM,i still don't see a reason why it would crash the client though,,
+561680015578759196,wrdg,05/15/2023 12:07 AM,hologram wasn't changed in 1.21 from what i can tell,,
+561680015578759196,wrdg,05/15/2023 12:07 AM,might be worth reporting,,
+384850738355896321,ragtyson,05/15/2023 12:08 AM,i will finish the workbench setup first and try to debug a bit,,
+561680015578759196,wrdg,05/15/2023 12:09 AM,actually `actiondeployobject.c` was changed,,
+561680015578759196,wrdg,05/15/2023 12:10 AM,when does it crash for you? as soon as you turn on advanced placement? or when you start placing,,
+384850738355896321,ragtyson,05/15/2023 12:11 AM,as soon as i click to place,,
+526470800572809227,progger,05/15/2023 12:11 AM,start placing,,
+384850738355896321,ragtyson,05/15/2023 12:11 AM,dont even see the hologram,,
+561680015578759196,wrdg,05/15/2023 12:11 AM,this is good to know,,
+561680015578759196,wrdg,05/15/2023 12:11 AM,wanna hop in vc?,,
+384850738355896321,ragtyson,05/15/2023 12:11 AM,sure,,
+84665468828254208,podrivo,05/15/2023 2:45 AM,is there a specific file that I can grab the latest dayz build version? inside the folder `/scripts`  or other?,,
+106922508707434496,thecrimsonzamboni,05/15/2023 2:53 AM,"Are you asking for a way to read the current version of DayZ?
+```cpp
+string version;
+GetGame().GetVersion(version);
+```",,🙏 (1)
+84665468828254208,podrivo,05/15/2023 2:54 AM,"yes! thank you! also, can I find this in a specific file?",,
+106922508707434496,thecrimsonzamboni,05/15/2023 2:58 AM,"```
+PS [19:57] C:\Program Files (x86)\Steam\steamapps\common\DayZ> grep -rw ""1.20.155981"" .
+Binary file ./DayZDiag_x64.exe matches
+Binary file ./DayZ_x64.exe matches
+```",,🙏 (1)
+526470800572809227,progger,05/15/2023 4:14 AM,"So, what's the case with, Holo client crashes,
+Any news?",,
+384850738355896321,ragtyson,05/15/2023 4:17 AM,"nope, we couldn't find the issue. Wardog will forward the issue towards BI, maybe a feedback tracker. We'll see",,
+561680015578759196,wrdg,05/15/2023 4:26 AM,https://feedback.bistudio.com/T172406,,
+561680015578759196,wrdg,05/15/2023 4:26 AM,@[EZ] Progger,,
+384850738355896321,ragtyson,05/15/2023 4:27 AM,:4642_peepoclap:,,
+526470800572809227,progger,05/15/2023 4:27 AM,maybe give them example code.,,
+561680015578759196,wrdg,05/15/2023 4:30 AM,You're free to provide details to the issue,,
+384850738355896321,ragtyson,05/15/2023 4:35 AM,i just did,,
+369714747072839681,breezygoincrazy,05/15/2023 11:09 AM,is there a way i can change the range that you see a storages inventory,https://cdn.discordapp.com/attachments/492295576470290433/1107595534249758750/BigSafe_ColorBase.c,
+369714747072839681,breezygoincrazy,05/15/2023 11:09 AM,this is my script for my safe its a walk in safe so i want it to be like the car tent that u can only see the inventory when your inside it,,
+143322866127994880,handsomenipple,05/15/2023 12:19 PM,"had a similar issue, but for me it didn't crash every time (usually on the second or third placement though) and the only function I'm really touching in the Hologram class is `UpdateHologram`
+the fix for me was to comment out the following line in `RefreshVisuals`
+```cs
+m_Projection.SetObjectMaterial(hidden_selection, hologram_material_path);
+```",,
+143322866127994880,handsomenipple,05/15/2023 12:20 PM,could be an entirely different issue though,,
+214154100080640001,r22rstern,05/15/2023 2:18 PM,Still have that issue? Had that many times before and worked it out. To me it was a couple of different things but mainly the p3d going into the ground,,
+214154100080640001,r22rstern,05/15/2023 2:20 PM,I ended up making some of my own holograms and scripts to prevent some of it but sometimes it would be p3d selections messing with base scripts etc.,,
+214154100080640001,r22rstern,05/15/2023 2:23 PM,Yes you can have memory points in the memory lod call it whatever and detect it. I have this in my... Base fortifications mod i think,,
+295995523658285066,truedolphin,05/15/2023 2:26 PM,"Or just a `if (vector.Distance(storage.GetPosition(), player.GetPosition()) > 2) return false;` check in one of the action bools...",,
+214154100080640001,r22rstern,05/15/2023 2:32 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1107646805086314598/Screenshot_20230515-083241.png,
+214154100080640001,r22rstern,05/15/2023 2:33 PM,Me and dumpgrah spoke about it a while ago. 'MAXPROPERDISTANCE' Is a value given ( float ) but you can replace it by any number or just assign it as we did,,
+214154100080640001,r22rstern,05/15/2023 2:34 PM,"Would have been much, much si pler hahaha",,
+214154100080640001,r22rstern,05/15/2023 2:34 PM,And if it has properdistance you can call a function that looks like showinventory(),,
+214154100080640001,r22rstern,05/15/2023 2:35 PM,Not sure exactly of the name but if you look at the barrel hide and see inventory script it is in there,,
+295995523658285066,truedolphin,05/15/2023 2:36 PM,Ideally if you're doing any distance checks you'd be using vector.DistanceSq(),,
+295995523658285066,truedolphin,05/15/2023 2:38 PM,"And if all three of those points are defined in one selection, wouldn't it use the closest distance of them if you just used the grouped selection instead of them seperately?",,
+295995523658285066,truedolphin,05/15/2023 2:40 PM,"Heck, could do a raycast check on the memorypoint too, so you'd need distance and/or LoS..",,
+214154100080640001,r22rstern,05/15/2023 3:11 PM,The idea of different points was to check between many areas. So if a player was close enough to x byt far anough to y he could build but not dismantle. If he had proper distance from both then he could dismantle. This prevents unwanted dismantle actions in weird angles players could find.,,
+295995523658285066,truedolphin,05/15/2023 3:13 PM,Iirc raycasts have a distance check built in.,,
+295995523658285066,truedolphin,05/15/2023 3:13 PM,"So the player would need distance + LoS to the memorypoint.
+
+Might stop softside raids if they can't see the Centrepoint on the soft side for example..",,❤️ (1)
+349870496759808010,ekki007,05/15/2023 3:16 PM,"this is not working. Because SomeContainer{}; is only in server side mod defined. So if I use ""modded class SomeContainer{};"" in client script I get error msg ""not defined class"" and if I use ""class SomeContainer{};"" it works for client bot server won´t start, because ""class is already defined""",,
+295995523658285066,truedolphin,05/15/2023 3:17 PM,"That's not my fault...
+That's on you to code it correctly..",,
+349870496759808010,ekki007,05/15/2023 3:18 PM,"I know, I just trying overide another mod, not mine 🙂",,
+349870496759808010,ekki007,05/15/2023 3:19 PM,So asking if possible to handle this situation somehow,,
+295995523658285066,truedolphin,05/15/2023 3:19 PM,And make sure you're adding the mod you're trying to override's cfgpatches classname to your mod's requiredaddons array...,,
+295995523658285066,truedolphin,05/15/2023 3:20 PM,And.....load the servermod as a clientside mod...,,
+349870496759808010,ekki007,05/15/2023 3:21 PM,ok thats something I should check 🙂,,
+214154100080640001,r22rstern,05/15/2023 3:27 PM,Time to learn about raycast then! I appreciate you guiding me i would never have tought,,
+295995523658285066,truedolphin,05/15/2023 3:29 PM,"I've been using memory points lately for spawning different layouts of proxies in buildings, so sorta testing out as much stuff as I can with them. 🙂",,
+94225995581620224,itsatreee,05/15/2023 4:28 PM,"Using memory points to ""check"" if you are close enough is fairly simple and doesn't even require a raycast
+```c
+bool HasProperDistanceToSRPWindow( string selection, vector playerPosition )
+{
+  // Print(string.Format(""has proper distance: %1"", selection));
+  if ( MemoryPointExists( selection ) )
+  {
+    vector selection_pos_action = ModelToWorld( GetMemoryPointPos( selection ) );
+    float distanceToPlayer;
+    if (MemoryPointExists(""inside""))
+    {
+      vector selection_pos_inside = ModelToWorld( GetMemoryPointPos( ""inside"" ) );
+      float distanceToAction = vector.Distance( selection_pos_inside, selection_pos_action );
+      distanceToPlayer = vector.Distance( selection_pos_inside, playerPosition );
+      float delta = distanceToPlayer - distanceToAction;
+      // Print(string.Format(""Has Inside and Has Delta: %1"", delta));
+      // negative values means the player is inside
+      return delta < MAX_ACTION_INSIDE_DETECTION_DISTANCE;
+    }
+
+    distanceToPlayer = vector.Distance( selection_pos_action, playerPosition );
+    // Print(string.Format(""mem point exists: position: %1 distance: %2"", selection_pos_action, distanceToPlayer));
+    if ( distanceToPlayer >= MAX_ACTION_WINDOW_DETECTION_DISTANCE )
+    {
+      return false;
+    }
+  }        
+  return true;
+}
+```",,
+94225995581620224,itsatreee,05/15/2023 4:29 PM,"In this example, I pass memorypoint's to the function and check if the player is close enough to do the action. Just have to remember the player position isn't like in the middle, it is either their head or the ground.",,
+94225995581620224,itsatreee,05/15/2023 4:29 PM,"Basically a copy paste of vanilla's `  bool HasProperDistance( string selection, PlayerBase player )` function",,
+380398998365667330,hand_of_midas,05/15/2023 8:56 PM,Hi Everyone! Tell me how to change the animation of the installation of the fenceKit? Maybe someone did it?,,
+220980493276020736,.gramps.,05/15/2023 9:09 PM,"probably ```c
+class ActionBuildPart: ActionContinuousBase
+{
+    void ActionBuildPart()
+    {
+        m_CommandUID = DayZPlayerConstants.CMD_ACTIONFB_ASSEMBLE;
+``` either that or just ActionDeployObject",,
+220980493276020736,.gramps.,05/15/2023 9:14 PM,search for CMD_ACTIONFB_ASSEMBLE in scripts and you'll find the list of other possible vanilla animations,,
+380398998365667330,hand_of_midas,05/15/2023 9:30 PM,"Yes, I see! But how and where to change it? I change the animation in the actiondeployobject.c it works but breaks other animations(((",,
+380398998365667330,hand_of_midas,05/15/2023 9:30 PM,Can you help me with this?,,
+267524084944994306,bobojim,05/16/2023 1:58 AM,"Afternoon, at one time I could of swore I saw on the workshop a mod for cleaning up safezones for items on the ground and aggressive ai. I'm currently unable to find it. Was wondering if anyone could refer me to another mod to do this? I currently use Dr Jones trader but the cleanup for ai and items does not work as well as intended it seems.",,
+384850738355896321,ragtyson,05/16/2023 2:04 AM,"Interesting that this fixed it for you... I don't even touching that in one of my mods. Would you add that to the feedback tracker, maybe it helps to fix this before 1.21 ?",,
+384850738355896321,ragtyson,05/16/2023 2:04 AM,https://feedback.bistudio.com/T172406#2444323,,
+384850738355896321,ragtyson,05/16/2023 2:06 AM,What script changes you made so it stopped crashing?,,
+526470800572809227,progger,05/16/2023 2:44 AM,i think they talk about prior 1.21.,,
+444384782931984414,n3msi,05/16/2023 8:37 AM,I´m looking for something like EEOnCECreate() but also working on other ways of spawning (like via init.c),,
+384850738355896321,ragtyson,05/16/2023 8:38 AM,`EEOnCECreate()` gets called **after** it spawned via types,,
+444384782931984414,n3msi,05/16/2023 8:39 AM,I had my own nm_Placeables which was just DeployableContainer_Base with some more actions and it still crashed. Removed all script and inherited from WoodenCrate in cfg worked for me,,
+444384782931984414,n3msi,05/16/2023 8:40 AM,"yes, thats why I´m looking for mth else. Want to spawn items with attachments on it",,
+384850738355896321,ragtyson,05/16/2023 8:40 AM,"yes, because it's using vanilla functions then. But that's not a proper solution though",,
+384850738355896321,ragtyson,05/16/2023 8:40 AM,cfgspawnabletypes and cfgrandompresets then,,
+444384782931984414,n3msi,05/16/2023 8:41 AM,most admins won´t even install these even if i pack it into the mod ^^,,
+384850738355896321,ragtyson,05/16/2023 8:42 AM,i do the same with a item in my mod,,
+384850738355896321,ragtyson,05/16/2023 8:43 AM,i provide it including a description on how to do it. Not my fault if someone is too lazy to do basic stuff for his own server,,
+576873531246116902,vchackett,05/16/2023 9:56 AM,"Can anyone help me mod a server? I'll pay you $125 if we can nail it. Have the mods listed out already, it's for the Lux map.",,
+444384782931984414,n3msi,05/16/2023 10:06 AM,#service-requests,,
+576873531246116902,vchackett,05/16/2023 10:27 AM,Thank you threw it up there 🙂,,
+369714747072839681,breezygoincrazy,05/16/2023 12:55 PM,do you have the message link to this conversation?,,
+715921600620396566,zraider,05/16/2023 12:58 PM,"```override void InvokeOnDisconnect( PlayerBase player )
+{
+    super.InvokeOnDisconnect( player );
+    PlayerIdentity identity = player.GetIdentity();        
+    string message = string.Format(""ID %1 disconnected at position %2"", identity.GetId(), player.GetPosition().ToString());
+    ConnectionLogs.Print(message);
+}
+
+NULL pointer to instance
+Class:      'CustomMission'
+Function: 'InvokeOnDisconnect'```
+
+I have placed this code in init.c Can someone tell me why I'm  getting a crashlog with ""NULL pointer to instance""? It doesn't seem to like identity.GetId() even though the script is working and it is giving me the exected output. I believe that identity.GetId() is the part it doesn't like because if I replace that with a literal string, it does not generate a crashlog. Any suggestions?",,
+135226527473336320,inclementdab,05/16/2023 1:03 PM,the player is disconnecting at this point. identity is probanly null,,
+715921600620396566,zraider,05/16/2023 1:12 PM,I'm pretty sure it's not null because it has the expected ID in the output.,,
+715921600620396566,zraider,05/16/2023 1:15 PM,also I've tried variations such as if (player && identity) .. with the same result.,,
+295995523658285066,truedolphin,05/16/2023 1:59 PM,Typically it tells you in the crash log what line is causing the issue.,,
+702427111243120700,r1c4rd07124,05/16/2023 2:19 PM,"someone would like to help me with running workbench and my first mod @demo, I did everything according to the youtube tutorial also i installed all https://mikero.bytex.digital/Downloads but I am missing some file when packing the mod: 
+binarise tools for ofp/xbox engines are not installed",https://cdn.discordapp.com/attachments/492295576470290433/1108005820693749820/image.png,
+135226527473336320,inclementdab,05/16/2023 2:25 PM,print!,,
+135226527473336320,inclementdab,05/16/2023 2:25 PM,print your variables,,
+135226527473336320,inclementdab,05/16/2023 2:25 PM,one of them is null. find which one haha,,
+135226527473336320,inclementdab,05/16/2023 2:25 PM,thats typically what i end up doing,,
+295995523658285066,truedolphin,05/16/2023 2:27 PM,Wtf?..,https://cdn.discordapp.com/attachments/492295576470290433/1108007839080906813/Screenshot_20230516-222713140_1.jpg,
+295995523658285066,truedolphin,05/16/2023 2:29 PM,Wouldn't you do that code before the super?,,
+135226527473336320,inclementdab,05/16/2023 2:29 PM,mod template moment,,
+135226527473336320,inclementdab,05/16/2023 2:29 PM,those batch files are so old,,
+135226527473336320,inclementdab,05/16/2023 2:29 PM,shouldnt invalidate the identity,,
+135226527473336320,inclementdab,05/16/2023 2:29 PM,oh,,
+135226527473336320,inclementdab,05/16/2023 2:30 PM,actually it might,,
+135226527473336320,inclementdab,05/16/2023 2:30 PM,i bet its only happening when people abort,,
+135226527473336320,inclementdab,05/16/2023 2:30 PM,since that nulls the identity,,
+135226527473336320,inclementdab,05/16/2023 2:30 PM,@ricziwąsik,,
+295995523658285066,truedolphin,05/16/2023 2:31 PM,And you could just do a cast check to remove the null.,,
+295995523658285066,truedolphin,05/16/2023 2:36 PM,"```override void InvokeOnDisconnect( PlayerBase player )
+{
+    super.InvokeOnDisconnect( player );
+    PlayerIdentity identity = PlayerIdentity.Cast(player.GetIdentity());
+     if (identity) {   
+    string message = string.Format(""ID %1 disconnected at position %2"", identity.GetId(), player.GetPosition().ToString());
+    ConnectionLogs.Print(message);
+}
+}```",,
+106922508707434496,thecrimsonzamboni,05/16/2023 2:38 PM,you don't need to cast to check for null,,
+384850738355896321,ragtyson,05/16/2023 2:47 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1108012797767462933/image.png,
+384850738355896321,ragtyson,05/16/2023 2:47 PM,https://tenor.com/view/wtf-steve-harvey-confused-excuse-me-wth-gif-15917165,,
+295995523658285066,truedolphin,05/16/2023 2:48 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1108013181449814067/image0.gif,
+295995523658285066,truedolphin,05/16/2023 2:49 PM,I'm all for learning better ways.,,
+702427111243120700,r1c4rd07124,05/16/2023 2:50 PM,@dab where  can I find good ones,,
+135226527473336320,inclementdab,05/16/2023 2:52 PM,i use the same ones,,
+135226527473336320,inclementdab,05/16/2023 2:52 PM,haha,,
+135226527473336320,inclementdab,05/16/2023 2:52 PM,wrdg is working on a build tool. im working on a build tool,,
+135226527473336320,inclementdab,05/16/2023 2:52 PM,eventually one of us will finish in 2025,,
+295995523658285066,truedolphin,05/16/2023 2:52 PM,My map will come out before your tools.,,
+106922508707434496,thecrimsonzamboni,05/16/2023 2:56 PM,"this is sufficient:
+```cpp
+PlayerIdentity identity  = player.GetIdentity();
+if (identity)
+{
+    // ...
+}
+```",,
+295995523658285066,truedolphin,05/16/2023 2:57 PM,Ah. Ty.,,
+295995523658285066,truedolphin,05/16/2023 2:58 PM,"So if it still throws a null, then that's player causing it right?",,
+561680015578759196,wrdg,05/16/2023 3:35 PM,"give this a shot, it still can be null but worth a shot
+```cs
+modded class MissionServer
+{
+    override void OnClientDisconnectedEvent(PlayerIdentity identity, PlayerBase player, int logoutTime, bool authFailed)
+    {
+        PrintFormat(""Player: %1 | Identity: %2"", player, identity);
+
+        // call hierarchy last
+        super.OnClientDisconnectedEvent(identity, player, logoutTime, authFailed);
+    }
+}
+```",,
+94225995581620224,itsatreee,05/16/2023 3:48 PM,Yeh pretty lame. I had to make my own wrapper for books,,
+384850738355896321,ragtyson,05/16/2023 3:51 PM,"Yeah if it wouldn't be a public mod, i would do that too...",,
+94225995581620224,itsatreee,05/16/2023 4:51 PM,I wonder if its a copyright thing because they have all the books defined already in vanilla,,
+94225995581620224,itsatreee,05/16/2023 4:52 PM,The script stuff is just disabled and the html's don't get packed in the pbo,,
+561680015578759196,wrdg,05/16/2023 4:57 PM,Definitely a copyright thing,,
+106922508707434496,thecrimsonzamboni,05/16/2023 4:59 PM,the book htmls were all public domain from project gutenberg IIRC,,
+106922508707434496,thecrimsonzamboni,05/16/2023 5:00 PM,sad they removed them 😦,,
+263808622180564992,starmage21,05/16/2023 5:08 PM,"Does DayZ have any built in scripting to deal with SQLite databases that I can leverage? The HeatMap mod is neat, but I wanna extend it.",,
+702427111243120700,r1c4rd07124,05/16/2023 5:08 PM,so how to fix it? I read an older post but I can't solve it,,
+561680015578759196,wrdg,05/16/2023 5:11 PM,"No, but you can export data out of the game easily using RestApi",,
+263808622180564992,starmage21,05/16/2023 5:12 PM,"Ya, HeatMap is already doing that to some json. I was gonna try to pipe it straight into SQLite",,
+561680015578759196,wrdg,05/16/2023 5:12 PM,"Yeah, so what you'd do is create an api application in what ever language you're comfortable with to handle rest requests from the game to then manage your SQLite db from that application",,
+135226527473336320,inclementdab,05/16/2023 5:13 PM,"close all tools. open pbo project manually, then set all settings in setup, source folder, etc",,
+135226527473336320,inclementdab,05/16/2023 5:13 PM,"then,.. this is the dumb part",,
+135226527473336320,inclementdab,05/16/2023 5:13 PM,close pboproject with the X button,,
+135226527473336320,inclementdab,05/16/2023 5:14 PM,its the only way to save settings,,
+135226527473336320,inclementdab,05/16/2023 5:14 PM,then run tools,,
+561680015578759196,wrdg,05/16/2023 5:14 PM,Because registry is a good place to store application settings :Kappa:,,
+743615861901885461,azimuthalobserver,05/16/2023 5:39 PM,alright guys I need help with a simple mod I'm trying to make. I'm new to the game and I'm just trying to test the interactions between the player and the mod so I can establish a baseline.,,
+743615861901885461,azimuthalobserver,05/16/2023 5:41 PM,"so I have a script.c, I use the addon builder to turn it into a pbo file
+
+Syncing folders... [source]=C:\Users\h4rdc\Documents\dayz\test-mod, [sync]=C:\Users\h4rdc\AppData\Local\Temp\test-mod
+Syncing file ""script.c""
+File sync done
+Done.
+
+I managed to create the server, start the server, join the server and ensure I don't get an error about the mod by signing this custom ""test-mod""
+
+this is the code for script.c:
+
+class MyModCommandHandler
+{
+    void HandleCommand(string command, Params params)
+    {
+        if (command == ""callmom"")
+        {
+            Print(""Response: Hello world"");
+        }
+    }
+};
+
+void main()
+{
+    GetGame().GetUIManager().ShowScriptedMenu(NULL, NULL, MyModCommandHandler, false);
+}",,
+743615861901885461,azimuthalobserver,05/16/2023 5:43 PM,"once i'm in game, i open the chat box. i type in #login [password] and it says (Game) Logged in as admin
+
+at this point i'm not sure how do i call this custom command so i can see the response anywhere. any help would be appreciated @skigoggles especially from you bro",,
+263808622180564992,starmage21,05/16/2023 5:51 PM,Thanks. Thats what I was thinking would need to happen.,,
+269356894131322890,fragilexpackage,05/16/2023 7:14 PM,What am i doing wrong to allow a item to be connected to a generator. Ive set the compatible plug type same as the generator. What else is needed to be done,,
+702427111243120700,r1c4rd07124,05/16/2023 7:15 PM,"i did it the same as you said, disabled all tools, then created a save config by closing pboproject, then opened @Demo workbench, packs and gets 2 cmd one is probably correct while the other one can't find the path /Demo, set everything according to tutorial https:/ /www.youtube.com/watch?v=Vyy194Ihcj0&t=1s","https://cdn.discordapp.com/attachments/492295576470290433/1108080382588498040/image.png,https://cdn.discordapp.com/attachments/492295576470290433/1108080382840143922/image.png,https://cdn.discordapp.com/attachments/492295576470290433/1108080383083421858/image.png",
+135226527473336320,inclementdab,05/16/2023 7:30 PM,Started a thread.,,
+743615861901885461,azimuthalobserver,05/16/2023 7:35 PM,"guys I still need help just setting up a super basic mod, this is MyScript.c:
+
+
+modded class PlayerBase // modded keyword for modding existing class
+{
+    override void OnJumpStart()
+    {
+        super.OnJumpStart();
+
+        Print(""jumping detected"");
+        
+        GetGame().ChatPlayer(""player jumped"");
+    }
+}
+
+I see log ""jumping detected"" in the script editor when I jump but I don't see the same logged in the player's chat. Can anyone advise me pls?",,
+207902577713479680,simonvic,05/16/2023 9:31 PM,and for peasants like me who prefer AddonBuilder 😄 : https://github.com/simonvic/cliz/tree/config-rework,,
+196845794513518592,shaggoth,05/16/2023 9:36 PM,🫂,,
+561680015578759196,wrdg,05/16/2023 10:49 PM,I'm also wrapping the tools addon builder uses :widebork:,,doggodance (2)
+561680015578759196,wrdg,05/16/2023 10:49 PM,"Bohemia knows what they're doing with their formats, rather them write the tools that handle the proprietary formats",,
+207902577713479680,simonvic,05/16/2023 10:51 PM,"btw how are you checking if a build has failed?
+I invoke AddonBuilder directly and it seems it doesn't return the correct exit code 😦",,
+561680015578759196,wrdg,05/16/2023 10:52 PM,"Addon builder is a wrapper for Binarize, BankRev, and CfgConvert",,
+561680015578759196,wrdg,05/16/2023 10:52 PM,Handle BankRev and Binarize directly and you'll get exit codes,,
+207902577713479680,simonvic,05/16/2023 10:52 PM,ah right,,
+207902577713479680,simonvic,05/16/2023 10:52 PM,thanks 🙂 :pepelove:,,
+561680015578759196,wrdg,05/16/2023 10:55 PM,"I'm aiming for a workflow and project management application, a tool to integrate all the tools DayZ tools already provides, but without the hassle of setting up your modding environment and own automation",,
+295995523658285066,truedolphin,05/17/2023 12:00 AM,"ETA, 2025",,
+196845794513518592,shaggoth,05/17/2023 12:06 AM,whoa,,
+196845794513518592,shaggoth,05/17/2023 12:06 AM,faster than zedmag anyway :hehehe:,,
+369714747072839681,breezygoincrazy,05/17/2023 12:28 AM,i get this error when i try that,https://cdn.discordapp.com/attachments/492295576470290433/1108159088342351872/image.png,
+535230913739751425,nikerage,05/17/2023 12:30 AM,Then define the variable with the value you like to be the max action detection distance,,
+369714747072839681,breezygoincrazy,05/17/2023 12:37 AM,got it,,
+369714747072839681,breezygoincrazy,05/17/2023 12:37 AM,ty,,
+369714747072839681,breezygoincrazy,05/17/2023 12:49 AM,script didnt seem to do anything at all tho,,
+295995523658285066,truedolphin,05/17/2023 3:09 AM,Then you don't understand where to use it.,,this (1)
+245265732978475009,kharn_thebetrayer,05/17/2023 4:26 PM,"guys, I'm struggling a bit with referencing classes that are lower in the 3_Game, 4_World, 5_Mission. I'm hoping someone can help clarify for me. Let's say I have a class in 4_World:
+
+```json
+class CustomClass {
+...
+}```
+ which does a bunch of stuff. if I want to create a custom array object of that class in a 5_Mission script,  do I do that with a declaration like this?
+
+```json
+private ref array<ref CustomClass> m_Object; ```
+I just keep running into a bunch of unknown type errors and I suspect it is something do with the ordering of the scripts and how they're being executed?",,
+245265732978475009,kharn_thebetrayer,05/17/2023 4:27 PM,It's also entirely possible I'm declaring the array wrong since I'm still quite new to this language and it's syntax - sorry for the stupid question,,
+561680015578759196,wrdg,05/17/2023 4:33 PM,"higher modules can access lower modules, but lower modules can not directly access higher modules statically",,
+561680015578759196,wrdg,05/17/2023 4:33 PM,inheritance and abstraction is how you'd allow communication across modules,,
+561680015578759196,wrdg,05/17/2023 4:35 PM,"as an example look at `3_Game/Mission.c`, you can access those methods and variables in a higher inherited class that's in 5_Mission",,
+561680015578759196,wrdg,05/17/2023 4:35 PM,such as MissionServer,,
+561680015578759196,wrdg,05/17/2023 4:35 PM,@Kharn the Betrayer,,👍🏻 (1)
+245265732978475009,kharn_thebetrayer,05/17/2023 4:56 PM,Ty as always Wardog I've got a little reading up to do this afternoon,,
+245265732978475009,kharn_thebetrayer,05/17/2023 6:41 PM,So If I understand in relation to inheritance in this example I could create a class in 5 which simply inherits my CustomClass them I can call the new inherited class,,
+330475826158108674,mikkbenelis,05/17/2023 11:57 PM,"What can cause this NULL pointer error?
+Spent almost a week trying to figure it out...
+
+```c++
+SCRIPT    (E): NULL pointer to instance
+Class:      'EffectSound'
+Function: 'Event_OnEffectEnded'
+Stack trace:
+scripts/3_Game/effect.c:321
+scripts/3_Game/effects\effectsound.c:552
+scripts/3_Game/sound.c:162
+```
+
+Code of my item:
+```c++
+class my_audio_player : ItemBase
+{
+  ...
+  protected ref EffectSound m_Track;
+  ...
+
+  void Play()
+  {
+    if (GetGame().IsClient())
+    {  
+      ...
+      m_Track = SEffectManager.CreateSound(soundSet, GetPosition());
+      m_Track.Event_OnSoundWaveEnded.Insert(SwitchTrack);
+      ...
+    }
+  }
+
+  void Stop()
+  {
+    ...
+    if (m_Track)
+    {
+      m_Track.Event_OnSoundWaveEnded.Clear();
+      m_Track.SoundStop();
+      delete m_Track;
+    }
+    ...
+  }
+
+  ...
+}
+```
+`SwitchTrack` calls `Stop` and then `Play` with the next `soundSet`",,
+295995523658285066,truedolphin,05/18/2023 12:03 AM,What line is it pointing to?,,
+222711381210824704,quadley,05/18/2023 1:36 PM,"```const int   DIRECT_COOKING_SLOT_COUNT            = 3;
+protected ItemBase m_DirectCookingSlots[DIRECT_COOKING_SLOT_COUNT];```
+that's from fireplacebase.c. can we change that number for child classes? 
+i tried ```void QDLY_BBQ()
+    {
+        DIRECT_COOKING_SLOT_COUNT            = 6;
+    }```",https://cdn.discordapp.com/attachments/492295576470290433/1108719856607559741/image.png,
+369714747072839681,breezygoincrazy,05/18/2023 1:53 PM,is there a guide somewhere that shows how to add the  code lock mod to a storage,,
+561680015578759196,wrdg,05/18/2023 3:07 PM,https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax#Modded_constants,,
+173448803578281984,inkihh,05/18/2023 3:40 PM,"something along these lines
+```
+attachments[] = {""Att_CombinationLock""};
+
+class GUIInventoryAttachmentsProps
+{
+    class CodeLock
+    {
+        name = ""CodeLock"";
+        description = """";
+        attachmentSlots[] = {""Att_CombinationLock""};
+        icon = ""cat_bb_attachments"";
+        view_index = 3;
+    };
+};
+```",,
+369714747072839681,breezygoincrazy,05/18/2023 3:59 PM,yea i looked at a few mods tho and there is a bunch of scrips also tho,,
+173448803578281984,inkihh,05/18/2023 4:29 PM,"you sure? most (all?) of the scripting should be in the codelock mod, or in the vanilla combination lock",,
+222711381210824704,quadley,05/18/2023 5:00 PM,thanks. so i can't do it just for my object i need to do it in modded class fireplacebase?,,
+561680015578759196,wrdg,05/18/2023 5:11 PM,"You can mod it from your class, not just the base class where it's derived",,
+561680015578759196,wrdg,05/18/2023 5:12 PM,You just can't set constants in the ctor like you had above,,
+222711381210824704,quadley,05/18/2023 5:17 PM,when i put it in my class i get multiple declaration error.  what am i missing there?,,
+315418519913365506,lilela,05/18/2023 5:23 PM,"hey guys, is it possible to remove plant material form spawning?",,
+444384782931984414,n3msi,05/18/2023 5:44 PM,You could try to override scope with 0 in cfg i think.,,
+173448803578281984,inkihh,05/18/2023 5:45 PM,There's also some kind of ignore list,,
+330475826158108674,mikkbenelis,05/18/2023 5:47 PM,"It points to the `Event_OnEffectEnded.Invoke(this);` line within the `scipts/3_game/effect.c` file
+So that is why I think the code above could cause a problem, but I don't know what exactly...
+All `NextTrack`, `Play` and `Stop` methods called manually works like expected
+
+```C++
+/** Event used when the actual effect stopped playing */
+void Event_OnEffectEnded()
+{
+  m_IsPlaying = false;
+  Event_OnEffectEnded.Invoke(this);
+  if (IsAutodestroy())
+    Destroy();
+}```",,
+135226527473336320,inclementdab,05/18/2023 7:11 PM,naming a variable and a function the same is never a good idea,,
+135226527473336320,inclementdab,05/18/2023 7:11 PM,and your script invoker appears to be named that,,
+211205099358257152,hlev,05/18/2023 8:02 PM,"Hello, I was going to see if I can make players have reduced movement speed while jog-leaning, but there seems to be only 4 available movement speeds: 0 (idle), 1 (walk), 2 (run), 3 (sprint), and any float value inbetween seems to fall back to one of these. However when you have the weapon raised (at least while standing), it looks like you're faster than walking but slower than jogging. Is there a way to set that speed without having to raise the weapon? Otherwise if a player is running and leaning and I decrease their speed, they now have walking speed, which is slower than if they were leaning while hipfiring/ADSing.",,
+211205099358257152,hlev,05/18/2023 8:02 PM,"This is my rough prototype (doesn't take into account movement changes while lean button is held down):```cpp
+modded class PlayerBase
+{
+    bool wasLeaning = false;
+    
+    override void CommandHandler(float pDt, int pCurrentCommandID, bool pCurrentCommandFinished)
+    //override void OnCommandMoveStart()
+    {
+        super.CommandHandler(pDt, pCurrentCommandID, pCurrentCommandFinished);
+        //super.OnCommandMoveStart();
+        
+        if (IsLeaning())
+        {
+            if (!wasLeaning)
+                OnLeaningStart();
+            
+            wasLeaning = true;
+        }
+        else
+        {
+            if (wasLeaning)
+                OnLeaningEnd();
+            
+            wasLeaning = false;
+        }
+    }
+    
+    void OnLeaningStart()
+    {
+        float speed = GetMovementSpeed();
+        
+        if (speed > 1)
+            GetInputController().OverrideMovementSpeed(true, speed - 1);
+        
+        //GetUApi().GetInputByID(UAWalkRunForced).ForceEnable(true);
+    }
+    
+    void OnLeaningEnd()
+    {
+        GetInputController().OverrideMovementSpeed(false, 0);
+        //GetUApi().GetInputByID(UAWalkRunForced).ForceEnable(false);
+    }
+    
+    float GetMovementSpeed()
+    {
+        auto hic = GetInputController();
+        
+        float speed;
+        vector localDirection;
+        hic.GetMovement(speed, localDirection);
+        
+        return speed;
+    }
+}```",,
+94225995581620224,itsatreee,05/18/2023 8:11 PM,From my understanding there is no real way to modify player movement speed `above` sprinting (state 3). There are mechanisms in place to modify how fast a player will arrive at max speed. OverrideMovementSpeed is more for AI which can be made to go very fast or slow.,,
+211205099358257152,hlev,05/18/2023 8:15 PM,"Don't want it above sprinting, want it to match raised-gun-jogging speed.",,
+192783578550108160,maloykun,05/18/2023 8:37 PM,"```c
+modded class PlayerBase
+{
+    bool wasLeaning = false;
+    float jogLeaningSpeed = 1; // or 2
+    
+    override void CommandHandler(float pDt, int pCurrentCommandID, bool pCurrentCommandFinished)
+    {
+        super.CommandHandler(pDt, pCurrentCommandID, pCurrentCommandFinished);
+        
+        if (IsLeaning())
+        {
+            if (!wasLeaning)
+                OnLeaningStart();
+            
+            wasLeaning = true;
+        }
+        else
+        {
+            if (wasLeaning)
+                OnLeaningEnd();
+            
+            wasLeaning = false;
+        }
+    }
+    
+    void OnLeaningStart()
+    {
+        GetInputController().OverrideMovementSpeed(true, jogLeaningSpeed);
+    }
+    
+    void OnLeaningEnd()
+    {
+        GetInputController().OverrideMovementSpeed(false, 0);
+    }
+}
+```
+maybeeeeee?",,
+211205099358257152,hlev,05/18/2023 8:40 PM,"no, the flat values 1/2/3 while gun is lowered do not match the player speed while playing has gun raised",,
+561680015578759196,wrdg,05/18/2023 8:41 PM,that speed is tied to the animation,,
+561680015578759196,wrdg,05/18/2023 8:42 PM,"can't really override it in script the way you're wanting, at least not in any way that i know of",,
+211205099358257152,hlev,05/18/2023 8:43 PM,"Sigh, I hope devs will implement that themselves someday https://feedback.bistudio.com/T167254",,
+610998837665988609,Madwest69#6826,05/18/2023 9:08 PM,"Hello guys please little help , i have published a mod for everyone ( no damage toxic zone animal and zmb for vanilla contaminated area ) i have publish her 13 nov. 2022 and he works great , but i have look this day is not work , can anyone help me please",,
+610998837665988609,Madwest69#6826,05/18/2023 9:08 PM,link mod,,
+610998837665988609,Madwest69#6826,05/18/2023 9:09 PM,https://steamcommunity.com/sharedfiles/filedetails/?id=2888244625,,
+610998837665988609,Madwest69#6826,05/18/2023 9:09 PM,script :,,
+610998837665988609,Madwest69#6826,05/18/2023 9:10 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1108833966984794213/message.txt,
+561680015578759196,wrdg,05/18/2023 9:19 PM,"the entirety of this can be condensed down into two modded classes
+```cs
+modded class AnimalBase
+{
+    override bool ResistContaminatedEffect()
+    {
+        return true;
+    }
+}
+
+modded class ZombieBase
+{
+    override bool ResistContaminatedEffect()
+    {
+        return true;
+    }
+}
+```",,
+561680015578759196,wrdg,05/18/2023 9:20 PM,"`ResistContaminatedEffect` handles the if the entity can be added to the trigger effect or not, so there's nothing extra you need to do",,❤️ (1)
+610998837665988609,Madwest69#6826,05/18/2023 9:28 PM,"thanks dude , jut for say its possible my other mod ( nodamage animal & zmb by cars ) conflict because in my folder script the two doc have the same name DayZCreature.c",,
+561680015578759196,wrdg,05/18/2023 9:30 PM,"this is why you prefix your folder structure differently, as well as not have the same CfgPatches and CfgMods name",,
+610998837665988609,Madwest69#6826,05/18/2023 9:32 PM,thnaks friend with your comment i have look my erro in cfg patch,,
+610998837665988609,Madwest69#6826,05/18/2023 9:32 PM,thanks dude ^^,,
+330475826158108674,mikkbenelis,05/18/2023 10:50 PM,"It is not my script, it is a script from DayZ scripts folder (same name for variable and function)
+My script is using this functionality like this: `m_Track.Event_OnSoundWaveEnded.Insert(...)`",,
+135226527473336320,inclementdab,05/18/2023 10:51 PM,yeah thats a vanilla bug,,
+135226527473336320,inclementdab,05/18/2023 10:51 PM,not really your fault,,
+135226527473336320,inclementdab,05/18/2023 10:51 PM,ive gottehn this before too,,
+330475826158108674,mikkbenelis,05/18/2023 10:54 PM,"But what could be the other way to switch to the next track when it ends?
+I have my own music player mod and found similar functionality in other mod
+It is using the `Event_OnSoundWaveEnded` trigger and it works for some reason",,
+218413499947155456,steve_aka_salutesh,05/18/2023 10:57 PM,It's just a script invoker no?! That has nothing to do with a trigger?! The invoke is what calls the method that has been inserted into the script invoker.,,
+218413499947155456,steve_aka_salutesh,05/18/2023 10:59 PM,If you use the same variable name as a other script invoker that might be an issue. Also never set a ref to a script invoker as a side note.,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:00 PM,I haven't followed what your issue is or what you try to archive but maybe posting the full code helps us to understand what you try to archive,,
+330475826158108674,mikkbenelis,05/18/2023 11:05 PM,"I think, this should be enough to understand what I have and what is a problem
+
+DayZ code:
+```C++
+class Effect : Managed
+{
+  ref ScriptInvoker Event_OnEffectEnded    = new ScriptInvoker();
+  ...
+  /**
+  \brief Event used when the actual effect stopped playing
+  */
+  void Event_OnEffectEnded()
+  {
+    m_IsPlaying = false;        
+    Event_OnEffectEnded.Invoke(this); <----- crash log points me here
+    if ( IsAutodestroy() )
+      Destroy();
+  }
+  ...
+}
+```
+
+My code:
+```C++
+class my_audio_player : ItemBase
+{
+  ...
+  protected ref EffectSound m_Track;
+  ...
+  void Play()
+  {
+    Stop();
+    ...
+    if (GetGame().IsClient())
+    {
+      m_Track = SEffectManager.CreateSound(soundSet, GetPosition());
+      m_Track.Event_OnSoundWaveEnded.Insert(SwitchTrack);
+      ...
+    }
+    ...
+  }
+  void Stop()
+  {
+    if (m_Track)
+    {
+      m_Track.Event_OnSoundWaveEnded.Clear();
+      m_Track.SoundStop();
+      delete m_Track;
+    }
+  }
+  void NextTrack()
+  {
+    ...
+  }
+  ...
+}
+```",,
+330475826158108674,mikkbenelis,05/18/2023 11:06 PM,"My `Play`, `Stop` and `NextTrack` methods works fine if called manually
+But when the `NextTrack` is called with the help of `Event_OnSoundWaveEnded` it crashes",,
+561680015578759196,wrdg,05/18/2023 11:08 PM,this pseudo code is difficult to follow,,
+561680015578759196,wrdg,05/18/2023 11:09 PM,too many open ends where information is needed in order to understand what you're doing,,
+330475826158108674,mikkbenelis,05/18/2023 11:09 PM,"It is not pseudo code, it is actual but not complete code",,
+330475826158108674,mikkbenelis,05/18/2023 11:11 PM,"Here is copy-paste of affected parts:
+```C++
+class mimd_audio_player_base : ItemBase
+{
+    ...
+    protected int m_CurrentTrackIndex = 0;
+    protected ref array<string> m_Tracks = {};
+    protected ref EffectSound m_Track;
+    ...
+    void Play()
+    {
+        Stop();
+
+        if (GetGame().IsClient())
+        {
+            auto soundSet = m_Tracks[m_CurrentTrackIndex];
+            m_Track = SEffectManager.CreateSound(soundSet, GetPosition());
+            m_Track.Event_OnSoundWaveEnded.Insert(SwitchTrack);
+            m_Track.SetSoundMaxVolume(m_TrackVolume * m_TrackVolumeMultiplier);
+            m_Track.SetSoundVolume(m_TrackVolume * m_TrackVolumeMultiplier);
+            m_Track.SetParent(this);
+            m_Track.SoundPlay();
+        }
+
+        m_IsPlaying = true;
+        m_IsPlayingLocal = true;
+        SetSynchDirty();
+    }
+
+    void Stop()
+    {
+        m_IsPlaying = false;
+        m_IsPlayingLocal = false;
+        SetSynchDirty();
+
+        if (m_Track)
+        {
+            m_Track.Event_OnSoundWaveEnded.Clear();
+            m_Track.SoundStop();
+            delete m_Track;
+        }
+    }
+
+    void SwitchTrack()
+    {
+        if (!m_IsLooping)
+            NextTrack();
+        else Play();
+    }
+    ...
+}
+```",,
+245265732978475009,kharn_thebetrayer,05/18/2023 11:11 PM,"If I'm running into an ""Only NULL assignment is allowed"" error is that because I'm trying to reassign a static variable?",,
+561680015578759196,wrdg,05/18/2023 11:11 PM,is it coming from a replace lambda?,,
+245265732978475009,kharn_thebetrayer,05/18/2023 11:15 PM,I don't believe so no,,
+330475826158108674,mikkbenelis,05/18/2023 11:23 PM,"Here are last records of client (only) crash log:
+```C++
+SCRIPT    (E): NULL pointer to instance
+Class:      'EffectSound'
+Function: 'Event_OnEffectEnded'
+Stack trace:
+scripts/3_Game/effect.c:321
+scripts/3_Game/effects\effectsound.c:552
+scripts/3_Game/sound.c:162```
+
+It points me to this method of the `scripts/3_game/effect.c` script:
+```C++
+class Effect : Managed
+{
+  ref ScriptInvoker Event_OnEffectEnded = new ScriptInvoker();
+  ...
+  void Event_OnEffectEnded()
+  {
+    m_IsPlaying = false;        
+    Event_OnEffectEnded.Invoke(this); <----- crash log points me here
+    if ( IsAutodestroy() )
+      Destroy();
+  }
+}```",,
+561680015578759196,wrdg,05/18/2023 11:24 PM,why do you have a script invoker and a method named the same thing? how is the method being called?,,
+330475826158108674,mikkbenelis,05/18/2023 11:24 PM,Where I have it? I don't...,,
+330475826158108674,mikkbenelis,05/18/2023 11:25 PM,Am I doing it wrong?,,
+561680015578759196,wrdg,05/18/2023 11:25 PM,ah this is vanilla,,
+561680015578759196,wrdg,05/18/2023 11:27 PM,"insert your method in the ctor of the item, not in the Play method",,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:28 PM,Forget what I said about ref on ScriptInvokers btw,,
+561680015578759196,wrdg,05/18/2023 11:28 PM,any method you insert needs to have the same parameters as what is being passed when it's invoked,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:28 PM,I am stupid,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:28 PM,And under drugs,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:28 PM,:exTwitchLul:,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:28 PM,Pain killers to be fair..,,
+561680015578759196,wrdg,05/18/2023 11:29 PM,"actually, where is `m_Track` getting stored?",,
+330475826158108674,mikkbenelis,05/18/2023 11:29 PM,"So the `m_Track` should be created in the constructor too?
+I don't think it would be an option because the track could be changed",,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:29 PM,And yes wardog is pointing out your issue here,,
+330475826158108674,mikkbenelis,05/18/2023 11:30 PM,It is not stored,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:30 PM,"The Invoker interst ""this"" with points to a param that you also need to have in your method",,
+330475826158108674,mikkbenelis,05/18/2023 11:30 PM,"Or you mean this part?
+
+```C++
+override void OnStoreSave(ParamsWriteContext ctx)
+{
+    super.OnStoreSave(ctx);
+    ctx.Write(m_CurrentTrackIndex);
+}
+```",,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:31 PM,"So what ever ""this"" is",,
+561680015578759196,wrdg,05/18/2023 11:31 PM,`this` would be `Effect`,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:31 PM,Need to be a param of your called method that has been inserted into that invoker,,
+561680015578759196,wrdg,05/18/2023 11:32 PM,"but he's going about using script invokers wrong for what he's wanting to do, because the instance is getting deleted before he's able to handle it",,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:32 PM,Oh well,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:32 PM,Then a manager class would be better,,
+561680015578759196,wrdg,05/18/2023 11:32 PM,script invokers are like c# delegates,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:33 PM,You might want to look at CFs module system then if this should play the same sound for all players,,
+561680015578759196,wrdg,05/18/2023 11:33 PM,"nah, he doesn't need a CF module at all",,
+561680015578759196,wrdg,05/18/2023 11:34 PM,this is client handled and per instance of the object,,
+330475826158108674,mikkbenelis,05/18/2023 11:34 PM,"Am I need to `Insert` something else here?
+Because this is how delagates in C# work
+```C++
+void Play()
+{
+  ...
+  m_Track.Event_OnSoundWaveEnded.Insert(SwitchTrack);
+  ...
+}
+void SwitchTrack() { ... }
+```",,
+561680015578759196,wrdg,05/18/2023 11:34 PM,`void SwitchTrack(Effect effect)`,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:34 PM,Oh ok my bad,,
+218413499947155456,steve_aka_salutesh,05/18/2023 11:34 PM,I  stfu then,,
+561680015578759196,wrdg,05/18/2023 11:35 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1108870563553878186/image.png,
+561680015578759196,wrdg,05/18/2023 11:36 PM,`Event_OnEffectEnded.Invoke(this)` is passing an instance of `Effect`,,
+561680015578759196,wrdg,05/18/2023 11:36 PM,"but you're still having your Effect auto deleted, so the effect ends up destructing before you're able to receive the invoked method",,
+330475826158108674,mikkbenelis,05/18/2023 11:36 PM,"Hmm, it is strange then... How could I determine it from this line? 😁 
+`ref ScriptInvoker Event_OnEffectEnded = new ScriptInvoker();`
+For me it seems like C# Action without parameters...",,
+561680015578759196,wrdg,05/18/2023 11:37 PM,"you don't, you handle it in the reverse way, from the invocation",,
+561680015578759196,wrdg,05/18/2023 11:37 PM,"script invokers aren't meant to have overloads either, so don't use them in such a way either",,
+330475826158108674,mikkbenelis,05/18/2023 11:38 PM,"Thanks, I'll try it and hope it'll work because I've spent too much time on it...",,
+561680015578759196,wrdg,05/18/2023 11:38 PM,"next time post the entire file, you manually cutting things out makes it difficult to follow",,
+561680015578759196,wrdg,05/18/2023 11:39 PM,i lose interest when people cut out information that's important,,
+330475826158108674,mikkbenelis,05/18/2023 11:39 PM,"The entire file is almost 400 lines, so I thought it would be easier to show the important part only",,
+330475826158108674,mikkbenelis,05/18/2023 11:55 PM,"Got the same crash, so it is something else...",,
+561680015578759196,wrdg,05/18/2023 11:56 PM,Remove the line where you do `delete m_Track`,,
+561680015578759196,wrdg,05/18/2023 11:57 PM,Your effect is getting deleted somewhere,,
+330475826158108674,mikkbenelis,05/19/2023 12:05 AM,"Yes, that was the issue (TBH, maybe `Effect effect` was not the issue either)
+But wouldn't it be a memory leak? I've set a `m_Track.SetAutodestroy(true);` upon creation",,
+207209434051641345,ronnus,05/19/2023 2:44 AM,is it possibel to have a different LiquidThroughputCoef whether an item is powered or not?,,
+295995523658285066,truedolphin,05/19/2023 3:41 AM,"If it's a variable accessible through script, yes.",,
+207209434051641345,ronnus,05/19/2023 4:11 AM,My first time messing with electrical things to be honest. Learning more yet. For some reason i cant get a cable reel to attach to my item even though I have it in the SetActions..,,
+207209434051641345,ronnus,05/19/2023 4:14 AM,I want to pickup a cable real and attach it to the item instead of the reverse,,
+295995523658285066,truedolphin,05/19/2023 4:14 AM,Inheritance is a thing that exists.,,
+207209434051641345,ronnus,05/19/2023 4:24 AM,Ok.,,
+207209434051641345,ronnus,05/19/2023 4:28 AM,I'm just trying to learn TrueDolphin.,,
+328299074266857475,spectramodz,05/19/2023 5:58 AM,I am having a problem that I never had before,,
+328299074266857475,spectramodz,05/19/2023 6:00 AM,When I close some GUI through script the GUI is closed but the player continue blocked,,
+328299074266857475,spectramodz,05/19/2023 6:00 AM,and I have to press ESC to open DayZ options and close it to move again.,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:27 AM,So player controls are blocked?,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:27 AM,Then you dont release the inputs again,,
+264336768294322178,tvalak,05/19/2023 7:28 AM,"Hellooo, i'm trying to translate an action of SFP (When you take a book of SFP, you can ""inspect"", it have an animation), So this is the file of sfp who contain text :
+
+```
+class ActionInspactJurnalCB : ActionContinuousBaseCB
+{
+    override void CreateActionComponent()
+    {
+        m_ActionData.m_ActionComponent = new CAContinuousTime(20);
+    }
+};
+
+class ActionInspactJurnal: ActionContinuousBase
+{
+    void ActionInspactJurnal()
+    {
+        m_CallbackClass = ActionInspactJurnalCB;
+        m_CommandUID = DayZPlayerConstants.CMD_ACTIONMOD_TAKETEMPSELF;
+        m_CommandUIDProne = DayZPlayerConstants.CMD_ACTIONFB_TAKETEMPSELF;    
+        m_SpecialtyWeight = UASoftSkillsWeight.PRECISE_LOW;
+    }
+    
+    override void CreateConditionComponents()  
+    {
+        m_ConditionItem = new CCINonRuined;
+        m_ConditionTarget = new CCTSelf;
+    }
+    
+    override bool HasProneException()
+    {
+        return true;
+    }
+    
+    override bool HasTarget()
+    {
+        return false;
+    }
+        
+    override string GetText()
+    {
+        return ""Осмотреть Журнал"";
+    }
+
+    override void OnStartAnimationLoopServer( ActionData action_data )
+    {
+        SFP_Collection_base horn = SFP_Collection_base.Cast(action_data.m_MainItem);
+        if(horn)
+            horn.BlowHorn();
+    }
+    
+    override void OnEndAnimationLoopServer( ActionData action_data )
+    {
+        SFP_Collection_base horn = SFP_Collection_base.Cast(action_data.m_MainItem);
+        if(horn)
+            horn.StopBlowingHorn();
+    }
+
+    override bool ActionCondition( PlayerBase player, ActionTarget target, ItemBase item )
+    {
+        return true;
+    }
+};
+```
+What is the best way to translate ""Осмотреть Журнал"" ? I wanted to override the class but I think it would cause too much modification just for a translation",,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:28 AM,Localisation keys,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:29 AM,Is the key word here,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:29 AM,If you want to translate your text into different languages you will need a string table that contains that keys and there translations.,,
+264336768294322178,tvalak,05/19/2023 7:31 AM,ok I'll look into it ! Thanks,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:31 AM,If it's just about replacing the current text with a new one then overriding the method is enoght,,
+264336768294322178,tvalak,05/19/2023 7:32 AM,yes but i need to set a new name for the class  who will override the method no ?,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:32 AM,No,,
+264336768294322178,tvalak,05/19/2023 7:32 AM,oh ?,,
+218413499947155456,steve_aka_salutesh,05/19/2023 7:33 AM,You just override the method in your modded version of that class,,
+264336768294322178,tvalak,05/19/2023 7:33 AM,okk i will try ! thanks for help,,👍 (1)
+264336768294322178,tvalak,05/19/2023 7:51 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1108995436905246732/image.png,
+264336768294322178,tvalak,05/19/2023 7:53 AM,so yes i have to modify name of the class x),,
+264336768294322178,tvalak,05/19/2023 8:23 AM,"forgot ""modded"" Thanks again !",,
+612719006725570560,blondaq1991,05/19/2023 10:10 AM,Hi everyone - can i get some health of my custom building model and adjust then what can happen when it is destroyed? (health  = 0) For example delete this model? Thanks for answer and help,,
+295995523658285066,truedolphin,05/19/2023 10:14 AM,Yes,,
+612719006725570560,blondaq1991,05/19/2023 10:15 AM,"awesome 🙂 so can you advise me, how to do that, please?",,
+295995523658285066,truedolphin,05/19/2023 10:15 AM,Negative,,🤪 (2)
+295995523658285066,truedolphin,05/19/2023 10:17 AM,Would suggest checking if the thing you're trying to mod has OnUpdate(),,
+179307958046294016,koizumisakiko,05/19/2023 10:19 AM,In theory how difficult would it be to modify the placement script for plastic explosives to raise them off the ground and towards the player slightly?,,
+179307958046294016,koizumisakiko,05/19/2023 10:19 AM,Looking into a potential jank fix for the plastics as we're removing breaching charges,,
+295995523658285066,truedolphin,05/19/2023 10:20 AM,Could do a little math with player position on the...CreateObject/SetPosition part.,,
+179307958046294016,koizumisakiko,05/19/2023 10:22 AM,Ahh so shouldn't really be too difficult then?,,
+179307958046294016,koizumisakiko,05/19/2023 10:22 AM,Awesome,,
+179307958046294016,koizumisakiko,05/19/2023 10:23 AM,From testing the main thing that bugs the plastics is either palcing them too close,,
+179307958046294016,koizumisakiko,05/19/2023 10:23 AM,Or placing them in the floor with a tiny bump in the way because you can't place them close enough,,
+179307958046294016,koizumisakiko,05/19/2023 10:23 AM,"So in ""theory"" this should alleviate most cases of the plastics not working",,
+144507985001971712,.theadmiral.,05/19/2023 5:02 PM,does anyone know where the script side of the new class InventorySlotsOffsets is i cant seem to find it,,
+148370724900306944,jacob_mango,05/19/2023 5:05 PM,There is nothing to do on the script side,,
+144507985001971712,.theadmiral.,05/19/2023 5:19 PM,"ah damn that would be a great addition would allow a lot of these ""sling"" mods to actively change positions without additional proxies",,
+218413499947155456,steve_aka_salutesh,05/19/2023 8:29 PM,I think it was a rvconfig thing,,
+218413499947155456,steve_aka_salutesh,05/19/2023 8:30 PM,If we talk about that new 1.21 thing for changing proxy object position/orientation,,
+218413499947155456,steve_aka_salutesh,05/19/2023 8:32 PM,Pretty sure there was a example on how to use it somewhere?!,,
+207902577713479680,simonvic,05/19/2023 10:09 PM,"I believe it can be defined via `InventorySlotsOffset`
+```cpp
+class YourItem {
+    class InventorySlotsOffsets
+    {
+        class NameOfTheSlotHere
+        {
+            position[]={0,0.0,0.0};
+            orientation[]={0,0,0};
+        };
+        class NameOfAnotherSlotHere
+        {
+            position[]={0,0.0,0.0};
+            orientation[]={0,0,0};
+        };  
+    };
+};
+```",,
+207902577713479680,simonvic,05/19/2023 10:09 PM,`NameOfTheSlotHere` is the slot classname without the `Slot_` prefix,,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:11 PM,"Looks right to me, nice. Thanks, might come in handy for me also some time.😆",,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:12 PM,@TheAdmiral there you go. simonvic posted what you need to do.,,
+561680015578759196,wrdg,05/19/2023 10:13 PM,hmmmm i might make dogtags have an actual visible dogtag on the person,,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:13 PM,Ohhh,,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:13 PM,Yes,,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:13 PM,Pls,,
+561680015578759196,wrdg,05/19/2023 10:13 PM,too bad i suck at modeling :widebork:,,
+218413499947155456,steve_aka_salutesh,05/19/2023 10:14 PM,Well you have a whole community  here to ask for help :dayz:,,
+561680015578759196,wrdg,05/19/2023 10:15 PM,that makes me look weak,,
+561680015578759196,wrdg,05/19/2023 10:15 PM,:Kappa:,,
+94225995581620224,itsatreee,05/19/2023 10:15 PM,hahah,,
+94225995581620224,itsatreee,05/19/2023 10:15 PM,once he shows that weakness us jackals will pounce!,,
+94225995581620224,itsatreee,05/19/2023 10:15 PM,https://tenor.com/view/psych-jackal-gif-26001356,,
+144507985001971712,.theadmiral.,05/19/2023 10:38 PM,"ah the issue is i want to be able to move it on the fly e.g i currently have a left hand that allows holding two items mainly used for a riotshield and pistol combo but i need to swap the shields position depending on the item in the main hand i currently have a multi proxy set up but it would be great if i could rotate it without worrying about multi proxys or adding child, its enough of a pain to add the custom fire geometry's to playerbase without weird hitboxes XD",,
+295935955850887168,onemantooo,05/19/2023 11:10 PM,"Hey guys, what is the best way to get Players near concrete Zombie? From zombie class. 
+
+Currently i know `GetObjectsAtPosition3D`  and then filter it by type, but is it a correct way to do? Maybe there is something more concrete?",,
+561680015578759196,wrdg,05/19/2023 11:19 PM,is this just one zombie?,,
+295935955850887168,onemantooo,05/19/2023 11:26 PM,"Yep, not a zombie but an inheritor to be honest - i want to add an area damage to his 'abilities', so i need to get all players which in 30m radius for example",,
+561680015578759196,wrdg,05/19/2023 11:28 PM,create a custom trigger and attach it to him upon EEInit,,
+295935955850887168,onemantooo,05/19/2023 11:37 PM,"Wow, nice. Thank you, a bit new to DayZ modding and never heard about triggers, nice feature.
+
+But from quick research of source code - i don't get - how can i deal damage continiously with trigger? 
+What i need is: While player is in the trigger - he gets 10 hp damage every 10 seconds.
+
+Should i create Timer for each player?",,
+561680015578759196,wrdg,05/19/2023 11:41 PM,"you can follow how dayz does it for contamination and use a player modifier, that way you have delta time, so you can control the distance between negative effects",,
+561680015578759196,wrdg,05/19/2023 11:41 PM,would be the appropriate way,,
+561680015578759196,wrdg,05/19/2023 11:42 PM,"but you can look at `TriggerEvents` if you want to do things on stay, leave, or enter",,
+561680015578759196,wrdg,05/19/2023 11:42 PM,`Trigger`'s inherit from `TriggerEvents`,,
+561680015578759196,wrdg,05/19/2023 11:43 PM,i think the `OnStayServerEvent` has delta time,,
+561680015578759196,wrdg,05/19/2023 11:43 PM,"so you can also handle it all there as well, instead of making a player modifier",,
+561680015578759196,wrdg,05/19/2023 11:50 PM,"if you do it the trigger only route, then every X seconds the effect will take place, regardless of when the player entered",,
+561680015578759196,wrdg,05/19/2023 11:50 PM,unless you handle that specifically,,
+612719006725570560,blondaq1991,05/19/2023 11:51 PM,"Hi please can someone advise me, how to adjust my object health level? For example i have almost destroyed object, but when i will be interact with something, it will set another level?",,
+612719006725570560,blondaq1991,05/19/2023 11:54 PM,maybe use this?,https://cdn.discordapp.com/attachments/492295576470290433/1109237553971871775/image.png,
+561680015578759196,wrdg,05/19/2023 11:55 PM,"```cs
+class CustomSphereManTrigger : Trigger
+{
+    override void EOnInit(IEntity other, int extra)
+    {
+        // set radius
+        SetCollisionSphere(3);
+    }
+
+    override protected bool CanAddObjectAsInsider(Object object)
+    {
+        // allow only alive players to be insiders
+        return object.IsMan() && object.IsAlive();
+    }
+}
+```",,
+561680015578759196,wrdg,05/19/2023 11:56 PM,"that'll give you a sphere trigger, you call also do `yourTrigger.GetInsiders()` in case you have a different loop somewhere else that handles the effect",,
+295935955850887168,onemantooo,05/20/2023 12:03 AM,"Thank you very much, exactly what i needed!
+
+One last question, am i correctly understand that `OnStayServerEvent` is called for each `player`  with his delta time? So i get the player and time for how long he is in trigger?",,
+561680015578759196,wrdg,05/20/2023 12:04 AM,"It's per player, but if you store accumulated delta time as a class variable in the trigger, it won't perform the way you're wanting",,
+561680015578759196,wrdg,05/20/2023 12:05 AM,It's up to you how you want to store the accumulated delta time per player,,
+561680015578759196,wrdg,05/20/2023 12:05 AM,Delta time is time passed per update essentially,,
+561680015578759196,wrdg,05/20/2023 12:06 AM,So OnStay is called a lot because it's in an update loop,,
+295935955850887168,onemantooo,05/20/2023 12:10 AM,"Hm, a bit confused now - delta time is time **between** the last call of `OnStay`  for  `player` and current call? So i need some var which holds an accumulated time?",,
+295935955850887168,onemantooo,05/20/2023 12:14 AM,"Ok, nevermind gonna find it through debugging. Thank you a lot!",,
+612719006725570560,blondaq1991,05/20/2023 12:22 AM,please can someone help? 🙂,,
+715525218701017138,frenchy1018,05/20/2023 5:07 AM,"Hi guys, not sure if this is the right channel, but I'm new into modding/retexturing. Can someone tell me how to delete an item from a mod file?",,
+295995523658285066,truedolphin,05/20/2023 5:47 AM,What's the end result you're aiming for?,,
+715525218701017138,frenchy1018,05/20/2023 6:28 AM,"Just wanna delete an item Im not too happy with.
+Also where do I change an item stat? For example change the shock and damage reduction values of an armor piece or change the damage of a gun",,
+185896664110727168,osodirty,05/20/2023 6:32 AM,"You can't delete an item from a mod. If there is something you don't like, you can either override properties by making scripted overrides, or by overriding the config.cpp, which is what you need to do to change base armor/health/damage properties. Or you just configure your server to not use it at all.",,
+207209434051641345,ronnus,05/20/2023 6:58 AM,yea jsut make it noit spawnable,,
+207209434051641345,ronnus,05/20/2023 6:58 AM,I don't think it adds unnecessaary load that way either?,,
+320959348899708940,.xorrox.,05/20/2023 10:39 AM,Hey. Is it possible to block another clothing slot when equipping something? f.e. putting a Jacket on that blocks the vest slot. If possible maybe someone willing to explain? ty,,
+173448803578281984,inkihh,05/20/2023 12:34 PM,you could have a look at cfgignorelist.xml,,
+185896664110727168,osodirty,05/20/2023 12:34 PM,"No,the object has no impact at all if it's not spawned in the world.",,
+185896664110727168,osodirty,05/20/2023 12:35 PM,Yes it is possible. In playerbase you can make overrides to check what is or isn't equipped and deny/hide slots accordingly.,,
+295995523658285066,truedolphin,05/20/2023 12:35 PM,Searching this discord answers that.,,
+185896664110727168,osodirty,05/20/2023 12:36 PM,If only the average human knew how to use the search,,
+295995523658285066,truedolphin,05/20/2023 12:36 PM,Ignore stops those objects from being loaded from storage on restarts.,,
+173448803578281984,inkihh,05/20/2023 12:37 PM,ok so it has no impact on the ce,,
+295995523658285066,truedolphin,05/20/2023 12:38 PM,"Just don't list those things in types.
+Done.",,
+207209434051641345,ronnus,05/20/2023 2:06 PM,I figured.,,
+262553435566637057,pepega4a,05/20/2023 2:38 PM,"Hi all
+How to overwrite an item's config without creating a new item?",,
+328299074266857475,spectramodz,05/20/2023 2:39 PM,"just dont create a new item, call the class of the item in the config and change what you want",,
+262553435566637057,pepega4a,05/20/2023 2:40 PM,"Like this?
+```cpp
+class TTSKOPants;
+class SGE_Stalker_Sunrise_Pants: TTSKOPants
+    {
+        weight=500;
+        itemSize[]={4,3};
+        itemsCargoSize[]={9,4};
+        quickBarBonus=3;
+        absorbency=0.80000001;
+        heatIsolation=0.60000002;
+        varWetMax=0.40000001;
+        radiationProtection = 0.001;
+    };
+```",,
+328299074266857475,spectramodz,05/20/2023 2:41 PM,in this case you are creating a new item,,
+328299074266857475,spectramodz,05/20/2023 2:41 PM,or,,
+328299074266857475,spectramodz,05/20/2023 2:41 PM,what you want to change is SGE_Stalker_Sunrise_Pants?,,
+262553435566637057,pepega4a,05/20/2023 2:41 PM,I have a mod that has this item (SGE_Stalker_Sunrise_Pants),,
+328299074266857475,spectramodz,05/20/2023 2:42 PM,then it should works,,
+262553435566637057,pepega4a,05/20/2023 2:42 PM,yes i want edit this item,,
+262553435566637057,pepega4a,05/20/2023 2:42 PM,but not working(,,
+328299074266857475,spectramodz,05/20/2023 2:43 PM,"It should works, try it.",,
+330475826158108674,mikkbenelis,05/20/2023 2:44 PM,"Add a `CfgPatсhes` name of the pants config to the `requiredAddons` of your mod, then it'll work",,
+262553435566637057,pepega4a,05/20/2023 2:46 PM,"like this?
+```cpp
+class CfgPatches
+{
+    class OverrideClothing
+    {
+        units[]={};
+        weapons[]={};
+        requiredVersion=0.1;
+        requiredAddons[]=
+        {
+                  ""DZ_Data"",
+                  ""DZ_Characters"",
+                  ""DZ_Gear_Medical"",
+                  ""DZ_Weapons_Firearms"",
+                  ""DZ_Gear_Consumables"",
+                  ""SGE_Loner"",   //this class name from overriting pbo
+                  ""SGE_Stalker_Sunrise_Pants""
+        };
+    };
+};
+```",,
+330475826158108674,mikkbenelis,05/20/2023 2:48 PM,"Yes, if the `SGE_Loner` is a class name of the `CfgPatches` where `SGE_Stalker_Sunrise_Pants` is defined
+You not need to add a `SGE_Stalker_Sunrise_Pants` to the `requiredAddons`, just the `CfgPatches` name",,
+262553435566637057,pepega4a,05/20/2023 2:48 PM,"I have added it before.
+But still",,
+330475826158108674,mikkbenelis,05/20/2023 2:49 PM,Are you sure that `SGE_Loner` is a proper class name? There could be multiple `CfgPatches` within a single `.pbo`,,
+330475826158108674,mikkbenelis,05/20/2023 2:50 PM,So find exact `config.cpp` file where the `SGE_Stalker_Sunrise_Pants` is defined and find its `CfgPatches` section,,
+262553435566637057,pepega4a,05/20/2023 2:53 PM,"yep
+i'm sure","https://cdn.discordapp.com/attachments/492295576470290433/1109463829869510747/image.png,https://cdn.discordapp.com/attachments/492295576470290433/1109463830188282016/image.png",
+535230913739751425,nikerage,05/20/2023 2:57 PM,What’s not working? Btw #configs-dayz related,,
+185896664110727168,osodirty,05/20/2023 2:57 PM,"Yes, but you can  remove all of the DZ_ stuff, no longer needed",,
+262553435566637057,pepega4a,05/20/2023 2:58 PM,"sry
+I'm trying to overwrite an already created item in another mod without repacking it",,
+535230913739751425,nikerage,05/20/2023 3:00 PM,"I get what you’re trying to do, but what isn’t working. Do you have no item called „SGE_Stalker_Sunrise_Pants“ or is it just not overwritten or what?",,
+262553435566637057,pepega4a,05/20/2023 3:02 PM,A new parameter needed to protect radiation has not been added,https://cdn.discordapp.com/attachments/492295576470290433/1109466079518003230/image.png,
+330475826158108674,mikkbenelis,05/20/2023 3:03 PM,"Try to change model's description or something visible to check if it works
+And if you just need to add this parameter, you can remove everything else
+It'll be defined in the original `config.cpp`",,
+262553435566637057,pepega4a,05/20/2023 3:04 PM,"ok
+I will try this",,
+535230913739751425,nikerage,05/20/2023 3:06 PM,"I think you don’t even need to inherit from TTSKOPants if it’s already existing. Wouldn’t this create a „new item“ ? Try 
+SGE_Stalker_Sunrise_Pants
+{
+    Your stuff 
+}",,
+262553435566637057,pepega4a,05/20/2023 3:45 PM,"it's work
+but still the parameter does not affect, but this already means an internal error for me
+Thank you",,
+535230913739751425,nikerage,05/20/2023 4:09 PM,Show your script class for the pant,,
+262553435566637057,pepega4a,05/20/2023 4:13 PM,"```cpp
+class CfgPatches
+{
+    class OverrideClothing
+    {
+        units[]={};
+        weapons[]={};
+        requiredVersion=0.1;
+        requiredAddons[]=
+        {
+            ""SGE_Loner""
+        };
+    };
+};
+class CfgVehicles
+{
+    class TTSKOPants;
+    class SGE_Stalker_Sunrise_Pants: TTSKOPants
+    {
+        weight=500;
+        itemSize[]={4,3};
+        itemsCargoSize[]={9,4};
+        quickBarBonus=3;
+        absorbency=0.80000001;
+        heatIsolation=0.60000002;
+        varWetMax=0.40000001;
+        radiationProtection = 0.001;
+    };
+};
+```",,
+330475826158108674,mikkbenelis,05/20/2023 4:15 PM,"It is not a script class
+You can simplify it, btw
+```C++
+class CfgPatches
+{
+    class OverrideClothing
+    {
+        requiredVersion = 0.1;
+        requiredAddons[] = { ""SGE_Loner"" };
+    };
+};
+class CfgVehicles
+{
+    class TTSKOPants;
+    class SGE_Stalker_Sunrise_Pants: TTSKOPants
+    {
+        radiationProtection = 0.001;
+    };
+};```",,
+262553435566637057,pepega4a,05/20/2023 4:16 PM,"ty
+you want to see radiationProtection script?",,
+330475826158108674,mikkbenelis,05/20/2023 4:17 PM,"And maybe it is not working because of the too low value of `0.001`?
+Sound like it has 0.1% of protection",,
+262553435566637057,pepega4a,05/20/2023 4:18 PM,"This is true
+0.1%
+
+But I look more at the protection of the gas mask filter
+```cpp
+class GasMask_Filter;
+class XZone_GasMask_FILTER_ClassB: GasMask_Filter
+    {
+        itemSize[] = {1,1};
+        weight = 150;
+        radiationProtection = 0.987;
+    };
+```",,
+262553435566637057,pepega4a,05/20/2023 4:20 PM,"0.5 = 50%
+0.05= 5%
+0.005 = 0.5%
+yep
+I made a mistake",,
+535230913739751425,nikerage,05/20/2023 4:31 PM,"> It is not a script class 
+
+But it needs one to handle the value",,
+612719006725570560,blondaq1991,05/20/2023 6:10 PM,"Hi everyone, some function for affecting building object to take damage from fire for example?",,
+612719006725570560,blondaq1991,05/20/2023 6:11 PM,"I have issue, that my building taking dmg only from range weapons, from melee it does nothing..it seems like fire geometry does not work for melee",,
+612719006725570560,blondaq1991,05/20/2023 6:11 PM,It is based on class BaseBuilding,,
+330475826158108674,mikkbenelis,05/20/2023 6:40 PM,"Try to investigate the fence behavior (config and scripts, maybe)",,
+218413499947155456,steve_aka_salutesh,05/20/2023 7:21 PM,Take a look at the offical building sample i would say?! Maybe something is missing in your object: https://github.com/BohemiaInteractive/DayZ-Samples/tree/master/Test_Building,,
+218413499947155456,steve_aka_salutesh,05/20/2023 7:21 PM,@Blondaq1991,,
+612719006725570560,blondaq1991,05/20/2023 7:49 PM,"Ok, thank you i will check it !! 🙂",,
+127732574272356352,benderb.rodriguez,05/20/2023 8:00 PM,"Hello,
+I want to drop an item from the Player cargo inventories to the ground, I tried PlayerBase.DropItem() and PlayerBase.PhysicalPredictiveDropItem(), without success.
+I found the Item in the cargo, I execute the function on it, but nothing more.
+Is there a limitation?",,
+330475826158108674,mikkbenelis,05/20/2023 8:03 PM,Here is how I dropped item in hands: `m_Player.DropItem(m_Player.GetItemInHands());`,,
+127732574272356352,benderb.rodriguez,05/20/2023 8:05 PM,"Thanks, ItemInHands seems straightforward, there's example in DayZ code for the unconscious part, but I found nothing from cargo to ground.
+Maybe I can try to place it in hand before, but that is not a good solution for me (in case the player already have an item in hands)",,
+743565979258454101,affenb3rt,05/20/2023 8:29 PM,"Manipulating inventory is heavily dependent on instance the code is being executed.
+
+Predictive methods only work on client (and are synchronized to server)",,👍 (1)
+561680015578759196,wrdg,05/20/2023 8:31 PM,working on give and take opened up my eyes to how inventory works,,
+743565979258454101,affenb3rt,05/20/2023 8:34 PM,Haha yeah. But honestly it got so much more difficult because of the hands being treated with such a tremendous overhead,,
+399744798703091713,urisaurius,05/20/2023 9:21 PM,"basic question:  in this instance, the proxy is connecting the stage of meat to the mod's matching asset? it's MASS food items, I'm not copying it, just trying to learn:
+
+`class ProxyMeat_8: ProxyAttachment
+    {      scope=2;
+        model=""\Food\Foods\Assets\Proxies\Meat_8.p3d"";
+        inventorySlot[]=    {""Meat_8""}; 
+     }; `",,
+295995523658285066,truedolphin,05/20/2023 9:24 PM,"It's creating an inherited object from the class ProzyAttachment, with the following properties changed:
+scope
+model
+inventorySlot[]",,
+399744798703091713,urisaurius,05/20/2023 9:24 PM,which then gives the inventory slot an image when an item is placed in it?,,
+295995523658285066,truedolphin,05/20/2023 9:26 PM,"Can't remember if that's the image, or setting what slot that object can be attached to..",,
+295995523658285066,truedolphin,05/20/2023 9:26 PM,"Also a #configs-dayz question.
+Scripting questions are typically files ending with .c",,
+399744798703091713,urisaurius,05/20/2023 9:27 PM,"my bad, and thank you for both pieces of info",,
+399744798703091713,urisaurius,05/20/2023 9:27 PM,ngl i have been struggling to figure out which is which and should have just asked a long time ago,,
+834806283608522832,realtimez420,05/20/2023 9:48 PM,"I've been seeing everywhere servers that have teleport areas that teleport players to these ""bunkers/hideouts"" and I was wondering if anyone could help me figure out how thats done?",,
+535230913739751425,nikerage,05/20/2023 9:50 PM,"There are different ways, you just wanna walk in and get teleported?",,
+834806283608522832,realtimez420,05/20/2023 9:51 PM,"Pretty much yea, have a radius in which they have to be in of course. I do understand the bunker part and I can easily go make a bunker in the Editor but I could never understand the teleport mechanic",,
+295995523658285066,truedolphin,05/20/2023 9:51 PM,"Basic - not the best but easy to understand method:
+https://github.com/TrueDolphin/references/blob/main/init.c%20files/teleport-locations-template.c",,
+535230913739751425,nikerage,05/20/2023 9:52 PM,"Create a trigger, and do player.SetPosition if entered",,
+295995523658285066,truedolphin,05/20/2023 9:52 PM,^ the better method.,,
+834806283608522832,realtimez420,05/20/2023 9:53 PM,"Alright I'll mess around with that a little bit and see what I can come up with, thank you guys 💯",,
+224960898765160448,connor82,05/20/2023 10:34 PM,"Hello all,
+got a quick question for those who know: where can I find the min and max drop for fillets?
+I am working on better fishing for our PvE server and I try to come up with some reasonable prices for gebsfish fishing mod. I asked about the chances on geb's Discord but got not response so I changed things according to the (old) mod description. That left me with lower chances to catch the bigger fish. However, I can't estimate their value for our economy because the fillet number is somewhat random. Cut a few and got everything from 1 to 3 or 2 to 5. I looked on here and found geb's post about the randomization but also a note that says he increased the fillet amount for the Great White shark from 2-6 to 4-6... I've looked in the config.cpp and some random files (not a scripter) and I'm lost. Google keeps showing videos and tutorials for the general CLE...
+So, could anyone please tell me where I can find  the settings so I can see what the max. amount of fillets a player can get per fish?",,
+224960898765160448,connor82,05/20/2023 10:34 PM,Thank you. 🙂,,
+535230913739751425,nikerage,05/20/2023 10:42 PM,"DZ\gear\food\config.cpp there you can find the Mackerel class if you need it
+And i think the result of cutting is in Recipes => class PrepareMackerel extends PrepareFish",,
+224960898765160448,connor82,05/20/2023 10:43 PM,"gear? explains a lot lol
+I'll have a look real quick. Thanks a bunch man... I was getting tired of cutting every fish 10 times. D:",,
+535230913739751425,nikerage,05/20/2023 10:43 PM,"For meat, its most likely in the animals config.cpp class but i didnt see it for the mackarel, so i think youll have to do it via recipe",,❤️ (1)
+535230913739751425,nikerage,05/20/2023 10:43 PM,Your welcome ^^,,
+535230913739751425,nikerage,05/20/2023 10:44 PM,Use NP++ and search keywords in P:\scripts for e.g. to find references fast,,
+224960898765160448,connor82,05/20/2023 10:52 PM,"It's gebsfish, the mod.",,
+224960898765160448,connor82,05/20/2023 10:53 PM,"```
+ran = Math.RandomFloatInclusive(1.0,2.0);
+...
+AddResult(""geb_BlackbassFilletMeat"");```
+Does that RandomFloat mean it gives me either 1 or 2 fillets?",,
+224960898765160448,connor82,05/20/2023 10:58 PM,"Thanks a lot man!
+Just checked the recipes for the sharks and found the values to be 4 and 6 just like geb has mentioned in the post I found on here.
+I can now use the basic price for each fillet * catching chance to set prices that will make people happy to catch a rare fish. 🙂",,
+535230913739751425,nikerage,05/20/2023 11:45 PM,You're welcome:-),,
+127732574272356352,benderb.rodriguez,05/21/2023 12:00 AM,"Ok, that explain why there's nothing, I'm doing it serverside",,
+144507985001971712,.theadmiral.,05/21/2023 12:57 AM,is anyone else having crash issues with 1.21 and addchild,,
+144507985001971712,.theadmiral.,05/21/2023 1:02 AM,"```
+        if(!shieldchild)
+        {
+            if(GetGame().IsDedicatedServer())
+            {
+                float health = GetHealth();
+                shieldchild = Object.Cast(GetGame().CreateObject(""DUB_Balshield_Child"",GetPosition()));
+                shieldchild.SetHealth(health);
+                shieldchild.SetOrientation(""0 0 0"");
+                shieldchild.SetPosition(""0 0 0"");
+                this.AddChild(shieldchild, -1);
+            }
+        }
+```
+worked fine for 1.20",,
+1073577472693653564,RP Vanilla+#4203,05/21/2023 1:03 AM,"hello, i have a problem, of some one coude help me point me in the right direction, im trying to make a override file that disables a dismanteling function on a workbench, i want it to stay on the map all time",,
+148370724900306944,jacob_mango,05/21/2023 1:13 AM,"What is the parent this child is being linked to? If it is a player then there should be no issues as no major changes happened on our end there, so I’ll be perplexed 
+
+Post about the crash to https://feedback.bistudio.com/project/view/40/ and include build number (1.21.xxxxxx) and either a link to the mod or a fully tested packed example in a pbo of how to trigger the crash",,
+144507985001971712,.theadmiral.,05/21/2023 1:17 AM,"```
+class DUB_Balshield_Child: ItemBase
+{
+    override bool CanBeActionTarget()//added with 1.21 seeing if it helped with a check i might of missed
+    {
+        return false;
+    }
+    override bool CanPutInCargo( EntityAI parent )
+    {
+        return false;
+    }
+    override bool CanPutIntoHands (EntityAI parent)
+    {
+        return false;
+    }
+    override void EEHitBy(TotalDamageResult damageResult, int damageType, EntityAI source, int component, string dmgZone, string ammo, vector modelPos, float speedCoef)
+    {
+        super.EEHitBy(damageResult, damageType, source, component, dmgZone, ammo, modelPos, speedCoef);
+        EntityAI parent = EntityAI.Cast(GetParent());
+        DUB_Balshield shield;
+        if (Class.CastTo(shield, parent))
+        {
+            float dmg = damageResult.GetDamage("""",""Health"");
+            shield.AddHealth("""",""Health"",-dmg);
+        }
+
+    };
+    void ~DUB_Balshield_Child()
+    {
+        this.Delete();
+    }
+    
+};
+```
+last state of working ""clunky"" i know but it was to get around the issue of no fire geometry, the issue isnt that its a full crash my client runs fine my server just seems to pause completely doesnt even crash just doesnt update with no error logs, this is in 1.21 exp diagmode",https://cdn.discordapp.com/attachments/492295576470290433/1109621027971010722/message.txt,
+144507985001971712,.theadmiral.,05/21/2023 1:18 AM,il drop a bug ticket as well in mo just wanted to check its not me doing something that i missed with the update,,
+214154100080640001,r22rstern,05/21/2023 2:00 AM,"Anyone knows how to get the rain stat? I tried a bunch of things including GetGame()something().isRain() or GetWeather but nothing. In environement.c there is a check for rain over 0.05 and sets a bool to isRaining
+I am just not skilledenough yet to use that check in my own function",,
+207209434051641345,ronnus,05/21/2023 5:30 AM,Does anyone know where the plugTypes are defined?,,
+743565979258454101,affenb3rt,05/21/2023 6:44 AM,Most predictive methods also have a local and server method with the same name. If you execute it on the server use the server method instead,,
+743565979258454101,affenb3rt,05/21/2023 6:56 AM,GetGame().GetWeather().GetRain().GetActual(),,
+743565979258454101,affenb3rt,05/21/2023 6:57 AM,Returns normalized rain between 0 and 1. Everything above 0 means it's raining. The higher the number the stronger the rain is,,
+834806283608522832,realtimez420,05/21/2023 9:58 AM,"Could someone help me create trigger teleport areas for my server? I'm not very good with writing code, just editting pre existing code and I can't quite figure out how to make triggers to make a teleport zone",,
+127732574272356352,benderb.rodriguez,05/21/2023 11:55 AM,"Hi affenb3rt, Yes, I found ""ServerDropEntity()"" and this seems to do the job perfectly. Thanks.",,
+214154100080640001,r22rstern,05/21/2023 1:52 PM,Thank you so much! I ended up finding it using chat gpt yesterday haha but I appreciate the answer,,
+330475826158108674,mikkbenelis,05/21/2023 2:26 PM,"Have you figured it out? I have similar problem for barrel-like placeable object
+It has Geometry and FireGeometry components and set to have `item_large` physics layer
+I can climb on it, however, it can only be hit by firearms, not by melee weapons or hands",,
+214154100080640001,r22rstern,05/21/2023 3:26 PM,Have you guys loiked in config.cpp and set it so it has a damage value for meele? Assuming everything is right in your .p3d,,
+612719006725570560,blondaq1991,05/21/2023 4:05 PM,Issue is not in settings of damage from melee..it seems like model lose fire geometry for melee..for ranged it is working well,,
+612719006725570560,blondaq1991,05/21/2023 4:09 PM,"Yeah still same issue..it seems like geometry working well ,but fire geometry working only for ranged weapons",,
+218413499947155456,steve_aka_salutesh,05/21/2023 5:48 PM,Debug it,,
+218413499947155456,steve_aka_salutesh,05/21/2023 5:48 PM,EEOnHit,,
+218413499947155456,steve_aka_salutesh,05/21/2023 5:49 PM,Should not be that hard,,
+218413499947155456,steve_aka_salutesh,05/21/2023 5:50 PM,All you need to do is override that method in your buildings script class i guess and debug the source and so on.,,
+218413499947155456,steve_aka_salutesh,05/21/2023 5:51 PM,At least this way you can see if its rly registers any damage source,,
+612719006725570560,blondaq1991,05/21/2023 6:03 PM,@Steve aka Salutesh  Yeah i already did it with this result,,
+612719006725570560,blondaq1991,05/21/2023 6:03 PM,"```c
+class Mefa_Gondor_Farm extends ItemBase
+{
+
+        override void EOnContact(IEntity other, Contact extra)
+        {
+            GetGame().ChatPlayer(""Test1"");
+            super.EOnContact(other, extra);
+        }
+
+        override void EEHitBy(TotalDamageResult damageResult, int damageType, EntityAI source, int component, string dmgZone, string ammo, vector modelPos, float speedCoef)
+        {
+            GetGame().ChatPlayer(""Test2"");
+            super.EEHitBy(damageResult, damageType, source, component, dmgZone, ammo, modelPos, speedCoef);
+        }
+    
+    override int GetMeleeTargetType()
+    {
+        return EMeleeTargetType.NONALIGNABLE;
+    }
+
+    override bool CanPutInCargo ( EntityAI parent )
+    {
+        return false;
+    }
+    override bool CanPutIntoHands(EntityAI parent)
+    {
+        return false;
+    }
+}
+```",,
+612719006725570560,blondaq1991,05/21/2023 6:03 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1109874206025469992/image-4.png,
+612719006725570560,blondaq1991,05/21/2023 6:04 PM,"Only Ranged weapons and grenades did that ""Test2""",,
+214154100080640001,r22rstern,05/21/2023 6:10 PM,"I am curious how that function works. i think it checks for rain every frame but can it create overloads? My game kept crashing as soon as I tried to log in when it was raining and basically what I did is check for rain, and if it is over 0.05 then play a soundset (7 seconds long soundset) then loop it",,
+214154100080640001,r22rstern,05/21/2023 6:11 PM,"```c
+modded class DynamicMusic
+{
+    protected string EventTrigger()
+    {
+        Weather weather = GetGame().GetWeather();
+        // get event manager, check if Aurora or Blizzard is running
+        if ( NamEventManager.GetInstance() )
+        {
+            NamEventBase event_check = NamEventManager.GetInstance().GetEvent( Blizzard );
+            if ( event_check )
+                return ""Nam_Snowstorm_SoundSet""; //nam_event_blizzard but replace the music for the rain soundset. 
+
+            event_check = NamEventManager.GetInstance().GetEvent( Aurora );
+            if ( event_check && m_Night )
+                return ""nam_event_aurora"";
+
+            event_check = NamEventManager.GetInstance().GetEvent( Snowfall );
+            if ( event_check || ( weather && weather.GetRain().GetActual() > 0.05 ) )
+                return ""Nam_Snowstorm_SoundSet"";  // Custom soundset with rain sounds.
+        }
+        return ""none"";
+    }
+}```",,
+214154100080640001,r22rstern,05/21/2023 6:12 PM,This iverrides the dynamic music when an event is happening on namalsk. I replaced the music that I don't quite like by a rain soundset (just override the nam_snowstorm_soundset but I could make a custom one if needed). Would this try to play the soundset every frame? If so that could be the issue,,
+214154100080640001,r22rstern,05/21/2023 6:13 PM,But this is how namalsk plays its music so it should not try to replay the soundset every frame...,,
+214154100080640001,r22rstern,05/21/2023 6:13 PM,Ohhh I think I just found an error,,
+612719006725570560,blondaq1991,05/21/2023 6:27 PM,"@Steve aka Salutesh @🅼🅸🅺🅺 [EN/RU] Oh i found that ""MediumTent_Orange"" works same for ranged and also for melee, maybe to inherit object from tent can solve this issue.. i will test it",,
+612719006725570560,blondaq1991,05/21/2023 6:27 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1109880164311113768/image.png,
+612719006725570560,blondaq1991,05/21/2023 6:27 PM,Ak74 and also sword made it damaged,,
+287398383864512512,the_f00,05/21/2023 7:02 PM,hey all. was wondering if someone could explain to me how I could go about damaging a BBP/vanilla wall from a script. like randomly assign damage to a base wall from a mod.,,
+214154100080640001,r22rstern,05/21/2023 7:12 PM,Depends how you want to do it. Wall damages are stored in the config.cpp. Do you want them to be damaged randomly on building the part or?,,
+287398383864512512,the_f00,05/21/2023 7:18 PM,no. certain events will damage the wall.,,
+287398383864512512,the_f00,05/21/2023 7:19 PM,sorry. had to go eat dinner. the wife gets mad when I am late. lol 😉,,
+214154100080640001,r22rstern,05/21/2023 7:20 PM,I would not know but I would say either look at how grenades do it in vanilla with fences or look at how mods like any C4 mods do it. It pretty much is an event when the C4 is done beeping it damages the wall it is on,,
+287398383864512512,the_f00,05/21/2023 8:58 PM,@[R22R] Stern think I may have found a  way to do it. hmmmm.,,
+315418519913365506,lilela,05/21/2023 9:32 PM,"Log  started at 21.05. 21:20:22
+------------------------------------
+WIN-HRHANB26U5D, 21.05 2023 21:20:22
+Can't compile ""World"" script module!
+CJ187_Immersive_NVG\scripts\4_World/classes\moddedactioninput.c(7): Unknown type 'AirDrop_Plane_Base'
+Runtime mode",,
+315418519913365506,lilela,05/21/2023 9:32 PM,anyone able to please help me????,,
+287398383864512512,the_f00,05/21/2023 10:52 PM,OK. I can deal damage directly to a wall but need to be able to figure out which BaseBuildingBase type is directly nearest and get be able to use gethealth using entityai method. otherwise this is not really going to work.,,
+287398383864512512,the_f00,05/21/2023 10:52 PM,@[R22R] Stern,,
+315418519913365506,lilela,05/22/2023 12:03 AM,"[Error] Mod Error: failed to find mod, D:\TCAFiles\Users\RizeldaBotha\9542867\mod does not exist   WHAT AM I DOING WRONG???",,
+287398383864512512,the_f00,05/22/2023 12:06 AM,my guess would be to check the path that its giving you.,,
+410962203370323978,riku5670,05/22/2023 12:14 AM,"hey guys, ive got a bit of an issue i was hoping someone could help me with. So ive made some reskinned clothing, and it looks fine in your inventory or on the ground, But if you wea rit, it becomes invisible, any ideas?",,
+315418519913365506,lilela,05/22/2023 12:15 AM,i have no idea where to look,,
+287398383864512512,the_f00,05/22/2023 12:16 AM,the path is right there in the error.,,
+315418519913365506,lilela,05/22/2023 12:16 AM,i am using gtx i dont see a d drive there,,
+287398383864512512,the_f00,05/22/2023 12:17 AM,no. but you can skip the d: and whátever else until you find the base path you can see.,,
+315418519913365506,lilela,05/22/2023 12:18 AM,"i cant find it, thats why i am asking",,
+264336768294322178,tvalak,05/22/2023 12:19 AM,"hello, i'm trying to restrain by handcuffs new player when they spawn, does i can do it with init.c or i need some scripty stuff ?",,
+287398383864512512,the_f00,05/22/2023 12:20 AM,that would most likely require a mod/script of some sort.,,
+264336768294322178,tvalak,05/22/2023 12:20 AM,"so i need to detect when a player is created and do action ""ActionRestrainSelf""",,
+287398383864512512,the_f00,05/22/2023 12:21 AM,you could place cuffs in inventory but actually restraining a player is scrip0ted.,,
+264336768294322178,tvalak,05/22/2023 12:21 AM,mhhm,,
+264336768294322178,tvalak,05/22/2023 12:21 AM,"okok, lets try",,
+612719006725570560,blondaq1991,05/22/2023 8:39 AM,"Hi everyone, i am using class, which inherit from **fence**
+Script is working well, but with this script, it also hide attachments on model. Can someone tell me, what script in this class i can use for showing attachments again please?(without that script, atrachments are visible)",,
+295995523658285066,truedolphin,05/22/2023 9:51 AM,What's the declaration look like in config.cpp?,,
+612719006725570560,blondaq1991,05/22/2023 10:05 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1110116095064539256/config-declaration.cs,
+612719006725570560,blondaq1991,05/22/2023 10:05 AM,i added most important parts for that,,
+612719006725570560,blondaq1991,05/22/2023 10:05 AM,"if you will need some other info, just let me know",,
+612719006725570560,blondaq1991,05/22/2023 10:07 AM,**Mefa_Item** is inherited from **Container_Base**,,
+295995523658285066,truedolphin,05/22/2023 10:18 AM,Add Land_ to the classname at the start,,
+295995523658285066,truedolphin,05/22/2023 10:18 AM,Line...14 in that,,
+612719006725570560,blondaq1991,05/22/2023 10:30 AM,"aah, i solved that only with this:
+change inheritance from fence --> BaseBuildingBase  solve that",,
+612719006725570560,blondaq1991,05/22/2023 10:30 AM,thanks 🙂,,
+185896664110727168,osodirty,05/22/2023 11:46 AM,99% sure you can do it in init just like you add loadout.,,
+185896664110727168,osodirty,05/22/2023 11:47 AM,Init is part of 5_mission and can access world and game script.,,
+264336768294322178,tvalak,05/22/2023 11:49 AM,"i think its possible too, actually my init teleport player at spawn, put some specific clothes, actually i just dont know how to deal with handcuffs",,
+264336768294322178,tvalak,05/22/2023 11:49 AM,Handcuff have an action (SelfRestraint),,
+185896664110727168,osodirty,05/22/2023 11:50 AM,Look in the action in on finish. It will probably have the answers.,,Love (1)
+264336768294322178,tvalak,05/22/2023 11:50 AM,i will check ! thanks,,
+436854995694911505,arch1ebalt,05/22/2023 12:15 PM,"Hello everyone, can anyone tell me where the strip with the lives of the character is located in the game files?",,
+218413499947155456,steve_aka_salutesh,05/22/2023 12:57 PM,:NoVote:,,
+218413499947155456,steve_aka_salutesh,05/22/2023 12:59 PM,You cant just simply increase/reduce the player health points if that is your plan. Eloberate what you try to archive and maybe someone can help you.,,
+295995523658285066,truedolphin,05/22/2023 2:03 PM,Literally answered in #server-help-dayz a couple hours ago.,,
+264336768294322178,tvalak,05/22/2023 2:44 PM,@oSoDirty thankks it work well,,
+612719006725570560,blondaq1991,05/22/2023 3:02 PM,"Hi all, how i can access to my object attachments, please?
+
+For player i used this:
+```c
+PlayerBase player;
+        if (PlayerBase.CastTo(player, GetHierarchyRootPlayer()))
+        {
+            EntityAI slot_temp = player.GetInventory().FindAttachment(InventorySlots.GetSlotIdFromString(""Race"")); //Get entity from headgear slot
+
+            player.ServerDropEntity(slot_temp); //Drop helmet/eye from player, at their feet
+            //OR TO DELETE: slot_temp.Delete();
+
+            player.GetInventory().CreateAttachment(""ME_Uruk_Face""); //Give new helmet to player
+        }
+```
+But for my ""building"" ?
+
+I need to attach attachment to my ""building"" through script in similiar way how i did it by a player.
+
+I have ready and working action to my building:
+
+```c
+override void OnFinishProgressServer(ActionData action_data)
+    {
+        action_data.m_Player.GetItemAccessor().HideItemInHands(false);
+        float currenthealth = action_data.m_MainItem.GetHealth("""", """");
+        action_data.m_MainItem.SetHealth("""", """", (currenthealth - 10));
+        Object targetObject3 = action_data.m_Target.GetObject();
+        float currenthealth2 = targetObject3.GetHealth("""", """");
+        targetObject3.SetHealth("""", """", (currenthealth2 - 0));
+
+        GetGame().ChatPlayer(""[Gondor Farm Was upgraded successfully]"");
+      
+    }
+```
+
+where  **targetObject3** is my building object.
+
+Thanks for advices 🙂",,
+185896664110727168,osodirty,05/22/2023 3:38 PM,Don't host servers and didn't do much setup when I was on a team. I'm not much help there so I eventually muted it and probably most other channels.,,
+295995523658285066,truedolphin,05/22/2023 3:39 PM,Fair enough.,,
+264336768294322178,tvalak,05/22/2023 4:34 PM,unpleasant as a reaction I think. Thanks again Dirté. Now i know how to deal with Missions class and understand how work init.c 🙂,,
+264336768294322178,tvalak,05/22/2023 4:35 PM,"(and if I ask here, its because my research did not give anything) (AND i asked yesterday 🙂 )",,
+218413499947155456,steve_aka_salutesh,05/22/2023 4:41 PM,:7346pepehmmm:,,
+185896664110727168,osodirty,05/22/2023 4:41 PM,"People will jump on your shit for multiposts, I generally ignore them but often don't notice as I only have a few modding channels that even show for me. But I thought nothing of it as it is script related.",,
+218413499947155456,steve_aka_salutesh,05/22/2023 4:41 PM,Be nice guys 💙,,
+218413499947155456,steve_aka_salutesh,05/22/2023 4:42 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1110216190669893632/image0.gif,Love (3)
+295935955850887168,onemantooo,05/22/2023 10:24 PM,"Guys, extra dumb question - is `CreateObject` accessible on client?",,
+535230913739751425,nikerage,05/22/2023 10:26 PM,Does GetEntityInHands() return a classname?,,
+330475826158108674,mikkbenelis,05/22/2023 10:26 PM,"It returns EntityAI (or ItemBase), but you can extract classname from it",,
+535230913739751425,nikerage,05/22/2023 10:28 PM,"To be exact, i have this 
+```c
+EntityAI item_in_hands_source = m_SourcePlayer.GetHumanInventory().GetEntityInHands();
+```
+But there is no source player, so i thought i could just enter the classname instead",,
+535230913739751425,nikerage,05/22/2023 10:31 PM,"Oh wait im dumb at this point, nvmd",,
+330475826158108674,mikkbenelis,05/22/2023 10:31 PM,Try `m_Player.GetItemInHands()`,,
+185896664110727168,osodirty,05/22/2023 10:33 PM,"You can create an object on client, but no simulation and obviously only visible to the client it was created on. Not entirely sure how it's done, Zedmag had done it with zombies, not sure he's still lurking around these parts.",,
+561680015578759196,wrdg,05/22/2023 10:35 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1110304952754126890/image.png,
+561680015578759196,wrdg,05/22/2023 10:36 PM,create local will create the object only on the executing client,,
+561680015578759196,wrdg,05/22/2023 10:37 PM,same with the `ECE_LOCAL` flag for `CreateObjectEx`,,
+295935955850887168,onemantooo,05/22/2023 10:59 PM,"So, maybe you can help me, what am i missing? I'm trying to create AI Creature on player position and only on client, but nothing happens on jump end. In both ways.
+
+```
+modded class PlayerBase {
+    override void OnJumpEnd(int pLandType = 0) {
+        super.OnJumpEnd(pLandType);
+        if (GetGame().IsClient()) {
+            // GetGame().CreateObject(""ZmbM_HermitSkinny_Base"", this.GetPosition(), true, true);
+            GetGame().CreateObjectEx(""ZmbM_HermitSkinny_Base"", this.GetPosition(), ECE_LOCAL)
+        }
+    }
+}
+```",,
+135226527473336320,inclementdab,05/22/2023 11:06 PM,creating AI and using LOCAL dont really like each other too much,,
+135226527473336320,inclementdab,05/22/2023 11:10 PM,try a different object just to experiment like `BandageDressing`,,
+384850738355896321,ragtyson,05/22/2023 11:16 PM,Don't listen to him,,
+384850738355896321,ragtyson,05/22/2023 11:16 PM,Try Rag,,
+135226527473336320,inclementdab,05/23/2023 12:03 AM,:why:,,
+384850738355896321,ragtyson,05/23/2023 2:54 AM,:aPC_NodChamp:,,
+295935955850887168,onemantooo,05/23/2023 3:38 AM,"How?) I'm trying to do the same. I have code on client mod only, to test it. But when i run:
+```GetGame().CreateObject(""Zombi_XZ_Duty_Zorya_fix"", this.GetPosition(), true, true);```
+Client crashes, with `C0000005 ACCESS_VIOLATION at 505DA29A`.",,
+185896664110727168,osodirty,05/23/2023 4:45 AM,"I feel like the second true should be false. Not going to simulate on client iirc, so try 
+`GetGame().CreateObject(""Zombi_XZ_Duty_Zorya_fix"", GetPosition(), true, false);`",,
+185896664110727168,osodirty,05/23/2023 4:46 AM,"Also, `this.` isn't needed, doesn't make a difference though.",,
+185896664110727168,osodirty,05/23/2023 4:51 AM,@onemantooo ^^ If that doesn't help then I'm all outta ideas.,,
+295935955850887168,onemantooo,05/23/2023 4:52 AM,Found this thread https://feedback.bistudio.com/T142617 - so i'm wondering fi @DaOne(Mark) solution is still working - since 2019,,
+295935955850887168,onemantooo,05/23/2023 4:53 AM,According to this thread - i have an exact same problem,,
+239201186933112833,da0ne_,05/23/2023 4:54 AM,Don't use `CreateObject`,,
+185896664110727168,osodirty,05/23/2023 4:54 AM,"Not sure, Zedmag and I were once working on a curse mod where Zombies would appear only for cursed players, and you'd look like an idiot shooting or punching at nothing. But they didn't move.",,👍 (1)
+239201186933112833,da0ne_,05/23/2023 4:54 AM,"`CreateObjectEx` and use the `ECE_*` flags, to achieve what you want",,
+295935955850887168,onemantooo,05/23/2023 4:55 AM,"I've also tryed with
+`GetGame().CreateObjectEx(""Vodka"", GetPosition(), ECE_LOCAL | ECE_PLACE_ON_SURFACE );` - got the same problem",,
+239201186933112833,da0ne_,05/23/2023 4:55 AM,1.21 or 1.20?,,
+295935955850887168,onemantooo,05/23/2023 4:55 AM,1.20,,
+239201186933112833,da0ne_,05/23/2023 4:56 AM,"Creating objects locally even while the client is connected to an MP session works as intended. 
+
+If you are spawning AI, that's a different story. It'd should be possible to spawn AI locally but with the correct flags (it will not walk around, and animate etc)",,
+239201186933112833,da0ne_,05/23/2023 4:57 AM,"If you get a crash, its likley due to not having a hive initialized locally. The client can have the hive created, but not when connected to an MP session",,
+207209434051641345,ronnus,05/23/2023 4:58 AM,"thats cool for the old school ""sanity"" stat",,
+239201186933112833,da0ne_,05/23/2023 4:58 AM,"You need to confirm your override is working, and that bit of code is getting called",,
+239201186933112833,da0ne_,05/23/2023 4:58 AM,add some prints to check,,
+239201186933112833,da0ne_,05/23/2023 5:00 AM,"also, the type `ZmbM_HermitSkinny_Base` is invalid",,
+239201186933112833,da0ne_,05/23/2023 5:00 AM,`_Base` types aren't meant to spawnable,,
+295935955850887168,onemantooo,05/23/2023 5:01 AM,"I've overrided `OnJumpEnd`  and `OnRollFinish` and added this:
+
+```
+        if (GetGame().IsClient()) {
+            GetGame().CreateObject(""NH_Rat_Illusion"", GetPosition(), true, true);
+                        //or this
+                        GetGame().CreateObjectEx(""NH_Rat_Illusion"", GetPosition(), ECE_LOCAL | ECE_INITAI | ECE_PLACE_ON_SURFACE );
+        }
+```
+
+So now when i'm jumping or rolling, client crashes, and only client crashes. Also it crashes with memory error.",,
+295935955850887168,onemantooo,05/23/2023 5:01 AM,fixed dat,,
+239201186933112833,da0ne_,05/23/2023 5:02 AM,Dont use `CreateObject` comment that out. And with `CreateObjectEx` remove the flag `ECE_INITAI`,,
+239201186933112833,da0ne_,05/23/2023 5:03 AM,You cannot `ECE_INITAI` on client while the client doesn't have a `Hive` instance running and or connected to an MP session,,
+239201186933112833,da0ne_,05/23/2023 5:03 AM,"AI will not work on a client, you can only spawn the model in and it would be in an ""idle"" state",,
+295935955850887168,onemantooo,05/23/2023 5:03 AM,"Gonna try now, there is no workaround to hive problem?",,
+239201186933112833,da0ne_,05/23/2023 5:04 AM,"No, there is no work around. Since you intended to do this in an MP session.
+
+If it was completely local, then you can simple do `CreateHive` and setup the proper CLE files to make it work",,
+295935955850887168,onemantooo,05/23/2023 5:06 AM,"Hm, maybe i can use some RPC to make client fake ai look alive and trigger some animations and move it to the player?",,
+239201186933112833,da0ne_,05/23/2023 5:06 AM,"No that's too complex, and probably not even possible",,
+239201186933112833,da0ne_,05/23/2023 5:07 AM,"Instead, keep the AI on the server side, flag the entity to be invisible for other players and allow it to target only your intended player.",,👍 (1)
+295935955850887168,onemantooo,05/23/2023 5:08 AM,">flag the entity to be invisible for other players
+
+Wow, thnx, but maybe you can show me direction on how to do that?",,
+295935955850887168,onemantooo,05/23/2023 5:08 AM,I thought that it's not possible,,
+295935955850887168,onemantooo,05/23/2023 5:17 AM,"Well, i've tryed.
+
+```
+    override void OnRollFinish()
+    {
+        super.OnRollFinish();
+        if (GetGame().IsClient()) {
+            GetGame().CreateObjectEx(""Animal_CervusElaphus"", GetPosition(), ECE_LOCAL | ECE_PLACE_ON_SURFACE );
+        }
+    }
+```
+Same crash.",,
+295935955850887168,onemantooo,05/23/2023 5:21 AM,"Ok, that's kinda simple, that's just i'm dumb;",,
+708275052948488254,costageo,05/23/2023 9:05 AM,"Morning all, hope all are well 💚! What’s the best way to have a json file created when a player joins a server? Each json file will be specific to a player (which il save as their SteamID), obviously I’m checking if one exists already and all that jazz. I’m just unsure on the process to get one to produce. I can get a normal one for server configuration to build in the profile etc but player specific I’m struggling with. 
+
+Would it be OnConnect, OnPlayerConnect, a new connection event in the mission server script? My brain keep’s farting and now I’m asking for help 😂",,
+262553435566637057,pepega4a,05/23/2023 9:22 AM,"Hi guys
+I'm trying to make a check to see if the filter is inserted into the gas mask
+Can you tell me if I'm doing something wrong?
+
+player.GetInventory().FindAttachment(InventorySlots.Mask)",,
+743565979258454101,affenb3rt,05/23/2023 9:44 AM,https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/58d02d5d9dd732a2aa3b27b36e9bfa6b45dcdad1/scripts/4_world/classes/playermodifiers/modifiers/mask.c#L37,,
+743565979258454101,affenb3rt,05/23/2023 9:45 AM,Read the code from this function,,
+262553435566637057,pepega4a,05/23/2023 9:45 AM,Thank you,,
+743565979258454101,affenb3rt,05/23/2023 9:45 AM,It got all you need,,
+525048777808281610,adamxmodding,05/23/2023 11:00 AM,Anyone ever had issue with codelock not being able to be removed from storage?,,
+525048777808281610,adamxmodding,05/23/2023 11:01 AM,[*fixed it*],https://cdn.discordapp.com/attachments/492295576470290433/1110492604002484264/AX_ActionDestroyCodeLock.c,
+525048777808281610,adamxmodding,05/23/2023 11:01 AM,I dont see problem with my ActionDestroyCodelock.,,
+214154100080640001,r22rstern,05/23/2023 12:38 PM,Had this in my basebuilding mod. @George can you check if it is the same issue as mine?,,
+84665468828254208,podrivo,05/23/2023 4:36 PM,hey all! hopefully this is helpful for someone looking for a quick documentation: https://dayz.yadz.app/,,"❤️ (4),💚 (3),👀 (1)"
+214154100080640001,r22rstern,05/23/2023 5:28 PM,Very useful!,,🙌 (1)
+708275052948488254,costageo,05/23/2023 5:35 PM,"Well done, no more zeroy explorer 1.11 for me 😂",,🙌 (1)
+262553435566637057,pepega4a,05/23/2023 6:18 PM,"Hi everyone
+Does anyone know a way
+How can I process an array of names with FindAttachmentByName?",,
+330475826158108674,mikkbenelis,05/23/2023 6:21 PM,You can just *process an array of names with FindAttachmentByName* 🙂,,
+262553435566637057,pepega4a,05/23/2023 6:22 PM,"if like this
+i tried it, nothing
+```c
+ref TStringArray GasMaskFilter_Slots = new TStringArray;
+    void GoToAddNewArray()
+    {
+        if (GasMaskFilter_Slots.Count() == 0)
+        {
+            GasMaskFilter_Slots.Insert(""GasMask_Filter963"");
+            GasMaskFilter_Slots.Insert(""GasMask_Filter987"");
+            GasMaskFilter_Slots.Insert(""GasMask_Filter990"");
+        }
+    }
+
+ItemBase GetGasMaskFilter()
+    {    
+        GoToAddNewArray()
+        ItemBase itemMask = GetItemOnSlot(""Mask"");
+        if (!itemMask) return null;
+        if (itemMask.IsInherited(GasMask)) return itemMask;
+        for (int i = 0; i < GasMaskFilter_Slots.Count();i++)
+        {
+                  ItemBase filters = ItemBase.Cast(itemMask.GetInventory().FindAttachmentByName(GasMaskFilter_Slots.Get(i)));
+            if(filters && !filters.IsRuined() && filters.GetQuantity() > 0 )
+                return ItemBase.Cast(itemMask.GetInventory().FindAttachmentByName(GasMaskFilter_Slots.Get(i)));
+        }
+        return null;
+    }
+```",,
+262553435566637057,pepega4a,05/23/2023 6:24 PM,I have corrected,,
+330475826158108674,mikkbenelis,05/23/2023 6:30 PM,"Cleaned up your code
+Not sure if it'll work btw:
+```C++
+ref array<string> GasMaskFilter_Slots =
+{
+  ""GasMask_Filter963"",
+  ""GasMask_Filter987"",
+  ""GasMask_Filter990"",
+};
+
+ItemBase GetGasMaskFilter()
+{    
+    ItemBase itemMask = GetItemOnSlot(""Mask"");
+    if (!itemMask) return null;
+    if (itemMask.IsInherited(GasMask)) return itemMask;
+    foreach (string slotName: GasMaskFilter_Slots)
+    {
+        ItemBase filter = ItemBase.Cast(itemMask.GetInventory().FindAttachmentByName(slotName));
+        if (filter && !filter.IsRuined() && filter.GetQuantity() > 0 ) return filter;
+    }
+    return null;
+}
+```",,
+262553435566637057,pepega4a,05/23/2023 6:31 PM,"thank you for clean up
+i will try",,
+876547889197883432,thedoctor001,05/23/2023 6:49 PM,"Guys, what is the command for cfg to increase item durability?",,
+262553435566637057,pepega4a,05/23/2023 6:52 PM,not working,,
+330475826158108674,mikkbenelis,05/23/2023 6:56 PM,At which point?,,
+262553435566637057,pepega4a,05/23/2023 6:56 PM,"fully
+doesn't even throw an error",,
+330475826158108674,mikkbenelis,05/23/2023 6:57 PM,Why should it throw an error?,,
+330475826158108674,mikkbenelis,05/23/2023 6:57 PM,You are not throwing it in this script,,
+262553435566637057,pepega4a,05/23/2023 7:12 PM,"@🅼🅸🅺🅺 [EN/RU] 
+Oh
+No
+It works
+It's me who's blind...",,
+207209434051641345,ronnus,05/23/2023 7:15 PM,"So the way ""!"" Works is as a negation meaning Negative of that function? For exampled 'GetCompEM().IsPlugged()' would be plugged in but '!GetCompEM().IsPlugged()' would be unplugged?",,
+207209434051641345,ronnus,05/23/2023 7:16 PM,And damn code thi g didnt work on the phone,,
+330475826158108674,mikkbenelis,05/23/2023 7:17 PM,"It is not negation of the function, it is negation of its return value (but you are right 🙂)",,
+207209434051641345,ronnus,05/23/2023 7:17 PM,Yes sorry i worded that poorly.. Ok that is very valuable thank you,,
+207209434051641345,ronnus,05/23/2023 7:18 PM,Just wanted to make sure I understooz the enforce syntax correctly. Not everything is really explained,,
+295935955850887168,onemantooo,05/23/2023 8:31 PM,"Hello again guys, is it possible to make a Symptom with animation - which can be interrupted only by another player or AI but not player itself?",,
+159371503715090432,marxy,05/24/2023 2:12 AM,"Hi there. When I CTRL+Click a symbol in the script editor, it just opens a blank file tab and I can't actually view the script source even for vanilla scripts. Is there a way to fix this?",,
+106922508707434496,thecrimsonzamboni,05/24/2023 2:13 AM,"wtf, dayz?
+```cpp
+class Well extends BuildingSuper
+{
+    // ...
+    override bool IsWell()
+    {
+        return GetWaterSourceObjectType();
+    }
+    
+    override EWaterSourceObjectType GetWaterSourceObjectType()
+    {
+        return EWaterSourceObjectType.WELL;
+    }
+```
+and:
+```cpp
+enum EWaterSourceObjectType
+{
+    NONE     = -1,
+    WELL     = 0,
+    THROUGH = 1
+}
+```",,
+295995523658285066,truedolphin,05/24/2023 2:16 AM,i was literally about to ask the same thing.,,
+401572164865753098,ℭ𝔬𝔟𝔯𝔞#0891,05/24/2023 2:27 AM,anyone have the playerconstants of the sprained ankle? i cant seem to find it in there trying to find it so i can override the damage of it,,
+94225995581620224,itsatreee,05/24/2023 2:50 AM,I think that is an alternative to the crashbase soundset register.,,
+106922508707434496,thecrimsonzamboni,05/24/2023 2:56 AM,Let me just plug that into my Turbo Encabulator...,,🤣 (1)
+401572164865753098,ℭ𝔬𝔟𝔯𝔞#0891,05/24/2023 3:26 AM,would the sprain to override it be in the entities? under falldamage? i would like to override it with my nofalldamage but im at a loss did they rename it or something?,,
+295995523658285066,truedolphin,05/24/2023 4:20 AM,Don't let it connect to the panametric fan.,,💯 (1)
+344195167538118657,commanderbeelo,05/24/2023 5:29 AM,Dont damage the spurvine bearings either,,
+278102625877098497,vliek,05/24/2023 12:30 PM,"I have replaced the sound file of a vehicle, but now only the driver can hear the exterior & interior sound, what could be wrong?",,
+310766510647934976,tecow,05/24/2023 6:32 PM,"Is there a way to have a config.json on the server which is then used by the client as well? I wanted to read the IP for the server from a json file and use it `OnClick` for the Play button. If this is a thing, whats the term for it to search for? I can't find any useful pages
+
+/edit: Thinking about this a bit more, I guess this makes little sense or at least only for the case when someone disconnects and lands on the main menu.",,
+561680015578759196,wrdg,05/24/2023 7:03 PM,how can a client get data from a server it's not connected to? 🤔,,
+561680015578759196,wrdg,05/24/2023 7:04 PM,"if you need the client to get data from an external known location, you're going to want to use RestApi",,
+561680015578759196,wrdg,05/24/2023 7:05 PM,"get a pastebin account, create a paste with the data you want in it, then when the main menu is shown, make a call to the raw paste url to get the IP",,
+310766510647934976,tecow,05/24/2023 7:20 PM,Yeah I realised as well hence the edit 🤦,,
+310766510647934976,tecow,05/24/2023 7:20 PM,"Ui great suggestion, thank you very much",,
+266950437805096970,zookemike,05/24/2023 7:57 PM,did they change the speed of how long clothes take to dry now?,,
+266950437805096970,zookemike,05/24/2023 7:58 PM,Usually youd just strip off drop clothes to ground stand near a fire and it takes 15 seconds,,
+266950437805096970,zookemike,05/24/2023 7:58 PM,now it takes a good 5 minutes to dry the clothes. If so what should i search in the scripts to change this.,,
+266950437805096970,zookemike,05/24/2023 8:01 PM,ah yeah reading patch notes looks like they did change it - The drying rate of items has been adjusted to correctly reflect item location and outside influences,,
+330475826158108674,mikkbenelis,05/24/2023 8:04 PM,"Hey, is it your website? If so, there is a problem with this file: https://dayz.yadz.app/df/d2e/_item_base_8c_source.html
+Scroll to the line `1418` or `1428` and hover over `DamageItemAttachments`, it says that this method is defined at line `6075`
+However, this file is `4678` lines long and this method is defined at line `1453` 🔍",,
+262553435566637057,pepega4a,05/24/2023 8:15 PM,"hi all
+Does anyone have an example or a link to a file on how to register a NEW clothing slot (like a Backpack or a Hat)",,
+295935955850887168,onemantooo,05/24/2023 8:58 PM,What is `SymptomBase.m_SyncToClient` purpose?,,
+295935955850887168,onemantooo,05/24/2023 9:29 PM,"Trying to figure out, should i run animations on server and client both, or just put animations into `OnGetActivatedClient` - and if `SymptomBase.m_SyncToClient` is present - it will automatically call `OnGetActivatedClient` on client - am i right?",,
+207209434051641345,ronnus,05/24/2023 9:37 PM,I'm trying to get my fuelpump to only make sound when I am draining fuel and it is powered.. Is it possible to call on the drain action in the script inherited by `Inventory_Base` ? I've been trying but having no luck.. Thought of making it turn on and drain only when the continuous action is initiated then turning off,,
+535230913739751425,nikerage,05/24/2023 9:47 PM,"Is it possible to call a function in func Run() like this ""class.function"" ?",,
+94225995581620224,itsatreee,05/24/2023 10:02 PM,That feels like a static method.,,👍 (1)
+561680015578759196,wrdg,05/24/2023 10:10 PM,"Yes, a static method",,👍 (1)
+330475826158108674,mikkbenelis,05/24/2023 10:41 PM,"I still can't damage `item_large` objects by melee attacks (sword, hands, etc.)
+Not sure, but seems like I need to create custom damage zones somehow
+Have you figured it out? 🙂",,
+106867714374569984,dave_p.,05/24/2023 11:02 PM,"hey all im trying to add an action condition to an item to only open if an item is in the players hands.
+
+is there anything i can use to do this i was thinking something like `iteminhand.isKindOf(""itemname"")` but i don't see anything in vanilla scripts for this",,
+207209434051641345,ronnus,05/24/2023 11:04 PM,look at canned tuna?,,
+207209434051641345,ronnus,05/24/2023 11:05 PM,i think canned tuna acts like that,,
+159371503715090432,marxy,05/24/2023 11:06 PM,So is there any way to view source of vanilla/modded scripts in the script editor? When ctrl+clicking a symbol it just opens a blank page instead of the actual script source (even for vanilla classes),,
+84665468828254208,podrivo,05/24/2023 11:29 PM,nice! thanks for pointing it out. I'll have a look! (:,,
+535230913739751425,nikerage,05/25/2023 1:34 AM,"```c
+override void EEKilled( Object killer )
+    {
+        super.EEKilled( killer );
+        #ifdef PVEZ
+        EntityAI eai;
+        if (!EntityAI.CastTo(eai, killer))
+            return;
+
+        PlayerBase player;
+        if (!PlayerBase.CastTo(player, eai.GetHierarchyRootPlayer()))
+            return;
+        
+        Imprisonment imprisonment;
+        string playerName = player.GetIdentity().GetName();
+        GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(imprisonment.ImprisonPlayers, 5000, false, player);
+        
+        Print(""[IMPRISONMENT DEBUG1]:: +++++++++++++ (""+ playerName +"") +++++++++++++"");
+        #endif
+    }
+class Imprisonment
+{
+    #ifdef PVEZ
+    vector JailLocation = ""2746.161621 33.638657 1306.124634"";
+    void ImprisonPlayers(PlayerBase player)
+    {
+        if(player.pvez_PlayerStatus.GetIsLawbreaker())
+        {
+            OH_Handcuffs cuffs;
+            player.SetPosition(JailLocation);
+            EntityAI item_in_hands_target = player.GetHumanInventory().GetEntityInHands();
+            string new_item_name = MiscGameplayFunctions.ObtainRestrainItemTargetClassname(cuffs);
+            
+            if (item_in_hands_target)
+            {
+                CuffedAndDropped lambda2 = new CuffedAndDropped(item_in_hands_target,item_in_hands_target.GetType(), player, false);
+                MiscGameplayFunctions.TurnItemInHandsIntoItemEx(player, lambda2);
+            }
+            else
+            {
+                CuffedNoDrop lambda = new CuffedNoDrop(cuffs, new_item_name, player);
+            }
+        }
+    }
+    #endif
+};
+```
+SCRIPT    (E): NullPointerError
+Class:      'SurvivorBase'
+
+Can someone explain me, why i get a NULL Pointer in my CallLater?",,
+94225995581620224,itsatreee,05/25/2023 1:38 AM,` Imprisonment imprisonment;`,,
+561680015578759196,wrdg,05/25/2023 1:38 AM,no instance to Imprisonment,,
+94225995581620224,itsatreee,05/25/2023 1:39 AM,You declare the instance but never define it.,,
+94225995581620224,itsatreee,05/25/2023 1:39 AM,"ie, where tf do you call `new Imprisonment()` and use that .",,
+106922508707434496,thecrimsonzamboni,05/25/2023 1:39 AM,"it's also scoped to the EEKilled method, so it'll probably be destroyed by the time the CallLater calls the method",,
+94225995581620224,itsatreee,05/25/2023 1:39 AM,yeh,,
+561680015578759196,wrdg,05/25/2023 1:39 AM,is the Imprisonment class even needed?,,
+561680015578759196,wrdg,05/25/2023 1:40 AM,"if that's the only method you have in it, you have some weird design decisions",,
+535230913739751425,nikerage,05/25/2023 1:42 AM,"Formatting issue, because I copied it out of another file.",,guh (1)
+535230913739751425,nikerage,05/25/2023 1:42 AM,"Probably not, I worked around a lot and reduced the code so I won’t need it now. But I’m done for today 😂",,
+535230913739751425,nikerage,05/25/2023 1:43 AM,"But true anyways, lol",,
+535230913739751425,nikerage,05/25/2023 1:45 AM,"Thanks, didnt thought of that",,
+561680015578759196,wrdg,05/25/2023 1:47 AM,"if you want to keep the same design, just add `static` to the `ImprisonPlayers` method and the `JailLocation` vector",,
+535230913739751425,nikerage,05/25/2023 1:49 AM,I’ll keep that in mind but you’re right I’ll probably just move it into the PlayerBase class,,
+112674215336951808,dr.borg,05/25/2023 4:53 AM,anyone know what required addons I should use when modifying the playerbase.c script?,,
+561680015578759196,wrdg,05/25/2023 4:53 AM,You don't need any required addon to mod dayz scripts,,
+112674215336951808,dr.borg,05/25/2023 4:54 AM,"oh okay, ty!",,
+328299074266857475,spectramodz,05/25/2023 5:26 AM,I am trying to compile my mod and workbench show me some erros that are not erros why it happens?,,
+328299074266857475,spectramodz,05/25/2023 5:26 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1111133174190317628/image.png,
+328299074266857475,spectramodz,05/25/2023 5:26 AM,It says to me with random variables that are normally initialized or cant find variables that created above the line.,,
+135226527473336320,inclementdab,05/25/2023 7:15 AM,fix the top two,,
+135226527473336320,inclementdab,05/25/2023 7:15 AM,and the rest will go away,,
+372246942409031691,ikr0gh,05/25/2023 8:40 AM,"Can anyone help clarify what the different plugtypes mean? example: `compatiblePlugTypes[]={1,5,8,6};` Can't find a list of the numbers",,
+136599846684459008,clinewest,05/25/2023 12:42 PM,"I'm getting the same error on the server. 
+```
+Can't compile ""World"" script module!
+
+scripts/4_World/classes\emotemanager.c(591): Can't find matching overload for function 'GetDebugName'
+```
+Were you able to fix this on your own? Which mod was causing the issue? 
+It seems for extensive testing that it isn't a particular mod, but more like a limit on scripts...
+I can take off some mods and add another in it's place without running into this issue... (Although I might be wrong).",,
+136599846684459008,clinewest,05/25/2023 12:42 PM,How can this be fixed?,,
+94225995581620224,itsatreee,05/25/2023 3:08 PM,Looks like debug code for diag mode? Idk. Remove that call.,,
+94225995581620224,itsatreee,05/25/2023 3:08 PM,"The error is very ""self explanatory"" you are overloading a function that doesn't exist at runtime.",,
+612719006725570560,blondaq1991,05/25/2023 3:09 PM,"Hi all - have someone same issue with particles?
+
+All is working well until it is stopped.
+
+ ```c
+if (!m_ParticleFire1)
+  {
+                m_ParticleFire1 =           ParticleManager.GetInstance().PlayOnObject(ParticleList.CAMP_NORMAL_FIRE, this, GetMemoryPointPos(""firepoint1_position""));
+  }
+```
+
+and when i stop particle
+
+```c
+  if (m_ParticleFire1)
+  {
+      m_ParticleFire1.Stop();
+  }
+```
+
+I cannot run it again - when i am trying to spawn same particle again - nothing happened - any clue?",,
+612719006725570560,blondaq1991,05/25/2023 3:12 PM,"For better understanding - i am running this particle, when **EEHealthLevelChanged** 
+
+When damaging object it is OK and working (From **Pristine ** to  **Worn**), but when i repair that object and set another health level (From **Worn** to **Pristine**) - here i am stopping that particle. But when health level is changed to same state, like first time (From **Pristine ** to  **Worn**) , nothing happened and particle doesn't start
+
+Can someone help, please? did i miss something?",,
+136599846684459008,clinewest,05/25/2023 3:29 PM,"I don't follow... because I am getting this with every mod or script I am attempting to add. Is there a way to increase this function to not ""overload""?",,
+295995523658285066,truedolphin,05/25/2023 3:31 PM,So it's fine until you add any mod past your current list?,,
+136599846684459008,clinewest,05/25/2023 3:31 PM,Correct.,,
+295995523658285066,truedolphin,05/25/2023 3:31 PM,Oh then you're at the script limit.,,
+136599846684459008,clinewest,05/25/2023 3:32 PM,"How do we increase this ""Script Limit""?",,
+136599846684459008,clinewest,05/25/2023 3:32 PM,This is not good.,,
+295995523658285066,truedolphin,05/25/2023 3:33 PM,You can't. That's the point of a limit.,,
+295995523658285066,truedolphin,05/25/2023 3:35 PM,"It's mainly caused by bad scripting practices and other things.
+Here's a similar explanation from from somebody more knowledgeable than me.",https://cdn.discordapp.com/attachments/492295576470290433/1111286309567336469/Screenshot_20230525-233323212_1.jpg,
+136599846684459008,clinewest,05/25/2023 3:39 PM,"Following this, almost all mods/scripts contribute to the script log with ""fix-me"" results. 
+If this is truly the case for why the compiler just seems to quit, then Bohemia must extend the limit for which the compiler gives up.",,
+295995523658285066,truedolphin,05/25/2023 3:40 PM,"No they shouldn't.
+People should fix their damn mods.",,
+136599846684459008,clinewest,05/25/2023 3:40 PM,I count at least 30 mods of the 40 that have errors.,,
+295995523658285066,truedolphin,05/25/2023 3:41 PM,Yup.,,
+295995523658285066,truedolphin,05/25/2023 3:42 PM,It's not the compilers fault it can't deal with over a hundred issues (arbitrary number). It's the people causing the issues.,,
+136599846684459008,clinewest,05/25/2023 3:44 PM,"Yes, perhaps, not the compliers fault for all the errors. It is the compliers fault it just shuts downs and refuses to work though.",,
+136599846684459008,clinewest,05/25/2023 3:44 PM,It needs some strength.,,
+295995523658285066,truedolphin,05/25/2023 3:44 PM,"Again, that's not the compilers fault",,
+295995523658285066,truedolphin,05/25/2023 3:44 PM,"If you keep putting the wrong fuel in a car, it's not the car's fault it stops working.",,
+136599846684459008,clinewest,05/25/2023 3:45 PM,Very good point.,,
+136599846684459008,clinewest,05/25/2023 3:46 PM,Than their shall be a crusade across the lands of the many scripts to vanquish those who do not meet the high standards of the 'Lord Complier'.,,
+136599846684459008,clinewest,05/25/2023 3:46 PM,https://tenor.com/view/shotgun-crusader-door-enter-gif-17792300,,😂 (2)
+295995523658285066,truedolphin,05/25/2023 3:47 PM,"It's not even high standards....
+It's basic standards of most other languages.
+People are just lazy.",,
+295995523658285066,truedolphin,05/25/2023 3:49 PM,"And it literally tells them there's issues and what to fix in the script log.
+People just either don't read it, or don't care because ""it's not an issue for them, so who cares"".
+Even most people that get paid/take donations for mods don't do it.",,
+136599846684459008,clinewest,05/25/2023 3:49 PM,Poor practices lead to cascade failures.,,
+94225995581620224,itsatreee,05/25/2023 4:18 PM,"oh, did you update your game files since 1.21 dropped?",,
+94225995581620224,itsatreee,05/25/2023 4:18 PM,"Can't compile ""World"" script module!
+
+scripts/4_World/classes\emotemanager.c(591): Can't find matching overload for function 'GetDebugName'",,
+94225995581620224,itsatreee,05/25/2023 4:18 PM,its breaking in a vanilla script,,
+136599846684459008,clinewest,05/25/2023 4:28 PM,The game files should be updated.,,
+136599846684459008,clinewest,05/25/2023 4:29 PM,Interesting.,,
+94225995581620224,itsatreee,05/25/2023 4:29 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1111300048882511933/image.png,
+94225995581620224,itsatreee,05/25/2023 4:29 PM,Are you in debug mode?,,
+94225995581620224,itsatreee,05/25/2023 4:29 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1111300101026099322/image.png,
+136599846684459008,clinewest,05/25/2023 4:30 PM,I shouldn't be in debug mode.,,
+136599846684459008,clinewest,05/25/2023 4:30 PM,"Server works fine now and then if I add any other mod, it shoots that error.",,
+136599846684459008,clinewest,05/25/2023 4:30 PM,"I've tried adding ""DayZ-Dog"", ""Admiral's Parachute"", ""Admiral's Diving""....",,
+136599846684459008,clinewest,05/25/2023 4:31 PM,"After 10+ hours of testing, I feel the server reaches a limit.",,
+94225995581620224,itsatreee,05/25/2023 4:31 PM,I can't assume your environment is even set up correctly given this error,,
+94225995581620224,itsatreee,05/25/2023 4:32 PM,"Like that `GetDebugName` is defined on Object so if your game can't compile due to that, a mod must be overriding Object",,
+94225995581620224,itsatreee,05/25/2023 4:33 PM,Go back to 0 mods and base map. Add one by one until you get the error,,
+136599846684459008,clinewest,05/25/2023 4:34 PM,"Yep, will do this then. Thanks for your help brother.",,
+94225995581620224,itsatreee,05/25/2023 4:35 PM,"np, sorry it wasn't more definitive. Post your results when done",,
+612719006725570560,blondaq1991,05/25/2023 5:01 PM,"Hey guys, can someone help please? @Tree @TrueDolphin https://discord.com/channels/452035973786632194/492295576470290433/1111279844970463282",,
+94225995581620224,itsatreee,05/25/2023 5:02 PM,!m_Particle is a null check,,
+94225995581620224,itsatreee,05/25/2023 5:02 PM,"m_Particle.Stop() just stops teh state machine, it doesn't null the object",,
+295995523658285066,truedolphin,05/25/2023 5:03 PM,Maybe look at how generators apply theirs to understand the correct method.,,
+295995523658285066,truedolphin,05/25/2023 5:03 PM,Or cars and theirs.,,
+94225995581620224,itsatreee,05/25/2023 5:04 PM,Smoke grenades,,
+612719006725570560,blondaq1991,05/25/2023 5:05 PM,"Oh, so when m_Particle will be set to null, it can work again?",,
+612719006725570560,blondaq1991,05/25/2023 5:05 PM,"Ok i will check, thanks 🙂",,
+612719006725570560,blondaq1991,05/25/2023 5:06 PM,Ok ty 🙂,,
+94225995581620224,itsatreee,05/25/2023 5:07 PM,🤷,,
+94225995581620224,itsatreee,05/25/2023 5:08 PM,you gave like 4 lines of code so who knows what else is breaking,,
+798630499768598578,musa7777,05/25/2023 5:13 PM,"this problem is still present, and removing any mod with scripts also helps. Last time I tried to convey this, but I was misunderstood",,
+136599846684459008,clinewest,05/25/2023 5:15 PM,So you still are facing this problem?,,
+798630499768598578,musa7777,05/25/2023 5:16 PM,"Yes, I asked many people if they had encountered this, some told me that there used to be a restriction on scripts in 4_world",,
+94225995581620224,itsatreee,05/25/2023 5:17 PM,It is most likely a mod that is overriding Object that has not been updated to include the new stuff DayZ updates bring.,,
+94225995581620224,itsatreee,05/25/2023 5:18 PM,I'd check with paid mods first as who knows what potential back doors are there for code preservation.,,
+94225995581620224,itsatreee,05/25/2023 5:19 PM,Or obfuscated ones since they cannot be inspected easily.,,
+136599846684459008,clinewest,05/25/2023 5:25 PM,"The weird thing is that, I don't get that error until I try to add a new mod.",,
+136599846684459008,clinewest,05/25/2023 5:25 PM,"The server is online right now, if I take it down and install one of the more open popular mods, the server will shoot that error and not start.",,
+334386120328740893,1gagarin1,05/25/2023 7:18 PM,"Hello everyone, can someone help make sure that a hood with a mask gives insulation to the face and head",,
+743565979258454101,affenb3rt,05/25/2023 7:26 PM,Since I got a DM from him regarding the issue I want to make my guess here as well. I would guess he is hitting the script limit where the game is unable to load all the scripts and therefore errors out because he said it happens no matter what mod he adds,,
+561680015578759196,wrdg,05/25/2023 7:26 PM,"If you have obfuscated mods that you're suspicious of, send them my way. I'll look for you",,
+561680015578759196,wrdg,05/25/2023 7:27 PM,"Not really much of a script limit, it's just poor programming.",,
+743565979258454101,affenb3rt,05/25/2023 7:27 PM,I know,,
+743565979258454101,affenb3rt,05/25/2023 7:27 PM,But that's the best way to describe it for someone who lacks deeper knowledge,,
+561680015578759196,wrdg,05/25/2023 7:27 PM,It's annoying because the compiler will spit out a false blame,,
+561680015578759196,wrdg,05/25/2023 7:28 PM,"The entire expansion team knows what they're doing when it comes to the compiler and what's wrong and right, but shitty mods will often cause false blames and point to valid expansion methods",,
+94225995581620224,itsatreee,05/25/2023 7:34 PM,ohhhhh good call affenb3rt,,
+207209434051641345,ronnus,05/25/2023 7:59 PM,Where can I check this?,,
+106922508707434496,thecrimsonzamboni,05/25/2023 8:01 PM,read your `script_*.log` files,,
+207209434051641345,ronnus,05/25/2023 8:07 PM,Thank you,,
+207209434051641345,ronnus,05/25/2023 8:18 PM,"That's awesome, thank you!",,
+207209434051641345,ronnus,05/25/2023 8:18 PM,Almost all mine are from CF 😮,,
+1073577472693653564,RP Vanilla+#4203,05/25/2023 8:41 PM,"hello world, i use maplink, and have a idea i need to test, and need some help, is it posible to make an serversided override pbo, that deactivate or overide empty a pbo from a mod? i want to deactivate all pbo's inside the counter maps in the maplink servers",,
+1073577472693653564,RP Vanilla+#4203,05/25/2023 8:42 PM,"example , ex1.pbo serversided, that deactivate or overide ex1.pbo in a mod",,
+136599846684459008,clinewest,05/25/2023 11:07 PM,"Yeah GameLabs has like 98 ""Fix-Me"".",,
+328299074266857475,spectramodz,05/26/2023 12:30 AM,"with the first it is all solved but not the second, I think it is because I am opening with dayz.gproj my mod in workbench but it not detect the inputs file then how can I solve that?",,
+112674215336951808,dr.borg,05/26/2023 3:34 AM,"So I am trying to make the item in hands visible while in car. I have tried setting the ""TryHideItemInHands();"" to false and it still hides the item.. i have tried completely removing the line and the item shows up but is detached from the player and floating the left.",https://cdn.discordapp.com/attachments/492295576470290433/1111467301955452968/message.txt,
+1073577472693653564,RP Vanilla+#4203,05/26/2023 1:45 PM,"hello world, i use maplink, and have a idea i need to test, and need some help, is it posible to make an serversided override pbo, that deactivate or overide empty a pbo from a mod? i want to deactivate all pbo's inside the counter maps in the maplink servers
+example , ex1.pbo serversided, that deactivate or overide ex1.pbo in a mod",,
+1073577472693653564,RP Vanilla+#4203,05/26/2023 1:46 PM,"im willing to pay if someone are able to fix this for me, like a teplate pbo",,
+295995523658285066,truedolphin,05/26/2023 1:56 PM,"Not how you want, no",,
+1073577472693653564,RP Vanilla+#4203,05/26/2023 2:10 PM,not posible?,,
+254630322602246144,joby_.,05/26/2023 4:48 PM,"hello would anyone be able to help me with some scripting on a keycard mod, happy to pay the going rate for time on the project.?",,
+295935955850887168,onemantooo,05/26/2023 6:42 PM,"Hello guys. I have a side mod with animation, which registered as `Emote` is there a way to use this animation in my `Symptom`?
+
+`PlayAnimationFB(CMD_ID, stancemask, GetDuration());`
+Is not working if I pass  `EMOTE_ID` in `CMD_ID` , so it looks like it should be registered somehow and somewhere, but i can't find any code related to registration for example `DayZPlayerConstants.CMD_SUICIDEFB_RIFLE` - which works fine with `PlayAnimationFB`.",,
+743565979258454101,affenb3rt,05/26/2023 7:36 PM,An emote also has a command id. Look at the emoteclasses,,
+743565979258454101,affenb3rt,05/26/2023 7:37 PM,https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/6482c5b5d047da45be3c382b0fd64a14239f39e9/scripts/4_world/classes/emoteclasses/emoteclasses.c#L10,,
+743565979258454101,affenb3rt,05/26/2023 7:48 PM,The command IDs correlate to the transition conditions in the animation graph btw,,
+295935955850887168,onemantooo,05/26/2023 7:48 PM,"Hm, ok. So i can use m_AdditiveCallbackUID as CMD_ID?",,
+743565979258454101,affenb3rt,05/26/2023 7:48 PM,It depends,,
+743565979258454101,affenb3rt,05/26/2023 7:49 PM,PlayanimationFB is for full body animations,,
+743565979258454101,affenb3rt,05/26/2023 7:49 PM,So you need to use the full body animation command id instead,,
+743565979258454101,affenb3rt,05/26/2023 7:50 PM,You can identify them on the command id name,,
+743565979258454101,affenb3rt,05/26/2023 7:50 PM,They also have FB in their name if they must be used for full body commands,,"❤️ (1),❤️‍🔥 (1)"
+343849583723413505,hun73xv2,05/26/2023 8:15 PM,"hello, has anyone of you ever tried to write a code that you can equip items on both arms? sometimes it would be really useful to have something like that",,❤️ (1)
+109082700391936000,kinkurono,05/26/2023 9:20 PM,anyone knows anything about the new  slot blocking system that came with this update ?,,
+112674215336951808,dr.borg,05/26/2023 9:45 PM,"What do you mean more specifically, i didn't see anything that sounds related in the patch notes.",,
+109082700391936000,kinkurono,05/26/2023 9:47 PM,"I didn’t as well, but it seems like there’s a conflict between slots in an item and the player, for example if I have a mask slot on a belt and there’s an item on it, I can’t wear a mask on the player face slot and vice versa",,
+112674215336951808,dr.borg,05/26/2023 9:49 PM,"I think some items block slots for other items because of ""realistic"" reasons.  So like some masks would prevent you from wearing glasses or a helmet.  But i think sometimes its just buggy or unintuitive.  But could also be a mod conflict if mods are in question.",,
+109082700391936000,kinkurono,05/26/2023 9:54 PM,"Yeah that’s all configs, the modded item in question worked before the update so it’s something new haha",,
+112674215336951808,dr.borg,05/26/2023 10:00 PM,ahh may just be another bug/conflict between the new update and existing mods.  I hear there is a long list of them,,
+109082700391936000,kinkurono,05/26/2023 10:01 PM,Sad,,
+109082700391936000,kinkurono,05/26/2023 10:02 PM,Just gotta figure out where the conflict is happening,,
+384850738355896321,ragtyson,05/26/2023 10:29 PM,How could i get several attachments by using inheritance?,,
+384850738355896321,ragtyson,05/26/2023 10:30 PM,i want to get CarWheel on vehicles but can't find a proper way of getting attachments without searching for actual slot id or slot names,,
+330475826158108674,mikkbenelis,05/26/2023 10:44 PM,"You want something like this? 🙂
+```C++
+int attachment_count = GetInventory().AttachmentCount();
+for (int i = 0; i < attachment_count; i++)
+{
+    auto attachment = GetInventory().GetAttachmentFromIndex(i);
+    ItemBase attachmentIB = ItemBase.Cast(attachment);
+    ...
+}```
+Just add an `IsKindOf` check somewhere",,
+384850738355896321,ragtyson,05/26/2023 10:45 PM,"ohhh thats neat, that could work",,
+384850738355896321,ragtyson,05/26/2023 10:45 PM,thank you!,,
+612719006725570560,blondaq1991,05/27/2023 1:46 AM,"Hi everyone, some method (function) which can detect throwed item's collision with my object please?",,
+535230913739751425,nikerage,05/27/2023 2:07 AM,How to get a specific door from the prison(island) building for e.g?,,
+184334545162731520,xaxas86,05/27/2023 3:56 AM,"Hello, please tell me where can I find a tutorial or help on how to add an particle effect to a model?",,
+295995523658285066,truedolphin,05/27/2023 4:25 AM,Generator has an example.,,
+126552821163229185,behelith666,05/27/2023 11:17 AM,"I'm currently building a rangefinder mod, adding new ones and simulating the viewfinders. There's a hard limit of 1000m on DayZPhysics.RaycastRV only for terrain. However there are rangefinders that go up to 2400m and more. Objects like players, trees and buildings can be detected much further. Anyone got an idea how to overcome this or is it just a hard limit for now?",,
+612719006725570560,blondaq1991,05/27/2023 12:15 PM,Please @TrueDolphin can you give me a hint for: https://discord.com/channels/452035973786632194/492295576470290433/1111802533086765258,,
+328461966232256513,varyel,05/27/2023 12:19 PM,@Blondaq1991 OnContact() / OnTouch(),,
+612719006725570560,blondaq1991,05/27/2023 12:25 PM,"I will try, thanks 👍",,
+328461966232256513,varyel,05/27/2023 12:25 PM,^^,,
+328461966232256513,varyel,05/27/2023 1:30 PM,"anyone knows if radiator in vanilla code damage itself over time?
+for example if the radiator spawn pristine and the car take no damage  it is in some way damaged? or does it never spawn pristine?",,
+328461966232256513,varyel,05/27/2023 1:30 PM,🤔,,
+330475826158108674,mikkbenelis,05/27/2023 1:40 PM,"Not sure about damaging it over time, but it could be damaged by the `cfgspawnabletypes.xml`
+However, it could be pristine if the random value is close to 0.0
+```C++
+<type name=""CarRadiator"">
+  <damage min=""0.0"" max=""0.35"" />
+</type>```",,
+328461966232256513,varyel,05/27/2023 1:56 PM,"@🅼🅸🅺🅺 [EN/RU] im doing a mod for a customer, but i never used car wr can say, so asked for more exeperienced car players! aha :p
+
+so basically vanilla they never spawn pristine or worn = they will alwasy lesk some coolant",,
+330475826158108674,mikkbenelis,05/27/2023 2:05 PM,"Seems like what are you saying is not pristine/damaged/etc radiator state, it is more related to the default coolant liquid amount
+But what are you trying to do? You want to make it always be 100% filled by default? @Varyel",,
+328461966232256513,varyel,05/27/2023 2:06 PM,"@🅼🅸🅺🅺 [EN/RU] im doing that a radiator does not lose coolant ( as costumer request )
+
+but looking into the code seems that the radiatior lose coolant only if damaged ( IsVitalRadiatior() )",,
+328461966232256513,varyel,05/27/2023 2:07 PM,so am wondering how it works in vanilla,,
+328461966232256513,varyel,05/27/2023 2:07 PM,cuz i never played a lot with car,,
+328461966232256513,varyel,05/27/2023 2:07 PM,"so am looking if , even the radiatori is pristine, in some way it lose liquid or just from worn/damaged to Ruined :p",,
+328461966232256513,varyel,05/27/2023 2:08 PM,"cuz if the radiator lose liquid only on !Pristine states , costumer just need to tweak the spawnableType forcing to 1",,
+328461966232256513,varyel,05/27/2023 2:08 PM,other way i need to take hand on :p,,
+328461966232256513,varyel,05/27/2023 2:09 PM,but the ***LeakFluid()*** method seems related only on non-pristine state,,
+330475826158108674,mikkbenelis,05/27/2023 2:10 PM,"I think, you need to tweak this part of car script (`m_RadiatorHealth < 0.5`)
+```C++
+//! leaking of coolant from radiator when damaged
+if ( IsVitalRadiator() )
+{
+  if ( GetFluidFraction(CarFluid.COOLANT) > 0 && m_RadiatorHealth < 0.5 ) //CARS_LEAK_THRESHOLD
+    LeakFluid( CarFluid.COOLANT );
+}
+```",,
+330475826158108674,mikkbenelis,05/27/2023 2:11 PM,"So `IsVitalRadiator()` is true by default, and removing the `&& m_RadiatorHealth < 0.5` condition it'll always leak",,
+328461966232256513,varyel,05/27/2023 2:11 PM,is true in CarScript,,
+328461966232256513,varyel,05/27/2023 2:11 PM,but set False,,
+328461966232256513,varyel,05/27/2023 2:11 PM,in the proper vehicle,,
+328461966232256513,varyel,05/27/2023 2:11 PM,:p,,
+328461966232256513,varyel,05/27/2023 2:11 PM,class,,
+328461966232256513,varyel,05/27/2023 2:12 PM,"anyway thst guy wants this scenario
+
+Pristine / worn no leak",,
+328461966232256513,varyel,05/27/2023 2:12 PM,damage badly and ruined Leak,,
+328461966232256513,varyel,05/27/2023 2:12 PM,"but looking at the code seems it is already in this way, or am i wrong? 🤔",,
+330475826158108674,mikkbenelis,05/27/2023 2:14 PM,"Yeah, seems like it is already works as he wants 😁 
+Except this part `IsVitalRadiator()` if it is set to `false`",,
+384850738355896321,ragtyson,05/27/2023 2:16 PM,IsVitalRadiator() checks only if the vehicle **needs** a radiator to work,,
+330475826158108674,mikkbenelis,05/27/2023 2:18 PM,But it seems like it is a required condition for constant fluid leak,https://cdn.discordapp.com/attachments/492295576470290433/1111991829714444338/image.png,
+384850738355896321,ragtyson,05/27/2023 2:19 PM,"yes, because if it wouldn't check for it, it would leak something which isn't there",,
+384850738355896321,ragtyson,05/27/2023 2:19 PM,null pointer generator,,
+384850738355896321,ragtyson,05/27/2023 2:19 PM,:pain:,,
+328461966232256513,varyel,05/27/2023 2:21 PM,ahah,,
+328461966232256513,varyel,05/27/2023 2:21 PM,seems true! ahah,,
+328461966232256513,varyel,05/27/2023 2:22 PM,ok so seems as i thought will let him know :p,,
+330475826158108674,mikkbenelis,05/27/2023 3:54 PM,"Is it possible to get the world position of a proxy?
+Calling the `GetWorldPosition();` on proxy returns the world position of the parent object
+I need to detach an attachment when it is destroyed, but I want to keep its position where it is
+Here is the related part of my attachment proxy item script:
+```C++
+override void EEKilled(Object killer)
+{
+  super.EEKilled(killer);
+  auto parent = GetParent();
+  if (parent)
+  {
+    auto proxyPosition = GetWorldPosition();
+    GetInventory().DropEntity(InventoryMode.SERVER, parent, this);
+
+    auto callQueue = GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM);
+    callQueue.CallLater(SetPosition, 100, false, proxyPosition);
+  }
+}```",,
+295995523658285066,truedolphin,05/27/2023 3:59 PM,Why are you using auto so much?..,,
+330475826158108674,mikkbenelis,05/27/2023 4:06 PM,It is a C# style: code looks way more clean 🙂,,
+330475826158108674,mikkbenelis,05/27/2023 4:07 PM,And no need to remember what exact type it'll return,,
+295995523658285066,truedolphin,05/27/2023 4:13 PM,"The auto callqueue would look neater if you just did it on one line.
+And there's ""probably"" reasons why auto shouldn't be used for everything..",,
+330475826158108674,mikkbenelis,05/27/2023 4:17 PM,"I don't like really long lines without any possibility to split it like this:
+```C++
+  GetGame()
+    .GetCallQueue(CALL_CATEGORY_SYSTEM)
+    .CallLater(SetPosition, 100, false, proxyPosition);```
+
+And I found the only one reason to not use `auto`, but it seems to be the edge case:
+`bool isPlugged = HasEnergyManager() && GetCompEM().IsPlugged();`",,
+121058803599933440,xam.nu,05/27/2023 4:18 PM,is it possible to fetch multiple localizations from the stringtable?,,
+330475826158108674,mikkbenelis,05/27/2023 4:21 PM,"You mean something like this?
+
+```C++
+""LANGUAGE"",""English"",""Russian"",
+""STR_TestString"",""Test"",""Тест"",```
+
+```C++
+override string GetText()
+{
+  return ""#STR_TestString"";
+}```",,
+121058803599933440,xam.nu,05/27/2023 4:21 PM,Yeah,,
+121058803599933440,xam.nu,05/27/2023 4:23 PM,"ConfigGetText only returns for your current localization, but figured I would be able to choose which language I want from the string table by using ConfigGetTextRaw and then use that.",,
+121058803599933440,xam.nu,05/27/2023 4:25 PM,or are you saying that override will return both?,,
+330475826158108674,mikkbenelis,05/27/2023 4:26 PM,"No, it'll return the value based on your current localization",,
+295995523658285066,truedolphin,05/27/2023 4:26 PM,@🅼🅸🅺🅺 [EN/RU],"https://cdn.discordapp.com/attachments/492295576470290433/1112024057316114452/Screenshot_20230528-002612449_1.jpg,https://cdn.discordapp.com/attachments/492295576470290433/1112024057668444200/Screenshot_20230528-002556229_1.jpg,https://cdn.discordapp.com/attachments/492295576470290433/1112024057903317142/Screenshot_20230528-002532829_1.jpg",
+295995523658285066,truedolphin,05/27/2023 4:27 PM,"Keep in mind this isn't C#
+Just because it uses similar syntax.",,
+295995523658285066,truedolphin,05/27/2023 4:29 PM,Can =\\= should.,,
+330475826158108674,mikkbenelis,05/27/2023 4:29 PM,"That was the edge case where `auto` could not determine the `bool` type with explicit `&&` for some reason
+But there are no more arguments to not use it (for me it is way more readable with `auto` than without)",,
+121058803599933440,xam.nu,05/27/2023 4:30 PM,how is not knowing the type more readable?,,
+295995523658285066,truedolphin,05/27/2023 4:30 PM,"If an orange or green says don't, it's best not to.
+They typically know the compiler a lot better than you...",,
+330475826158108674,mikkbenelis,05/27/2023 4:32 PM,"Look at this example:
+`my_unique_and_relatively_long_class_name var = my_unique_and_relatively_long_class_name.Cast(item)`
+vs.
+`auto var = my_unique_and_relatively_long_class_name.Cast(item)`",,👍 (1)
+330475826158108674,mikkbenelis,05/27/2023 4:35 PM,"I can agree with you, but only if there will be some arguments
+I can see an argument from `Wardog`, but it is the edge case
+`evil` and `ugly` are not arguments here even from orange/green 🙂",,
+295995523658285066,truedolphin,05/27/2023 4:37 PM,You're covering one bad habit with another. That's not solving issues.,,
+330475826158108674,mikkbenelis,05/27/2023 4:40 PM,"The original issue with my code is not `auto` related anyway
+The `proxyPosition` is `vector` and `SetPosition` is called",,
+295995523658285066,truedolphin,05/27/2023 4:40 PM,Then just use vector.,,
+330475826158108674,mikkbenelis,05/27/2023 4:41 PM,"So you think it may change something?
+If yes, I'll get rid of all `auto`s in my code 😁",,
+295995523658285066,truedolphin,05/27/2023 4:42 PM,"Just get rid of the autos..
+Secondly..
+RemoveChild, GetPosition and do your CallLater before super.",,
+330475826158108674,mikkbenelis,05/27/2023 5:31 PM,"Took a while to check it because I broke some other parts of my mod
+But yes, the only thing I replaced is `GetWorldPosition` with `GetPosition` and it is working now
+Thanks 👍 
+
+`RemoveChild` seems to have a different purpose (but I'm not sure)
+It was a proxy attachment, not the actual child",,
+218413499947155456,steve_aka_salutesh,05/27/2023 6:08 PM,auto is fine if used in the right context,,
+218413499947155456,steve_aka_salutesh,05/27/2023 6:10 PM,If you Cast to the certain class like the example stands out auto is a total legit thing to use,,
+330475826158108674,mikkbenelis,05/27/2023 8:24 PM,"But what could be the wrong context for it?
+Except the `bool` edge case for unknown reason
+
+I think that it is even better to use `auto` everywhere it is possible
+But it means you need to give proper variable names for readability
+Even with this `bool` case: `auto isTrue = bool.Cast(x && y || z)`
+Have not tried this code, but it seems to be valid",,
+237930687569723392,straydoglp,05/27/2023 8:28 PM,"is there a way to take the server-time or my location time for the dogtags?
+bcs. i'm not in CEST.. so that's a bit confusing :/",,
+561680015578759196,wrdg,05/27/2023 8:34 PM,it's based off IP per client,,
+561680015578759196,wrdg,05/27/2023 8:36 PM,"your client makes a call to this api, and this is how i determine your timezone. because there's no native way to do it in script
+<http://worldtimeapi.org/api/ip>",,
+237930687569723392,straydoglp,05/27/2023 8:39 PM,"ok.. if i see this right he know that my time is 20:39.. but my dogtag is 19:39.. :/
+
+```
+{""abbreviation"":""CEST"",""client_ip"":""2a02:2454:8d52:1700:5978:c8bd:b303:8274"",""datetime"":""2023-05-27T20:38:19.874131+02:00"",""day_of_week"":6,""day_of_year"":147,""dst"":true,""dst_from"":""2023-03-26T01:00:00+00:00"",""dst_offset"":3600,""dst_until"":""2023-10-29T01:00:00+00:00"",""raw_offset"":3600,""timezone"":""Europe/Berlin"",""unixtime"":1685212699,""utc_datetime"":""2023-05-27T18:38:19.874131+00:00"",""utc_offset"":""+02:00"",""week_number"":21}
+```",,
+561680015578759196,wrdg,05/27/2023 8:40 PM,"the timestamp that the server stores is from the server's configured time, it does not use the API",,
+561680015578759196,wrdg,05/27/2023 8:40 PM,"so if the server time is not synced, then timestamps can be off",,
+237930687569723392,straydoglp,05/27/2023 8:41 PM,"sorry.. i'm dumb^^
+but my root is correct with his time",,
+207209434051641345,ronnus,05/27/2023 9:29 PM,Is there a way to test server side/clientside things without breinging another person into the server?,,
+330475826158108674,mikkbenelis,05/27/2023 9:32 PM,"I think, for some easy scenarios the basic reconnect could help",,
+207209434051641345,ronnus,05/27/2023 9:35 PM,"But it works perfectly for me, just not for the other person.. Was trying to see if I can test it alone so I'm only wasting my own time",,
+266950437805096970,zookemike,05/27/2023 9:51 PM,Does anyone have a script or know of a mod that adds the old drying of clothing back. The new system is annoying having to wait a lot longer to dry clothes. Before u just drop the clothes on the floor by a fire and it takes 30 seconds,,
+266950437805096970,zookemike,05/27/2023 9:51 PM,now it takes 5+ minutes,,
+207209434051641345,ronnus,05/27/2023 9:52 PM,They chnged clothes drying in 1.21?,,
+266950437805096970,zookemike,05/27/2023 11:23 PM,yeah u cant drop clothes on floor by a fire anymore and have it dry quick,,
+266950437805096970,zookemike,05/27/2023 11:23 PM,takes ages now,,
+526470800572809227,progger,05/27/2023 11:35 PM,what,,
+526470800572809227,progger,05/27/2023 11:35 PM,are u sure mike?,,
+526470800572809227,progger,05/27/2023 11:36 PM,wasn here not a dry-speed-config this update?,,
+266950437805096970,zookemike,05/28/2023 1:13 AM,No idea but all I know to get your clothes drenched and drop your clothing by a fire,,
+266950437805096970,zookemike,05/28/2023 1:13 AM,It takes a good 5minutes to dry and sometimes only dries to damp not completely dry,,
+207209434051641345,ronnus,05/28/2023 1:49 AM,Are you on vanilla or someones server? They could have configured it,,
+728482541215940638,stephanc9288,05/28/2023 3:47 AM,"yea they changed drying
+https://forums.dayz.com/topic/254893-stable-update-121/
+> The drying rate of items has been adjusted to correctly reflect item location and outside influences",,
+256468089338724355,Veles#7530,05/28/2023 12:11 PM,"Hello everyone, I need your help, I can’t get it in any way, Protection from IsWearingProtectiveGloves, applies to a copy of the item on the item in the inventory, if the player is wearing gloves and he is holding the item in his hands",https://cdn.discordapp.com/attachments/492295576470290433/1112322244434210826/Damage_Handler.c,
+266950437805096970,zookemike,05/28/2023 2:09 PM,Would be nice if someone can take a look and get it back to how it is lol fucking changing shit that doesn't need changing,,
+330475826158108674,mikkbenelis,05/28/2023 2:14 PM,"BI are targeted on realism (with flying vehicles, walking through walls zombies, but... realism) 😁",,
+196845794513518592,shaggoth,05/28/2023 2:18 PM,"@🅼🅸🅺🅺 [EN/RU] don't bother, there will always be disable innertia/ return previous movement/ etc people )",,
+196845794513518592,shaggoth,05/28/2023 2:19 PM,"Luckily he can learn to mod, or commission it from someone in #service-requests",,
+266950437805096970,zookemike,05/28/2023 2:19 PM,True lol,,
+266950437805096970,zookemike,05/28/2023 2:23 PM,If you're referring to me I haven't had time to really check the changes they've made. Just seeing if anyone has already tried to change back to the old system before either attempting myself or finding someone who can do so. But imo it's just an unecessary change that nobody asked for or wanted.,,
+196845794513518592,shaggoth,05/28/2023 3:04 PM,Well I love it,,
+196845794513518592,shaggoth,05/28/2023 3:05 PM,Sumrak team 4 life :x2res:,,
+266950437805096970,zookemike,05/28/2023 3:07 PM,Nothing like an enjoyable time standing by a fire for 5 minutes to dry up. Lol I can't imagine in namalsk must be way harder,,
+196845794513518592,shaggoth,05/28/2023 3:12 PM,"Yes I love harsh environment, harder stamina management, extremely dangerous zombies, and other things what makes this game actually survival and challenging. For quick and fun gameplay we have PUBG, Fortnite, hell, even quake and unreal tournament 🙂 
+You can of course have any DayZ you want, that's the beauty of it, just don't say nobody wants or likes something.",,👍 (2)
+266950437805096970,zookemike,05/28/2023 5:01 PM,Ye for sure. That's why there's 100000 diff servers out there. Everyone trying to make their own ideal server. I personally hate the hardcore style servers I like some form of grind but without the tedious time consuming things,,
+185896664110727168,osodirty,05/28/2023 5:16 PM,"Lol. My old community was H.E.G. ""Harsh Environment Gaming"". It had all of the traders and shit you don't care for, but that was just how Exile was. But if you even looked an at ai wrong he'd one tap you from 1500m.",,
+196845794513518592,shaggoth,05/28/2023 5:46 PM,:devious:,,
+299270109086744576,host_leaver,05/28/2023 5:59 PM,"Hello, does anyone know if it's possible to rotate items you spawn in ItemSets in Community Online Tools?",,
+207209434051641345,ronnus,05/28/2023 6:19 PM,Yes i absolutely welcome the change,,
+384850738355896321,ragtyson,05/28/2023 11:06 PM,"Whenever i compile scripts (F7) in Workbench, it crashes. This is only happening if i add this action. Commenting it out, works fine. Any ideas?",https://cdn.discordapp.com/attachments/492295576470290433/1112487092052824074/image.png,
+384850738355896321,ragtyson,05/28/2023 11:06 PM,,https://cdn.discordapp.com/attachments/492295576470290433/1112487144854925383/image.png,
+295995523658285066,truedolphin,05/28/2023 11:08 PM,lift or Lift?,,
+384850738355896321,ragtyson,05/28/2023 11:08 PM,"whenever i click on ""Retry"" as it says on the last screenshot, the error popup becomes bigger and bigger until i can't even see the buttons anymore 😄",,🤣 (1)
+384850738355896321,ragtyson,05/28/2023 11:08 PM,ah damn it,,
+384850738355896321,ragtyson,05/28/2023 11:09 PM,Lift it should be ofc,,
+295995523658285066,truedolphin,05/28/2023 11:10 PM,"That'll be -$1
+Wa....awe...damn it ...",,
+202612759446290432,savaena,05/29/2023 5:28 AM,I'm teaching myself how to make a crafting recipe mod. Videos on youtube and examples from BI but my mod isn't working. I'm not sure where I messed up. Would someone mind taking a look?,,
+202612759446290432,savaena,05/29/2023 5:30 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1112583705832206406/config.cpp,
+202612759446290432,savaena,05/29/2023 5:30 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1112583804280905828/CraftBandageDressing.c,
+202612759446290432,savaena,05/29/2023 5:31 AM,,https://cdn.discordapp.com/attachments/492295576470290433/1112583859142393917/PluginRecipesManager.c,
+202612759446290432,savaena,05/29/2023 5:32 AM,Folder layout (config.cpp is in the SVNAcrafting folder next to Scripts folder):,https://cdn.discordapp.com/attachments/492295576470290433/1112584171869716480/image.png,
+214098170588692480,iandy88,05/29/2023 11:10 AM,Is it possible to let only some people (Steamid) open a vanilla gate at a specific location?,,
+181864632216977408,arkensor,05/29/2023 11:51 AM,"Yes, serverside action, getting steam id should work from the player identity and then you just need to have a whitelist in either code or serverside in a text file you read or something. Requires a little scripting but these are the hints you need to implement it.",,"✅ (1),DuckyThankYou (1)"
+185896664110727168,osodirty,05/29/2023 12:47 PM,"1st thing I would check is that it's compiling at all. Open one of the .c files, slap the keyboard and get some jibberish in there, pack it and see if it throws a compile error when you start the server.",,
+185896664110727168,osodirty,05/29/2023 12:48 PM,"Also, you are testing this on a server, correct? COM is not a reliable script testing environment.",,

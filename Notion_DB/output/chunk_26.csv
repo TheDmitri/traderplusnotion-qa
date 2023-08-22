@@ -1,0 +1,1634 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+239201186933112833,da0ne_,03/10/2019 4:29 AM,"```
+proto native int GetMemoryPointIndex(string memoryPointName);
+proto native vector GetMemoryPointPos(string memoryPointName);
+proto native vector GetMemoryPointPosByIndex(int pointIndex);
+proto native bool MemoryPointExists(string memoryPoint);
+```
+this should do it Banana",,
+148370724900306944,jacob_mango,03/10/2019 4:29 AM,That is what does it,,
+239201186933112833,da0ne_,03/10/2019 4:29 AM,https://tenor.com/view/thumbsup-cool-great-nice-notbad-gif-5220607,,
+207328818203983872,notabanana,03/10/2019 4:29 AM,I never thought to check if anything like that exists,,
+207328818203983872,notabanana,03/10/2019 4:30 AM,How tf you guys just *know* all this? Do you just browse the scripts for fun?,,
+239201186933112833,da0ne_,03/10/2019 4:30 AM,yes,,
+148370724900306944,jacob_mango,03/10/2019 4:30 AM,I was trying to animate a player in script so I could do face motion,,
+148370724900306944,jacob_mango,03/10/2019 4:30 AM,Failed at that,,
+148370724900306944,jacob_mango,03/10/2019 4:30 AM,Found those functions,,
+239201186933112833,da0ne_,03/10/2019 4:30 AM,i was able to do it my results: :oog:,,😛 (1)
+179204846019149824,mikero,03/10/2019 5:42 AM,"`@mikero Is that something that's possible, to maybe get their exact coordinate position relative to center or something?`
+
+Eliteness (and dep3d) only list their names not their location. Needing to 'know' their location is wooly thinking. The designer of the p3d sets a mempoint called 'light' in the exact spot he wants it to appear, and similarly 'doplvani' (the supply point) is the exact place the designer wants things to attach. 
+
+even if the values were spat out, the numbers have no meaning. there is no sensible visual translation of where that point actually is that would give the user any better idea than just attaching in the first place (and looking for himself at the result)",,
+179204846019149824,mikero,03/10/2019 5:44 AM,all of which is irrelevant since you don't get choices in what gets attached to where.,,
+179204846019149824,mikero,03/10/2019 5:50 AM,in flashpoint you could direct a unit to `goto` up to ten mempoints in a building. They are clearly displayed ingame. I don't know if bis broke it in arma.,,
+402077901174079499,munghard,03/10/2019 1:50 PM,"would some scripting genius be willing to help a bit with my scripts? send a pm. having troubles getting things to work on server, works on offline mode though.",,
+402077901174079499,munghard,03/10/2019 3:14 PM,is this where rpcframework comes in? @Jacob_Mango,,
+326682025643737089,smpklul,03/10/2019 3:21 PM,Does anyone know what the external and owned keywords do?,,
+326682025643737089,smpklul,03/10/2019 3:24 PM,and volatile,,
+105574798691680256,totallynotgrim,03/10/2019 3:39 PM,Dont worry about them,,
+105574798691680256,totallynotgrim,03/10/2019 3:40 PM,You cant use them,,
+326682025643737089,smpklul,03/10/2019 3:53 PM,I know but I want to know what they mean.,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:11 PM,He guys 😃 i want to set health to all players to 0 after 60 minutes,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:12 PM,"```C
+void ResetChar(PlayerBase player)
+         {
+            player.SetHealth(0,0)
+         }
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:12 PM,"```C
+class CustomMission: MissionServer
+{    
+   override void OnInit()
+         {
+
+            super.OnInit();
+            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ResetChar, 60*60*1000, true);
+
+         }
+}
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:12 PM,https://gyazo.com/e366e4efa30f3bc7b8f51464ac93d22e,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:13 PM,is there a solution for this ?,,
+326682025643737089,smpklul,03/10/2019 4:39 PM,one of the parameters should be a string check the reference,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:44 PM,"```C
+void ResetChar(PlayerBase player)
+         {
+            player.SetHealth( ""GlobalHealth"", ""Health"", 0);
+         }
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:44 PM,i have it like this the server starts,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:44 PM,but doesnt kill me,,
+326682025643737089,smpklul,03/10/2019 4:54 PM,first param empty string maybe?,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:56 PM,it's Nullpointer to instance,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:56 PM,i think i have to set health for each player,,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:57 PM,"```C
+ref array<Man> m_players = new array<Man>;
+GetGame().GetWorld().GetPlayerList(m_players);
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 4:57 PM,and then for each player set health 0 but idk how,,
+326682025643737089,smpklul,03/10/2019 5:11 PM,what exactly is the problem there? don't you know the syntax of foreach?,,
+335454156221579265,|NP|Noah#1496,03/10/2019 5:26 PM,Cleetus and Gravity found the solution!,,
+335454156221579265,|NP|Noah#1496,03/10/2019 5:26 PM,"```C
+void ResetChar(PlayerBase player)
+         {
+            ref array<Man> players = new array<Man>;
+            GetGame().GetPlayers(players);
+            
+            for (int i = 0; i < players.Count(); i++)
+            {
+                PlayerBase m_Player;
+                Class.CastTo(m_Player, players.Get(i));
+                m_Player.SetHealth(""GlobalHealth"", ""Health"", 0);
+            }
+
+         }
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 5:26 PM,"```C
+class CustomMission: MissionServer
+{    
+   override void OnInit()
+         {
+
+            super.OnInit();
+            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ResetChar, 1*60*1000, true);
+
+         }
+}
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 5:30 PM,"this kills the player ever minute change 
+```C
+GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ResetChar, 1*60*1000, true);
+```",,
+335454156221579265,|NP|Noah#1496,03/10/2019 5:31 PM,"X to the minutes the player should be killed if someone is interested :D
+```C
+GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ResetChar, X*60*1000, true);
+```",,
+326682025643737089,smpklul,03/10/2019 5:35 PM,Using a foreach and the Timer class would look better but if it works.,,
+529346692307484672,WalkingSkull#4632,03/11/2019 3:02 AM,"Good evening, could someone show me the script to send automatic message to my server?
+
+If you can not tell me the location, and what folder do this ...
+
+Good game..",,
+225757988005216257,mistaputt,03/11/2019 10:37 AM,"@WalkingSkull you need to be more precise about what you want to do exactly.
+There are many ways to send message, via RCON for example, CFTools can also handle messaging, and you can either do it in scripts, using GetCallQueue for example",,
+402077901174079499,munghard,03/11/2019 11:23 AM,what is the difference between EEHitBy and EEHitByRemote?,,
+402077901174079499,munghard,03/11/2019 11:23 AM,https://tenor.com/view/tullaluana-tulla-webdiva-gif-8710134,,
+402077901174079499,munghard,03/11/2019 11:26 AM,im guessing EEHitByRemote is on server?,,
+167370568893464576,0x346e3730,03/11/2019 11:27 AM,EEHitBy is on server as well,,
+402077901174079499,munghard,03/11/2019 11:27 AM,"hmm, cant see it on the scriptlog though?",,
+102121607417327616,rvn,03/11/2019 11:39 AM,EEHitByRemote is called only on the client who caused the hit event,,
+402077901174079499,munghard,03/11/2019 12:34 PM,i see thanks.,,
+106435033203482624,kerkkoh,03/11/2019 4:39 PM,Is there a way to get the server fps other than `GetGame().GetFps()`?,,
+105574798691680256,totallynotgrim,03/11/2019 5:51 PM,``1000/GetGame().GetTickTime()``,,
+105574798691680256,totallynotgrim,03/11/2019 5:51 PM,But that is pretty much the same thing,,
+106435033203482624,kerkkoh,03/11/2019 6:14 PM,"`GetFps()` is just giving me the same number (0.07), which doesn't change even though I spawn in enough zombies to kill the server etc.",,
+106435033203482624,kerkkoh,03/11/2019 6:26 PM,"@Happy As `GetTickTime()` returns ""current time from start of the game"", wouldn't that number then just get closer and closer to 0?",,
+105574798691680256,totallynotgrim,03/11/2019 6:27 PM,Well im fairly sure it returns delta time,,
+105574798691680256,totallynotgrim,03/11/2019 6:27 PM,Not time since start,,
+105574798691680256,totallynotgrim,03/11/2019 6:28 PM,No wait,,
+105574798691680256,totallynotgrim,03/11/2019 6:28 PM,Oh yea,,
+105574798691680256,totallynotgrim,03/11/2019 6:28 PM,In OnUpdate,,
+105574798691680256,totallynotgrim,03/11/2019 6:28 PM,You can get delta time,,
+105574798691680256,totallynotgrim,03/11/2019 6:28 PM,And just divide 1000 by it,,
+106435033203482624,kerkkoh,03/11/2019 6:29 PM,What's the logic behind that?,,
+106435033203482624,kerkkoh,03/11/2019 6:30 PM,Also that's returning `1e+06` :_.,,
+105574798691680256,totallynotgrim,03/11/2019 6:31 PM,What do you mean whats the logic?,,
+105574798691680256,totallynotgrim,03/11/2019 6:31 PM,1000/16.666667 will give you 60,,
+105574798691680256,totallynotgrim,03/11/2019 6:31 PM,Aka FPS if your frame time is 16.6666667 ms,,
+106435033203482624,kerkkoh,03/11/2019 6:32 PM,So I guess 1e+06 is pretty good fps huh,,
+105574798691680256,totallynotgrim,03/11/2019 6:33 PM,That sounds giga wrong,,
+105574798691680256,totallynotgrim,03/11/2019 6:33 PM,Im fairly sure timeslice is in seconds,,
+105574798691680256,totallynotgrim,03/11/2019 6:33 PM,Not in miliseconds,,
+105574798691680256,totallynotgrim,03/11/2019 6:33 PM,Not sure,,
+105574798691680256,totallynotgrim,03/11/2019 6:33 PM,Check it out,,
+335454156221579265,|NP|Noah#1496,03/11/2019 6:36 PM,"```C
+GetGame().GetTime();
+```",,
+335454156221579265,|NP|Noah#1496,03/11/2019 6:36 PM,is in ms,,
+335454156221579265,|NP|Noah#1496,03/11/2019 6:36 PM,"```C
+20*60*1000 == 20mins
+```",,
+235718406492520448,niirozz,03/11/2019 6:39 PM,"timeslice  in OnUpdate is in second, yes",,
+106435033203482624,kerkkoh,03/11/2019 7:01 PM,I believe 1/timeslice should provide an accurate enough representation of server performance. As long as one spaces it out enough,,
+114872332719357956,hennysea,03/11/2019 11:21 PM,There's there any type of radial deletion call to delete certain class names within a radius distance?,,
+207328818203983872,notabanana,03/11/2019 11:23 PM,Get objects at position then delete,,
+529346692307484672,WalkingSkull#4632,03/11/2019 11:33 PM,"@Mista  MistaputtHoje às 06:37
+@WalkingSkull you need to be more precise about what you want to do exactly.
+There are many ways to send message, via RCON for example, CFTools can also handle messaging, and you can either do it in scripts, using GetCallQueue for example",,
+529346692307484672,WalkingSkull#4632,03/11/2019 11:33 PM,"@Mista I prefer via script, but I need a template.
+thanks",,
+225757988005216257,mistaputt,03/11/2019 11:34 PM,@WalkingSkull yes ok i see,,
+529346692307484672,WalkingSkull#4632,03/11/2019 11:35 PM,thank you,,
+456226577798135808,Deleted User,03/12/2019 12:07 AM,i have been looking for a script as well,,
+114872332719357956,hennysea,03/12/2019 1:17 AM,Thank you 🍌,,
+456226577798135808,Deleted User,03/12/2019 1:41 AM,"working on an idea I got but does anyone know where the usage on the types files calls from? Possible to add another class for a section of loot?
+for example I want to learn how to call:
+
+<category name=""customloot"" />
+   <usage name=""customspot"" />
+     <value name=""Tier1"" />
+    <value name=""Tier2"" />
+  </type>",,
+214427063665295362,aeryes,03/12/2019 1:55 AM,How can I get PPeffects to work on a server? Right now I can only get it to work client side.,,
+456226577798135808,Deleted User,03/12/2019 2:25 AM,"someone help me ?
+I added this script in the file serverDZ.cfg all right, but message does not appear in the game ..
+
+motd [] = {""line1"", ""line2""}; // Message of the day displayed in the in-game chat
+motdInterval = 1; // Time interval (in seconds) between each message",,
+99298225999056896,cashewsan,03/12/2019 3:42 AM,"There's so many scripts to adjust for every instance of Firewood, is there an easier way or do I just gotta tough it through?",,
+239201186933112833,da0ne_,03/12/2019 4:02 AM,what do you mean?,,
+239201186933112833,da0ne_,03/12/2019 4:02 AM,how many firewood instances are there?,,
+99298225999056896,cashewsan,03/12/2019 4:34 AM,a good amount,,
+99298225999056896,cashewsan,03/12/2019 4:34 AM,I suffered through it though,,
+99298225999056896,cashewsan,03/12/2019 4:52 AM,"So I'm unable to do modded core files, how would I be able to change the Firewood instances in that to my new Firewood?",,
+99298225999056896,cashewsan,03/12/2019 4:54 AM,"that's the only instance I haven't been able to fix so far. But, I changed the WoodenLog output from trees, but they're not handled in the same script so I'm a bit lost :hmm:",,
+99298225999056896,cashewsan,03/12/2019 5:03 AM,"It's handled under `plant.c`, while the WoodenLog drop is handled under `CAContinuousMineWood`, so could the fix to implement the new instance of Firewood under `CAContinuousMineWood`?",,
+99298225999056896,cashewsan,03/12/2019 5:03 AM,"But then that would create two instances of the firewood at once, so I just :hmMM: :",,
+99298225999056896,cashewsan,03/12/2019 5:05 AM,this is what I'm referencing btw,https://cdn.discordapp.com/attachments/492295576470290433/554877545166798851/Screenshot_506.png,
+326682025643737089,smpklul,03/12/2019 10:04 AM,Can anyone tell me why the fuck an Timer object can only work with classes that are inherited from Managed?,,
+239201186933112833,da0ne_,03/12/2019 10:13 AM,dont use timers,,
+239201186933112833,da0ne_,03/12/2019 10:13 AM,they are shit,,
+239201186933112833,da0ne_,03/12/2019 10:13 AM,use CallQueues,,
+239201186933112833,da0ne_,03/12/2019 10:14 AM,make your own queue yea? so you dont cause issues with main ones thats if you are gonna do some hacky sleeping,,
+326682025643737089,smpklul,03/12/2019 10:17 AM,U can add custom CallQueues?,,
+239201186933112833,da0ne_,03/12/2019 10:18 AM,yes you can,,
+239201186933112833,da0ne_,03/12/2019 10:18 AM,"i dont have an example handy, but its possible",,
+326682025643737089,smpklul,03/12/2019 10:20 AM,I will figure it out,,
+235718406492520448,niirozz,03/12/2019 6:32 PM,Timer works really fine,,
+235718406492520448,niirozz,03/12/2019 6:32 PM,and my timer works even my class is not inherited from Managed,,
+235718406492520448,niirozz,03/12/2019 6:33 PM,If you are doing new CallQueue for just a new timer,,
+235718406492520448,niirozz,03/12/2019 6:33 PM,you are doing more shit than just a timer class,,
+235718406492520448,niirozz,03/12/2019 6:33 PM,if you want to sleep,,
+235718406492520448,niirozz,03/12/2019 6:33 PM,use thread instead,,
+326682025643737089,smpklul,03/12/2019 11:19 PM,The Timer class has a Run function which requires a class inherited from Managed. Of course some random self written timer works what is your point?,,
+99298225999056896,cashewsan,03/13/2019 3:04 AM,Is there any possible way to override engine classes??,,
+99298225999056896,cashewsan,03/13/2019 3:04 AM,"Because I'm unable to mod plant.c, but I need to change a line in it",,
+99298225999056896,cashewsan,03/13/2019 3:07 AM,"I mean I guess I could just override the base firewood class in config, but I wanted to avoid that",,
+214427063665295362,aeryes,03/13/2019 3:18 AM,What values does Math.RandomFloat01 give back?,,
+105574798691680256,totallynotgrim,03/13/2019 3:19 AM,Wild idea,,
+105574798691680256,totallynotgrim,03/13/2019 3:19 AM,Try it,,
+402077901174079499,munghard,03/13/2019 9:29 AM,@Aeryes  is it not a float between 0 and 1.,,
+214427063665295362,aeryes,03/13/2019 4:46 PM,It is. Ty,,
+214427063665295362,aeryes,03/13/2019 5:58 PM,Does anyone know how to change the destroy and dismantle action length of time for wooden fences/,,
+335454156221579265,|NP|Noah#1496,03/13/2019 7:47 PM,is it possible to print something from a client and server side mod to server ?,,
+335454156221579265,|NP|Noah#1496,03/13/2019 7:47 PM,into script.log,,
+99298225999056896,cashewsan,03/13/2019 10:58 PM,How would I go about setting up a weapon to be able to have the weaponlight go on without a handguard?,,
+99298225999056896,cashewsan,03/13/2019 10:59 PM,"Would I just put this in the script for it?
+```
+override bool CanDetachAttachment (EntityAI parent)
+    {
+        if ( Weapon_Base.Cast(parent) && parent.FindAttachmentBySlotName(""weaponFlashlight"")/*.IsKindOf(""UniversalLight"")*/ )
+        {
+            return false;
+        }
+        return true;
+    }
+```",,
+207328818203983872,notabanana,03/13/2019 11:12 PM,you dont need to do anything thats already how it works,,
+99298225999056896,cashewsan,03/13/2019 11:15 PM,"@Not A Banana without a handguard, I mean, my bad",,
+271314077261758481,kamronx,03/14/2019 2:44 AM,"If I add a .c for a new way to repair items, do I need to add it anywhere else or extend anything else to make it work?",,
+230061386888118273,.thurston,03/14/2019 3:10 AM,@DaOne(Mark) UAGear is what opens the inventory,,
+230061386888118273,.thurston,03/14/2019 3:11 AM,if there is a way to manually exclude UAGear from that,,
+230061386888118273,.thurston,03/14/2019 3:11 AM,it'd be perfect,,
+239201186933112833,da0ne_,03/14/2019 3:11 AM,"yea, the radial exclude has it inside",,
+230061386888118273,.thurston,03/14/2019 3:11 AM,but ima test this way real quick,,
+239201186933112833,da0ne_,03/14/2019 3:11 AM,which is bad,,
+239201186933112833,da0ne_,03/14/2019 3:11 AM,thats what i was doing,,
+230061386888118273,.thurston,03/14/2019 3:11 AM,"You say it's bad, i say look at the old code.",,
+239201186933112833,da0ne_,03/14/2019 3:11 AM,ended up having a script made to search the user profile and add an exclude group to their XML lol,,
+239201186933112833,da0ne_,03/14/2019 3:12 AM,you know what the exclude group does right?,,
+230061386888118273,.thurston,03/14/2019 3:12 AM,not a clue tbh,,
+230061386888118273,.thurston,03/14/2019 3:12 AM,i'd imagine its self explanatory,,
+148370724900306944,jacob_mango,03/14/2019 3:12 AM,"`GetUApi().GetInputByName(""UAGear"").Lock()` ?",,
+239201186933112833,da0ne_,03/14/2019 3:12 AM,it just triggers a disable on all the actions in it,,
+230061386888118273,.thurston,03/14/2019 3:12 AM,yeah.. that doesn't work,,
+230061386888118273,.thurston,03/14/2019 3:12 AM,can't use any input,,
+230061386888118273,.thurston,03/14/2019 3:12 AM,i'll try that now @Jacob_Mango,,
+230061386888118273,.thurston,03/14/2019 3:13 AM,"but my issue currently, is that the only way to get the inventory to close, is to do this ``GetUApi().ActivateGroup(""infantry"");``",,
+230061386888118273,.thurston,03/14/2019 3:13 AM,because when i do ``PlayerMouseControlDisable`` that disables the action,,
+230061386888118273,.thurston,03/14/2019 3:13 AM,does locking it prevent the action from being disabled?,,
+148370724900306944,jacob_mango,03/14/2019 3:13 AM,i don't know,,
+230061386888118273,.thurston,03/14/2019 3:13 AM,worth a test ¯\_(ツ)_/¯,,
+230061386888118273,.thurston,03/14/2019 3:14 AM,"yeah, still doesn't work",,
+239201186933112833,da0ne_,03/14/2019 3:16 AM,"nah what you should do is, after you activate the exclude of `radialmenu` you use `GetUApi().GetInputByName(""UAGear"").Unlock();` to unlock the TAB key",,
+239201186933112833,da0ne_,03/14/2019 3:17 AM,that should fix it,,
+239201186933112833,da0ne_,03/14/2019 3:17 AM,because that exclude group has UAGear to be disabled in it.,,
+239201186933112833,da0ne_,03/14/2019 3:17 AM,all what `PlayerDisableMouseControl` does is it kills a few actions for that frame,,
+239201186933112833,da0ne_,03/14/2019 3:17 AM,"`GetUApi().ActivateExclude(""radialmenu"");`",,
+230061386888118273,.thurston,03/14/2019 3:17 AM,"So, like this: https://i.imgur.com/ikjIEQw.png",,
+239201186933112833,da0ne_,03/14/2019 3:17 AM,yea,,
+230061386888118273,.thurston,03/14/2019 3:17 AM,ok,,
+230061386888118273,.thurston,03/14/2019 3:19 AM,still nothing,,
+239201186933112833,da0ne_,03/14/2019 3:19 AM,:goo:,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,holy shit,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,its working,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,but broken,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,but working,,
+239201186933112833,da0ne_,03/14/2019 3:22 AM,whats broken,,
+239201186933112833,da0ne_,03/14/2019 3:22 AM,delay?,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,nope,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,you can't re-open it after :LULW:,,
+230061386888118273,.thurston,03/14/2019 3:22 AM,i need to reset everything back to default,,
+230061386888118273,.thurston,03/14/2019 3:23 AM,"oh, i know why!",,
+230061386888118273,.thurston,03/14/2019 3:23 AM,This should actually be fixed,,
+230061386888118273,.thurston,03/14/2019 3:23 AM,and all good,,
+230061386888118273,.thurston,03/14/2019 3:23 AM,with no errors,,
+230061386888118273,.thurston,03/14/2019 3:23 AM,jesus christ,,
+230061386888118273,.thurston,03/14/2019 3:23 AM,thank you!,,
+239201186933112833,da0ne_,03/14/2019 3:24 AM,https://tenor.com/view/freaking-out-kermit-gif-8832122,,😆 (1)
+230061386888118273,.thurston,03/14/2019 3:27 AM,"Now, that's the basic functionality out the way. Time to disable emotes again!",,
+271314077261758481,kamronx,03/14/2019 3:38 AM,"So I made a new script to repair items, copied the repair with duct tape script, made the new items, added them to the script, in game you can combine the items with the correct item types, but once the action completes, it doesn't repair the item. Anyone have any ideas?",,💔 (1)
+271314077261758481,kamronx,03/14/2019 3:52 AM,@thurston You fixing emotes with Inventoryplus?!,,
+230061386888118273,.thurston,03/14/2019 3:52 AM,Not just that,,
+230061386888118273,.thurston,03/14/2019 3:52 AM,Also the rebinding issue,,
+230061386888118273,.thurston,03/14/2019 3:52 AM,& the crash issue,,
+271314077261758481,kamronx,03/14/2019 3:52 AM,PRAISE,,
+271314077261758481,kamronx,03/14/2019 3:52 AM,JESUS,,
+271314077261758481,kamronx,03/14/2019 3:52 AM,,https://cdn.discordapp.com/attachments/492295576470290433/555584005160960010/157bi5.png,
+154778237925326848,baroness1,03/14/2019 4:01 AM,lel pennsatucky,,
+271314077261758481,kamronx,03/14/2019 4:04 AM,xD,,
+326682025643737089,smpklul,03/14/2019 11:07 AM,Does anyone  know if u can override operators for classes?,,
+105574798691680256,totallynotgrim,03/14/2019 11:26 AM,no,,
+101690384320573440,strohkopf212,03/14/2019 2:00 PM,"i wanted to add more spawnpoints and added  some to the cfgplayerspawnpoints.xml but i got the feeling those new points doesnt work, do i have to delete something else in order to get them to work? havent found a clear answer in search",,
+181560985029574656,anthonyroe,03/14/2019 2:09 PM,No. Should work if you put them in correctly,,
+101690384320573440,strohkopf212,03/14/2019 2:09 PM,"hmm weird, got them in for long but havent seen a new spawn yet",,
+181560985029574656,anthonyroe,03/14/2019 2:11 PM,Remove old ones to test,,
+101690384320573440,strohkopf212,03/14/2019 2:11 PM,"good idea, ill try that",,
+181560985029574656,anthonyroe,03/14/2019 2:11 PM,Or input them into one of the tools on the dayz website. Forgot which one it is,,
+226007936546111498,ctlaltdelammo,03/14/2019 2:19 PM,I believe you need to delete the .bin in your storage so it gets rebuild from the xml,,
+226007936546111498,ctlaltdelammo,03/14/2019 2:19 PM,but not 100% on that,,
+101690384320573440,strohkopf212,03/14/2019 2:20 PM,heard something similar but wasnt sure,,
+483945142424698881,nines9805,03/14/2019 2:31 PM,@[DUG] Ammo  if you delete all the dynamic.bin's files from 0 to 11 restart the server it will respawn an rebuild the xml,,
+226007936546111498,ctlaltdelammo,03/14/2019 2:39 PM,"oh I am aware of that, but there is also a spawnpoints.bin that I believe you should delete for new xml to get used",,
+483945142424698881,nines9805,03/14/2019 2:50 PM,no thats only for the spawn points youve set,,
+483945142424698881,nines9805,03/14/2019 2:50 PM,or were the players logged out at i think,,
+226007936546111498,ctlaltdelammo,03/14/2019 3:13 PM,were players logged out is stored in playerdb,,
+483945142424698881,nines9805,03/14/2019 3:29 PM,yeah dont need to delete the playerspanpoints then that does nothing from the loot table xml,,
+226007936546111498,ctlaltdelammo,03/14/2019 8:06 PM,oh he does need to delete that bin to get his new player spawns to work,,
+101690384320573440,strohkopf212,03/14/2019 11:13 PM,yep did delete bin and well see if it works.,,
+101690384320573440,strohkopf212,03/14/2019 11:14 PM,"Another thing im not aware of or find any infos about. The weed, does anyone share the script for it or is some sort of a secret?",,
+207328818203983872,notabanana,03/14/2019 11:28 PM,@[DUG] Ammo was correct,,
+207328818203983872,notabanana,03/14/2019 11:28 PM,@Nines no you only need to delete the spawn points bin,,
+207328818203983872,notabanana,03/14/2019 11:29 PM,@strohkopf pretty sure the weed just works by default,,
+207328818203983872,notabanana,03/14/2019 11:29 PM,Nothing needs to be done other than enabling it in types.xml,,
+101690384320573440,strohkopf212,03/14/2019 11:30 PM,havent found it in there? whats the name?,,
+207328818203983872,notabanana,03/14/2019 11:31 PM,Cannibis,,
+101690384320573440,strohkopf212,03/14/2019 11:32 PM,not listed in my type,,
+207328818203983872,notabanana,03/14/2019 11:37 PM,Yeah it needs to be added,,
+101690384320573440,strohkopf212,03/14/2019 11:39 PM,could you provide me the lines?,,
+207328818203983872,notabanana,03/15/2019 12:04 AM,"Mobile, can't",,
+200688949448933386,chambersenator,03/15/2019 3:52 AM,"I could use some advice for my efforts to have things like pre-placed activated mines and fully assembled stone ovens spawn in specific places on server start. Just using SpawnObject and a custom class to handle the location and building/arming has a high risk of stacking the items on any restart, so would I be better off attempting to make them an Event, since lifespan and cleanup might be easier to manage? (note: while I can look at existing code and understand what's going on, I'm still a noob when it comes to making my own stuff from scratch, but I'm learning)",,
+207328818203983872,notabanana,03/15/2019 3:54 AM,Just check the location you want to create a mine for a mine before creating it,,
+207328818203983872,notabanana,03/15/2019 3:54 AM,with getobjectsatposition,,
+200688949448933386,chambersenator,03/15/2019 3:58 AM,"OK, that makes sense, so I'll likely go with the basic SpawnOject route first and try that. I'll likely keep it that way for the mines, and maybe use Events with the stone ovens to have them rotate around the trail rest stops. Thanks!",,
+332787795582124033,liquidkarak,03/15/2019 6:59 AM,@strohkopf DELETE the .bin File,,🙏🏻 (1)
+483945142424698881,nines9805,03/15/2019 7:52 AM,Ahhhh ok @Not A Banana,,
+186142745671368704,sebbepwnyou,03/15/2019 10:14 AM,"Anyone know why i cant re-texture ""Paper""? here is the code
+```
+class IRP_PaperWanted : Paper {
+        scope = public;
+        displayName = ""Piece of Wanted Paper"";
+        descriptionShort = ""$STR_CfgVehicles_Paper1"";
+        model = ""\dz\gear\consumables\Paper.p3d"";
+        SingleUseActions[] = {535};
+        ContinuousActions[] = {220};
+        isMeleeWeapon = 1;
+        weight = 2;
+        absorbency = 1;
+        rotationFlags = 16;
+        itemSize[] = {1, 1};
+        inventorySlot = ""Paper"";
+        lootTag[] = {""Civilian"", ""Office""};
+        lootCategory = ""Materials"";
+        hiddenSelections[] = {""zasleh"", ""camo""};
+        hiddenSelectionsTextures[] = {""basebuilding\data\paper_wanted_co.paa"", ""basebuilding\data\paper_wanted_co.paa"", ""basebuilding\data\paper_wanted_co.paa""};
+        
+        class AnimEvents {
+            class SoundWeapon {
+                class pickUpItem {
+                    soundSet = ""pickUpPaper_SoundSet"";
+                    id = 797;
+                };
+            };
+        };
+    };
+```",,
+207328818203983872,notabanana,03/15/2019 10:15 AM,Why is zasleh there,,
+186142745671368704,sebbepwnyou,03/15/2019 10:16 AM,"tried without it, and with it nothing happens to the paper ingame",,
+207328818203983872,notabanana,03/15/2019 10:22 AM,zasleh selection isnt on paper,,
+207328818203983872,notabanana,03/15/2019 10:22 AM,where did you even get the idea to use that lol,,
+207328818203983872,notabanana,03/15/2019 10:22 AM,zbytek is likely what you want to use,,
+186142745671368704,sebbepwnyou,03/15/2019 10:26 AM,Oh yeah that worked thanks 😃,,
+207328818203983872,notabanana,03/15/2019 10:27 AM,zasleh = muzzle flash,,😆 (1)
+226007936546111498,ctlaltdelammo,03/15/2019 10:41 AM,you can retexture paper just fine,,
+226007936546111498,ctlaltdelammo,03/15/2019 10:43 AM,no need for all the extra stuff you have either just override the hiddenselectiontextures with 1 single texture and you're done,,
+335454156221579265,|NP|Noah#1496,03/15/2019 1:23 PM,Can anyone help me with RPC?,,
+326682025643737089,smpklul,03/15/2019 4:23 PM,well in 3_Game\Global\Game.c everything is explained with example,,
+326682025643737089,smpklul,03/15/2019 4:23 PM,look for RPC and OnRPC,,
+402077901174079499,munghard,03/15/2019 8:31 PM,@|NP|Noah  how did it go?,,
+112762841173368832,twistrr,03/16/2019 3:15 AM,Do how does write to the default database?,,
+112762841173368832,twistrr,03/16/2019 3:15 AM,And is this in any way similar to a2/a3 scripting,,
+230061386888118273,.thurston,03/16/2019 3:17 AM,"I've never done it personally, but take a look at ``ctx.write``, etc. And no, a2 uses SQS/SQF, a3 uses SQF. This is C",,
+148370724900306944,jacob_mango,03/16/2019 3:17 AM,Enscript I think it's called,,
+148370724900306944,jacob_mango,03/16/2019 3:17 AM,Or Enforce Script,,
+148370724900306944,jacob_mango,03/16/2019 3:18 AM,It's had many names but never has been called C,,
+230061386888118273,.thurston,03/16/2019 3:18 AM,I thought it was Enfuscript? :Thonk:,,
+230061386888118273,.thurston,03/16/2019 3:18 AM,So many names of it,,
+230061386888118273,.thurston,03/16/2019 3:18 AM,I was generalising the language,,
+207328818203983872,notabanana,03/16/2019 3:21 AM,"It's either enforce or enscript, I keep seeing both used so who knows",,
+112762841173368832,twistrr,03/16/2019 3:38 AM,I saw it recently,,
+112762841173368832,twistrr,03/16/2019 3:38 AM,I believe it’s enforce,,
+112762841173368832,twistrr,03/16/2019 3:38 AM,And what about the structure of server files,,
+112762841173368832,twistrr,03/16/2019 3:39 AM,Is it similar as in a server side and a mission side?,,
+230061386888118273,.thurston,03/16/2019 3:44 AM,"I'm not entirely sure what you mean by ``server side and a mission side``, but just download the server files from steam and take a look",,
+326682025643737089,smpklul,03/16/2019 1:51 PM,I made a guide containing everything I learned about Enforce script to this date. It's currently only in German but I heard that a large part of this community is German anyhow so here it is: https://germandayz.de/forum/thread/19551-guide-dayz-standalone-scripting-enforce-scripting/,,
+326682025643737089,smpklul,03/16/2019 1:56 PM,I hope it helps the google translate version is readable too,,
+148370724900306944,jacob_mango,03/16/2019 4:50 PM,"you only heard that from a German, I don't believe @Arkensor is someone to trust since he is obviously biased towards Germans",,
+402077901174079499,munghard,03/16/2019 4:51 PM,https://tenor.com/view/kevin-hart-help-help-me-gif-5042489,,
+402077901174079499,munghard,03/16/2019 4:51 PM,"pls need help with rpc, send help pls.",,
+235718406492520448,niirozz,03/16/2019 5:01 PM,Tell me in private @Munghard what is your problem,,
+235718406492520448,niirozz,03/16/2019 5:02 PM,"use RPCFramework, this will give you way more easy to handle this first",,
+402077901174079499,munghard,03/17/2019 11:24 AM,what does this mean?,https://cdn.discordapp.com/attachments/492295576470290433/556784885344370691/unknown.png,
+259018582145499137,Shark272#3966,03/17/2019 12:10 PM,does anyone have an idea how I always get the Respawn in the InGame menu active?,,
+326682025643737089,smpklul,03/17/2019 3:02 PM,Does the super keyword in an modded class give access to the original class or the parent class?,,
+181864632216977408,arkensor,03/17/2019 7:20 PM,parent and original are the same in that case,,
+181864632216977408,arkensor,03/17/2019 7:20 PM,a modded class creates a child with identical name,,
+181560985029574656,anthonyroe,03/17/2019 7:43 PM,"Since your overriding the class's methods. You need to use ``super.METHOD()`` to run that class's original method.
+
+At least this is my theory",,
+108535912018771968,zisb,03/18/2019 6:43 AM,Anyone have any clue where the foot cut script is? Like when you run around without shoes you feet start bleeding,,
+299573387779506179,psyko_z,03/18/2019 10:21 AM,"Hello, someone got an idea to make Traders NPC godmode to be able to remove the safe zone?
+Have a good day :)",,
+101690384320573440,strohkopf212,03/18/2019 2:02 PM,"I used this tutorial https://josephtwheeler.wixsite.com/dayzstandaloneguide/forum/introductory-topics/scripts-and-stamina?fbclid=IwAR3GEG9ne0CTIUKhr4WvI6M3cRmwnHyOY5CPh1Ps2YI5i2uu-Ky4kR21gDE to change some values to adjust stamina but it only works with the original file, once i edit it and follow the steps im unable to join the server. I even asked the creator of this tutorial, he did rewrite the script for me but still, doesnt work",,
+101690384320573440,strohkopf212,03/18/2019 2:03 PM,can someone help me to get it to work,,
+181560985029574656,anthonyroe,03/18/2019 3:32 PM,@PsykoZ i believe you would store the entity and continously set the health. Check how COT sets players godmode.,,
+105574798691680256,totallynotgrim,03/18/2019 3:40 PM,setAllowDamage(false),,
+105574798691680256,totallynotgrim,03/18/2019 3:40 PM,:wow:,,
+299573387779506179,psyko_z,03/18/2019 3:41 PM,Thanks i'll check it :),,
+270079988617707520,.johnnybravo,03/18/2019 4:21 PM,"I'm curious to is if there is a way to have the night time speed increased so there are longer days than nights? I know about the time multiplier in the serverDZ.cfg file but that is the overall day. I was wondering if there was another similar variable to change for the night time values. If there is, could someone please point me in the right direction. Any help would be greatly appreciated.",,
+167370568893464576,0x346e3730,03/18/2019 4:21 PM,check the server documentation on dayz forums.,,
+102121607417327616,rvn,03/18/2019 4:22 PM,serverTimeAcceleration & serverNightTimeAcceleration,,
+270079988617707520,.johnnybravo,03/18/2019 4:22 PM,Thank you very much guys for the help! I'll go there now.,,
+110129608036220928,byr4m,03/18/2019 6:14 PM,"@[OSG] JohnnyBravo my server runs at 1 and a half hours day and 45 minute nights. I achieve this by using the following:
+
+serverTimeAcceleration=8;
+serverNightTimeAcceleration=2;
+
+Hope that helps",,
+270079988617707520,.johnnybravo,03/18/2019 6:22 PM,It does @BYR4M  . When I checked the server documentation I realized I was behind as I didn't notice that parameter before. Thank you for your help though!,,
+110129608036220928,byr4m,03/18/2019 6:25 PM,You're welcome dude,,
+99298225999056896,cashewsan,03/18/2019 7:22 PM,"@PsykoZ I think the Trader has something built in for that reason. They’re not invincible, but if a player decides to shoot them, the player dies as well.",,
+402077901174079499,munghard,03/18/2019 8:51 PM,anyone been able to do ppeffects yet?,,
+463051926406430720,saltybob#3845,03/18/2019 9:08 PM,How do you make an item heavy so you can only walk with it?,,
+463051926406430720,saltybob#3845,03/18/2019 9:10 PM,I tried weight but it doesn’t seem to have an effect. Tried heavyitem=1 in the config... what am I missing?,,
+225757988005216257,mistaputt,03/19/2019 9:28 AM,@saltybob it seems to be a bit more complexe than just a param. The base you extends from has also its importance.,,
+181560985029574656,anthonyroe,03/19/2019 1:37 PM,@saltybob try making the item size 20x20,,
+463051926406430720,saltybob#3845,03/19/2019 3:04 PM,Thanks both I’ll take a look into your suggestions,,
+456226577798135808,Deleted User,03/19/2019 4:27 PM,"if those dont work we used this in a script as an extension of itembase and it worked for us ``` override bool IsHeavyBehaviour() 
+    {
+        return true;
+    }
+    
+    override bool IsTwoHandedBehaviour() 
+    {
+        return true;
+    }```",,
+207328818203983872,notabanana,03/19/2019 5:41 PM,@saltybob you need to inherit off of an item that uses the animation you want,,
+456226577798135808,Deleted User,03/19/2019 5:46 PM,"yea that is likely a much easier route^^, but there are a few scripting queues that tweek some of those things if you find that you have to make a custom base class for some reason",,
+207328818203983872,notabanana,03/19/2019 5:51 PM,"Didn't even see your comment lmao, it's early",,
+207328818203983872,notabanana,03/19/2019 5:51 PM,Neat to know you can do that,,
+463051926406430720,saltybob#3845,03/19/2019 5:52 PM,@Not A Banana how do i do an inherit? i have found the item,,
+456226577798135808,Deleted User,03/19/2019 5:53 PM,yea we still haven't found all the different parameters but it appears (dont quote me lol) there is a litany of choices like say I wanted my barrel to be held like an axe or something.,,
+463051926406430720,saltybob#3845,03/19/2019 5:53 PM,ok great,,
+463051926406430720,saltybob#3845,03/19/2019 5:54 PM,also... is it possible to have a crafting recipe available only after an item is powered / switched on?,,
+207328818203983872,notabanana,03/19/2019 5:54 PM,@saltybob just use the example Jest posted.,,
+463051926406430720,saltybob#3845,03/19/2019 5:54 PM,ok will do,,
+207328818203983872,notabanana,03/19/2019 5:54 PM,If you know what you're doing yeah,,
+463051926406430720,saltybob#3845,03/19/2019 5:54 PM,i dont thats why im asking 😃,,
+207328818203983872,notabanana,03/19/2019 5:55 PM,Then maybe. You'll have to experiment,,
+207328818203983872,notabanana,03/19/2019 5:55 PM,But it's probably possible,,
+463051926406430720,saltybob#3845,03/19/2019 5:55 PM,ok,,
+207328818203983872,notabanana,03/19/2019 5:56 PM,Might be as simple as checking if the item is on in cando,,
+207328818203983872,notabanana,03/19/2019 5:57 PM,I'm away from pc for a while,,
+463051926406430720,saltybob#3845,03/19/2019 5:58 PM,@Deleted User where do i stick that script?,,
+463051926406430720,saltybob#3845,03/19/2019 5:58 PM,"@Not A Banana thanks, appreciate the help",,
+456226577798135808,Deleted User,03/19/2019 5:59 PM,"i started to type it but im lazy lol, ill send you an example and ill try and help if it doesnt make sense",,
+207328818203983872,notabanana,03/19/2019 5:59 PM,In your item,,
+463051926406430720,saltybob#3845,03/19/2019 5:59 PM,ok thanks,,
+463051926406430720,saltybob#3845,03/19/2019 5:59 PM,where im defining the new class>,,
+463051926406430720,saltybob#3845,03/19/2019 5:59 PM,?,,
+207328818203983872,notabanana,03/19/2019 6:00 PM,"Just do class youritemclassname extends itembase, then inside it just the code he posted",,
+463051926406430720,saltybob#3845,03/19/2019 6:00 PM,ok,,
+207328818203983872,notabanana,03/19/2019 6:00 PM,In 4_world,,
+226007936546111498,ctlaltdelammo,03/19/2019 6:14 PM,you don't have to inherit of an item that has the animation you want,,
+226007936546111498,ctlaltdelammo,03/19/2019 6:14 PM,you can add it in your own config,,
+226007936546111498,ctlaltdelammo,03/19/2019 6:14 PM,but then you will have to add the action as well,,
+226007936546111498,ctlaltdelammo,03/19/2019 6:14 PM,in script,,
+226007936546111498,ctlaltdelammo,03/19/2019 6:14 PM,"been there, done that.",,
+463051926406430720,saltybob#3845,03/19/2019 7:22 PM,"@Not A Banana with the power / crafting issue... there is this section at the end of a crafting recipe:
+override bool CanDo(ItemBase ingredients[], PlayerBase player)//final check for recipe's validity
+    {
+        return true;
+    }
+do you think i could somehow use the switched on check from the radio to enable /disable the crafting ability?
+bool CanOperate()
+    {
+        return GetCompEM().IsSwitchedOn();
+    }",,
+207328818203983872,notabanana,03/19/2019 7:22 PM,That's what I was saying you should look into,,
+207328818203983872,notabanana,03/19/2019 7:23 PM,`Might be as simple as checking if the item is on in cando`,,
+463051926406430720,saltybob#3845,03/19/2019 7:24 PM,"yeah i know thats why i was looking, just wondering if you had any ideas about how i could combine before i started randomly experimenting",,
+463051926406430720,saltybob#3845,03/19/2019 7:25 PM,can i just simply stick that check above the return true? sorry if a stupid question,,
+463051926406430720,saltybob#3845,03/19/2019 7:25 PM,still trying to get my head around it all,,
+335454156221579265,|NP|Noah#1496,03/19/2019 9:55 PM,Hey guys im trying to make a votepanel. I already createt the GUI and it works when pressing a certain key 😃,,
+335454156221579265,|NP|Noah#1496,03/19/2019 9:55 PM,,https://cdn.discordapp.com/attachments/492295576470290433/557668555458347043/8bb11a038d606f2c60a012d9d4788d97.png,
+335454156221579265,|NP|Noah#1496,03/19/2019 9:56 PM,"This is the panel. 
+
+The code for the 3 Buttons Berezino Elektro and Novo looks the following:
+
+```C
+if ( w == m_BtnBerezino )
+        {
+            GetGame().GetUIManager().Back();
+            return true;
+
+            if (GetGame().IsServer())
+            {
+                Print(""VoteBerezino"");
+            }
+        }
+
+        if ( w == m_BtnElektro )
+        {
+            GetGame().GetUIManager().Back();
+            return true;
+
+            if (GetGame().IsServer())
+            {
+                Print(""VoteElektro"");
+            }
+        }
+
+        if ( w == m_BtnNovo )
+        {
+            Print(""VoteNovo"");
+            GetGame().GetUIManager().Back();
+            return true;
+
+            if (GetGame().IsServer())
+            {
+                Print(""VoteNovo"");
+            }
+        }
+```",,
+335454156221579265,|NP|Noah#1496,03/19/2019 9:57 PM,"now the problem i have is that the Print(""VoteNovo"") is written to the script.log playerside but i need it in a file on the serverside so i have to use a RPC in some kind but im totally lost there. Anyone knows how i can do that ?",,
+456226577798135808,Deleted User,03/19/2019 10:08 PM,ui does not execute on server,,
+456226577798135808,Deleted User,03/19/2019 10:09 PM,so if (GetGame().IsServer()) is useless here,,
+456226577798135808,Deleted User,03/19/2019 10:10 PM,in order to do logs you can do them at the end since voting for something supposed to be done on serverside,,
+456226577798135808,Deleted User,03/19/2019 10:10 PM,so in function on server where you handle voting results,,
+456226577798135808,Deleted User,03/19/2019 10:10 PM,you can do logs,,
+335454156221579265,|NP|Noah#1496,03/19/2019 10:11 PM,What could i use to log the button press ?,,
+335454156221579265,|NP|Noah#1496,03/19/2019 10:11 PM,(serverside),,
+167370568893464576,0x346e3730,03/19/2019 10:12 PM,rpc,,
+335454156221579265,|NP|Noah#1496,03/19/2019 10:12 PM,yeah thats waht i supposed above 😃 the struggle is that i dont rly get forward with it,,
+335454156221579265,|NP|Noah#1496,03/19/2019 10:16 PM,is there anyone up helping me with the RPC stuff?,,
+335454156221579265,|NP|Noah#1496,03/19/2019 10:17 PM,i only need it to sent a phrase to a certain file located on my server. the rest is already working,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:32 AM,Hello! Is there anyone who is willing to give me a quick run through of how to setup and/or start scripting? I tried to follow some tutorials but I feel they all miss the initial setup.,,
+239201186933112833,da0ne_,03/20/2019 12:36 AM,😂,,
+239201186933112833,da0ne_,03/20/2019 12:36 AM,Don’t think anyway wants to do it @[Village] Barely Infected,,
+239201186933112833,da0ne_,03/20/2019 12:37 AM,Trying to write up a wiki with @thurston,,
+239201186933112833,da0ne_,03/20/2019 12:37 AM,Had this idea of a discord bot that can assist you. (Like a search tool).,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:40 AM,"Well, I need something! :p",,
+239201186933112833,da0ne_,03/20/2019 12:40 AM,To start scripting 🤔the tools you really need is syntax knowledge and the Enfusion environment. Knowing what’s client and what is server script. What and when and how the clients connect to the server (MP functionality). There is no tutorial that will do a fair enough job in trying to explain and cover everything....my suggestion is always...get a mod from the workshop that is simple and script related....and also a mod by someone reputable....,,
+239201186933112833,da0ne_,03/20/2019 12:40 AM,Read around and fiddle,,
+239201186933112833,da0ne_,03/20/2019 12:41 AM,Change it or re write it...do whatever as long as you don’t re upload 😱😝,,
+239201186933112833,da0ne_,03/20/2019 12:41 AM,You are more than welcome to unpack and read all my workshop memes,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:43 AM,"of course, thanks for the advise. I will poke around and see. IS there anything written down you can point me to?",,
+217580162898853889,Barely Infected#2698,03/20/2019 12:44 AM,The main thing I need to get started is just that I don't know where to start.,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:44 AM,"I open workbench, script editor",,
+217580162898853889,Barely Infected#2698,03/20/2019 12:44 AM,and then?,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:44 AM,I can PowerShell fairly well,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:45 AM,I know a very tiny bit of phyton.,,
+217580162898853889,Barely Infected#2698,03/20/2019 12:45 AM,"I'm looking to do some very basic stuff, but I don't know where to start.",,
+217580162898853889,Barely Infected#2698,03/20/2019 12:57 AM,ok I looked through some files and I'm following this thing now: https://github.com/maxkunes/Enscript-Workbench-Project-Setup/wiki/2.-Folder-Setup,,
+225066030605533195,Gone#3652,03/20/2019 1:00 AM,Dont suppose anyone knows how to make my new food/drinks have there own stats instead of going off the in-games ones?,,
+207328818203983872,notabanana,03/20/2019 1:13 AM,"Not really scripting related, you just do it in config",,
+207328818203983872,notabanana,03/20/2019 1:13 AM,change the nutrition class,,
+267745224502149120,Atlas#3936,03/20/2019 10:28 AM,"hey, is there any possibility to increase the brightness/light intensity of light sources? in the files i just found
+```    void FlashlightLight()
+    {
+        SetVisibleDuringDaylight(true);
+        SetRadiusClient(30);
+        SetSpotLightAngle(120);
+        SetCastShadow(true);
+        EnableSpecular(true);
+        SetBrightnessClient(6);
+        SetAmbientColor(1.0, 0.85, 0.75);
+        SetDiffuseColor(1.0, 0.85, 0.75);
+    }```
+for the flashlight. anybody got an idea?",,
+230061386888118273,.thurston,03/20/2019 10:33 AM,I'd imagine it'd be ``SetBrightnessClient``,,
+267745224502149120,Atlas#3936,03/20/2019 10:37 AM,hm maybe i need to try it. thing is i want to decrease the overall brightness (by lowering exposure) and increase light source brightness to create an underground effect. `SetBrightnessClient` sounds to me like it would just counteract the overall lower brigthness/exposure,,
+402077901174079499,munghard,03/20/2019 11:42 AM,is there a way to add to an existing enum list?,,
+402077901174079499,munghard,03/20/2019 12:12 PM,"i fucking did it, got the ppeffects to work on server! so happy.",,
+181560985029574656,anthonyroe,03/20/2019 1:54 PM,@Atlas check out increased lumens mod,,
+267745224502149120,Atlas#3936,03/20/2019 1:55 PM,"yeah i already did that, but as far as i've seen it the mod just changes the Radius and Angle",,
+108535912018771968,zisb,03/20/2019 3:30 PM,"Excuse me, I have never touched scripting before in arma or dayz and I have a quick question. Are we able to overwrite any of the .c scripts? In particular I want to make a change to ```\scripts\4_world\classes\emotemanager.c```",,
+167370568893464576,0x346e3730,03/20/2019 4:11 PM,yes,,
+106841799863111680,skigoggles,03/20/2019 6:32 PM,"Looking at vehicle spawns now that there are a couple of mods with vehicles```1. What tool to use to create new spawn locations (that shows the coords)?
+2. Can 2 vehicles use the same spawn coordinates or will they get spawned on top of each other?```",,
+106841799863111680,skigoggles,03/20/2019 7:44 PM,"I'm wondering if it has todo with the <children> of an event. 1 master spawn even, multiple children types",,
+158294510080753665,gravitywolf,03/20/2019 10:47 PM,What class do I have to mod to add a function to GetGame()?,,
+167370568893464576,0x346e3730,03/20/2019 11:01 PM,Game,,
+167370568893464576,0x346e3730,03/20/2019 11:01 PM,Not sure it's moddable,,
+167370568893464576,0x346e3730,03/20/2019 11:01 PM,It may be an engine class,,
+158294510080753665,gravitywolf,03/20/2019 11:05 PM,"@0x346e3730 
+But can't we just mod DayZGame, and those function can be called from GetGame(), or am I dumb...",,
+167370568893464576,0x346e3730,03/20/2019 11:07 PM,"you should be able to, yeah",,
+167370568893464576,0x346e3730,03/20/2019 11:07 PM,but if it's moddable only,,
+158294510080753665,gravitywolf,03/20/2019 11:13 PM,"Well, I did:
+```cpp
+
+modded class DayZGame{
+  ref VoteManager voteManager = new VoteManager();
+
+  
+  VoteManager getVoteManager(){
+    return voteManager;
+  }
+}
+```",,
+158294510080753665,gravitywolf,03/20/2019 11:13 PM,and I cannot seem to get it to call GetGame().getVoteManager(),,
+483945142424698881,nines9805,03/20/2019 11:14 PM,@skigoggles,,
+483945142424698881,nines9805,03/20/2019 11:14 PM,https://dayz.ginfo.gg/#c=-37;-2;2,,
+483945142424698881,nines9805,03/20/2019 11:14 PM,"use iZurvive , and edit the spawnpoints.xml",,
+106841799863111680,skigoggles,03/21/2019 12:34 AM,"I'll try it, but I wonder how accurate it is for placing objects. I know for arma2-dayzmod it was not accurate enough.",,
+181560985029574656,anthonyroe,03/21/2019 2:02 AM,@GravityWolf in order to use ``getVoteManager()`` i think you do ``g_Game.getVoteManager();``,,
+158294510080753665,gravitywolf,03/21/2019 2:18 AM,Thank you,,
+181560985029574656,anthonyroe,03/21/2019 2:26 AM,did it work?,,
+148370724900306944,jacob_mango,03/21/2019 8:22 AM,hmm... 🤔,https://cdn.discordapp.com/attachments/492295576470290433/558188620410781697/unknown.png,
+148370724900306944,jacob_mango,03/21/2019 8:24 AM,guess it doesn't like floats,,
+148370724900306944,jacob_mango,03/21/2019 9:06 AM,"well realized this would be better anyways so no longer affects me
+
+```cpp
+if ( m_StepValue != 0 )
+{
+    m_Current = Math.Round( m_Current / m_StepValue ) * m_StepValue;
+}
+```",,
+167370568893464576,0x346e3730,03/21/2019 11:35 AM,"@Jacob_Mango do you have spaces around your ""%"" ?",,
+167370568893464576,0x346e3730,03/21/2019 11:35 AM,Otherwise try with them,,
+148370724900306944,jacob_mango,03/21/2019 11:35 AM,"doesn't matter anymore, since deleted that code",,
+167370568893464576,0x346e3730,03/21/2019 11:35 AM,k,,
+456226577798135808,Deleted User,03/21/2019 11:45 AM,"i create a p3d but when i spawn that, it's not solid, and you can go through, any code for resolved that?",,
+230061386888118273,.thurston,03/21/2019 11:49 AM,#modelling-dayz and you don't have a geometry LOD on it @Deleted User,,
+456226577798135808,Deleted User,03/21/2019 11:49 AM,uuuhm,,
+410865890284797953,fget487,03/21/2019 3:33 PM,Can anyone tell me where I can find those Action IDs?,,
+410865890284797953,fget487,03/21/2019 3:33 PM,"ContinuousActions[] = {159,185};",,
+410865890284797953,fget487,03/21/2019 3:35 PM,,https://cdn.discordapp.com/attachments/492295576470290433/558297679143370812/unknown.png,
+410865890284797953,fget487,03/21/2019 3:35 PM,"there are the scripts, but there is no ID in it.",,
+226007936546111498,ctlaltdelammo,03/21/2019 3:36 PM,dta/scripts.pbo/4_World/Classes/UserActionsComponent/_constants.c,,
+410865890284797953,fget487,03/21/2019 3:38 PM,perfect. thanks,,
+251796151760715777,remoz_,03/21/2019 11:19 PM,hello! There are a way to setup a scheduler on init.c main script? I mean a Timer that every x seconds call a function...,,
+167370568893464576,0x346e3730,03/21/2019 11:20 PM,yes,,
+167370568893464576,0x346e3730,03/21/2019 11:20 PM,GetGame().CallLater or something,,
+167370568893464576,0x346e3730,03/21/2019 11:20 PM,check DayZGame,,
+167370568893464576,0x346e3730,03/21/2019 11:20 PM,Ccant remember,,
+251796151760715777,remoz_,03/21/2019 11:21 PM,CallLater? Can specify every how much time call the function?,,
+251796151760715777,remoz_,03/21/2019 11:21 PM,I've tried with:,,
+251796151760715777,remoz_,03/21/2019 11:21 PM,"class CustomMission: MissionServer
+{    
+    
+    protected ref Timer m_TriggerTimer = NULL;
+    
+    override void OnUpdate( float timeslice )
+    {
+        super.OnUpdate( timeslice );
+        if (m_TriggerTimer == NULL)
+        {
+            m_TriggerTimer = new Timer();
+            m_TriggerTimer.Run( 1, this, ""Triggered"", NULL, true );
+        }
+    }
+    
+    void Triggered()
+    {
+        Print(""Triggered!"");
+    }",,
+251796151760715777,remoz_,03/21/2019 11:21 PM,but doesn't work 😄,,
+167370568893464576,0x346e3730,03/21/2019 11:21 PM,"yes, and there is a boolean so set it repeat everytime",,
+167370568893464576,0x346e3730,03/21/2019 11:22 PM,take a look at it you will see it fits your thing probably,,
+251796151760715777,remoz_,03/21/2019 11:22 PM,"ok, many thanks man, i will",,
+251796151760715777,remoz_,03/21/2019 11:29 PM,"@0x346e3730  i've tried this:
+
+//TIMER
+GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(Logger.Triggered, 1000, true, NULL);
+
+inside init.c -> void main()",,
+251796151760715777,remoz_,03/21/2019 11:29 PM,But i get this:,https://cdn.discordapp.com/attachments/492295576470290433/558416954147471375/unknown.png,
+251796151760715777,remoz_,03/21/2019 11:41 PM,"Ok, i'm sorry for my ignorance, i'm noob :-D
+Changed the function definition to: -> static void Triggered()
+and now it works! Thanks",,
+364058221591134218,bombjack#0184,03/22/2019 8:45 AM,"I need some help, I want to change the stamina values in constants.c. Can someone show me how to xhange/override a cost value?",,
+181560985029574656,anthonyroe,03/22/2019 1:34 PM,Make a mod and just override them,,
+181560985029574656,anthonyroe,03/22/2019 1:37 PM,I cant be much of help right now. Later.,,
+186142745671368704,sebbepwnyou,03/22/2019 6:15 PM,Anyone know what the script to get Books to work is? or is there a way to get it to work?,,
+456226577798135808,Deleted User,03/22/2019 6:20 PM,"well I never read the old books so i dont know quite how it looked or worked in game, I imagine there are 1000 more efficient ways than my thought on how to implement it (if i knew them id love to work on reimplementing the note system) but you could make one class for every single 2 pages and copy the paper read function (like hold it up to your face to see it easier) and use the item lambda with an action to turn the pages (no animation of course). cooler way that someone else would have to help with or hopefully i learn when i get to it: custom gui",,
+186142745671368704,sebbepwnyou,03/22/2019 6:21 PM,You could put it on your hotbar and hit the hotkey and you could actually read it as an actual book ingame by hitting the arrow back and forward inside the book to change pages and stuff,,
+186142745671368704,sebbepwnyou,03/22/2019 6:22 PM,( old system for books and removed in .61 or .60 ),,
+181560985029574656,anthonyroe,03/22/2019 9:12 PM,this is completely possible. but you'll prob have to write all the books lol,,
+158294510080753665,gravitywolf,03/23/2019 10:51 AM,Can someone explain to me how to get the server to open a UIScriptedMenu with an RPC?,,
+181560985029574656,anthonyroe,03/23/2019 3:06 PM,Have you looked at other mods?,,
+181560985029574656,anthonyroe,03/23/2019 3:07 PM,If so you should be able to figure that out,,
+158294510080753665,gravitywolf,03/23/2019 7:15 PM,"@Anthony Roe That doesn't help me ~50 - 60% of code is horribly formatted, or is just straight 🍝 code , but thank you. I figured it out, I was simply over thinking it, and should just have used an RPC to call the function EnterScriptedMenu.",,
+463051926406430720,saltybob#3845,03/23/2019 8:18 PM,"Can you make a static object part of a recipe? I tried using class classname: housenodestruct to make the object unmoveable, that worked but now i can’t interact with it. Can you only use inventorybase items in recipes??",,
+181560985029574656,anthonyroe,03/23/2019 8:19 PM,did you get it to spawn?,,
+181560985029574656,anthonyroe,03/23/2019 8:19 PM,if you did all you need to do is add actions to that static object,,
+463051926406430720,saltybob#3845,03/23/2019 10:19 PM,Yes i can spawn it with com. How do I add actions to it?@Anthony Roe I have working recipes I can use when the items are inventorybase,,
+186142745671368704,sebbepwnyou,03/24/2019 4:30 AM,"Does anyone have a script for restricting people to stay in a specific area of the map like example, Balota Airfield that i could have for a friends PVP server?",,
+463051926406430720,saltybob#3845,03/24/2019 6:16 PM,"still trying to get my head around giving actions to static objects, specifically crafting with one. does anyone know where the numbers in object config.cpp        InteractActions[] = {1018,1019,1020,1037}; are defined?",,
+456226577798135808,Deleted User,03/24/2019 6:19 PM,"hey salty, from my experience HouseNoDestruct removes the mouse over interactions (which is not entirely accurate because houses are HouseNoDestruct and they have doors so i havent fully researched it yet) that being said make your item off of the Itembase instead of houseNoDestruct and use script to lock it the ground (can copy from the barrel code, just change bools a little) and thats how we got static objects to lock to the ground that you could still interact with",,
+456226577798135808,Deleted User,03/24/2019 6:20 PM,in terms of where those are defined thats probably more Henney's or W00kies territory but it would be in like useractioncomponents or something one of those guys,,
+207328818203983872,notabanana,03/24/2019 6:20 PM,`from my experience HouseNoDestruct removes the mouse over interactions` Not true,,
+207328818203983872,notabanana,03/24/2019 6:20 PM,You must have goof'd something,,
+207328818203983872,notabanana,03/24/2019 6:20 PM,As my elevator which has a user interact point is housenodestruct,,
+207328818203983872,notabanana,03/24/2019 6:20 PM,And it works fine,,
+456226577798135808,Deleted User,03/24/2019 6:21 PM,"lol see the explination after that piece of informaton, yes banana i agree with you. that being said there are other methodologies to achieve what salty desires that dont require housenodestruct, that being said im not saying my way is right. That is good to know though thanks, I will definitely investigate that again when i get back around to it",,
+456226577798135808,Deleted User,03/24/2019 6:21 PM,ALSO,,
+207328818203983872,notabanana,03/24/2019 6:21 PM,@saltybob What do you mean? use actions and recipes are two different things,,
+456226577798135808,Deleted User,03/24/2019 6:21 PM,Elevatator!?!?!? do tell,,
+207328818203983872,notabanana,03/24/2019 6:21 PM,"@Deleted User I dont have an artist anymore so nothing will likely come of it for a long time. But I have a prototype elevator for an ""underground"" bunker",,"😖 (1),😍 (1)"
+207328818203983872,notabanana,03/24/2019 6:22 PM,And a little elevator button panel that triggers the warp,,
+456226577798135808,Deleted User,03/24/2019 6:22 PM,Shit yea man!!!!! sorry to hear you dont have an artist right now (im garbage at that stuff bahaha) but ill keep my ears open. sounds like it would be a great addition,,
+207328818203983872,notabanana,03/24/2019 6:22 PM,To be honest I'm probably just dropping the idea,,
+456226577798135808,Deleted User,03/24/2019 6:23 PM,"I hear that, cant say I blame you. worst case some other may want to play with the idea if you feel like sharin your progress but also wouldnt blame you for a second if you just wanted to let it rest",,
+207328818203983872,notabanana,03/24/2019 6:24 PM,"Everything I have currently is pretty simple, decent scripters would be able to make it from scratch in a few minutes",,
+456226577798135808,Deleted User,03/24/2019 6:34 PM,*lol runs out of room to go back and learn more scripting bahahahah*,,
+463051926406430720,saltybob#3845,03/24/2019 6:40 PM,"@Not A Banana @Deleted User thanks both. I was using housenodestruct as I was looking at similar items (waterpump, radio desk) that are static but can be interacted with. I want to have an option to perform a crafting recipe when an ingredient is brought to the static object. I may be using the wrong terminology. I’ll look at the suggestions you’ve already made but anything else useful you can think of would be great, cheers!",,👌 (1)
+207328818203983872,notabanana,03/24/2019 6:41 PM,Like a workshop?,,
+463051926406430720,saltybob#3845,03/24/2019 6:41 PM,Yeah exactly like a workshop,,
+207328818203983872,notabanana,03/24/2019 6:42 PM,"How good of a scripter are you? Maybe you could make the class for your static item have a ""zone"" around it, then modify the cando part of a recipe to check if the player is in that zone",,
+207328818203983872,notabanana,03/24/2019 6:42 PM,Im too dumb to write an example for you,,
+463051926406430720,saltybob#3845,03/24/2019 6:42 PM,I’ve got the saw and drill as objects and can use them as inventorybase but I really want them to be static (and preferably powered),,
+463051926406430720,saltybob#3845,03/24/2019 6:43 PM,I’m a terrible scripter sadly,,
+456226577798135808,Deleted User,03/24/2019 6:44 PM,salty I will send you an example of my static oven that cant be picked up but can be placed (so you could craft it with a recipe if you want) and has interact buttons. you maybe be able to use it as a reference point at the very least.  But that being said it also wouldnt hurt to just keep exploring and testing out your bit (and run with notabananas methodology.) If you use my sample itll be bit different,,
+456226577798135808,Deleted User,03/24/2019 6:44 PM,(lol i hear that bud ^_^ just learning what we can from the innards of the game),,
+463051926406430720,saltybob#3845,03/24/2019 6:48 PM,Anything you’re happy to throw my way is great I’m not giving up on it but I keep going down dead ends so I really appreciate you guys helping out with some suggestions,,
+181560985029574656,anthonyroe,03/24/2019 11:27 PM,#ui-ux-dayz,,
+160185978131185664,kh4zy,03/24/2019 11:42 PM,Ty @Anthony Roe,,
+239201186933112833,da0ne_,03/25/2019 12:35 AM,@Not A Banana you got an idea on how I would make a single use action always show up for players? With out the need of having the item in hands to trigger,,
+207328818203983872,notabanana,03/25/2019 12:36 AM,"Hmmm You'll probably have to redo stuff to make that work, I cant think of any way its easily doable currently.",,
+239201186933112833,da0ne_,03/25/2019 12:37 AM,Only way I can think of now is to hack in the action on SurvivorBase,,
+239201186933112833,da0ne_,03/25/2019 12:37 AM,As in mod the config class to have action,,
+239201186933112833,da0ne_,03/25/2019 12:37 AM,‘SingleUseAction={420420};’,,
+207328818203983872,notabanana,03/25/2019 12:39 AM,Is the script for making the action 'available' exposed to us? Out of my skill level but maybe something you could manage,,
+207328818203983872,notabanana,03/25/2019 12:39 AM,To make it so instead of if it checks if its in your hands it checks inventory?,,
+239201186933112833,da0ne_,03/25/2019 12:40 AM,"The script is not public yet, but is there a Boolean for me to disable “hasToBeinhand”",,
+239201186933112833,da0ne_,03/25/2019 12:40 AM,I feel like there is 🤔,,
+207328818203983872,notabanana,03/25/2019 12:44 AM,"if you cant figure it out maybe make a remote, helps with muh immersion anyway",,
+239201186933112833,da0ne_,03/25/2019 12:45 AM,🤔yea,,
+239201186933112833,da0ne_,03/25/2019 12:45 AM,“Wtf man I wanted to blow up that squad but the damn remote did not work?!”,,
+239201186933112833,da0ne_,03/25/2019 12:45 AM,- ah yea? Did you put a battery in it?,,
+239201186933112833,da0ne_,03/25/2019 12:45 AM,🗑:oog:,,
+239201186933112833,da0ne_,03/25/2019 12:45 AM,Remote it is baby. Lol,,
+207328818203983872,notabanana,03/25/2019 12:46 AM,Could even make an attachment slot for storing the remote lmao,,
+239201186933112833,da0ne_,03/25/2019 12:46 AM,Jacob suggested it at first,,
+148370724900306944,jacob_mango,03/25/2019 12:46 AM,two people had already suggested that and it took you until banana says it to actually do that?,,
+239201186933112833,da0ne_,03/25/2019 12:46 AM,To use a remote,,
+207328818203983872,notabanana,03/25/2019 12:47 AM,@Jacob_Mango he wanted me to feel special lul,,
+239201186933112833,da0ne_,03/25/2019 12:47 AM,Hehehe no I was already going with remote when you said. But still wanted to see if we could hack in those types of actions,,
+207328818203983872,notabanana,03/25/2019 12:47 AM,original idea,,
+239201186933112833,da0ne_,03/25/2019 12:47 AM,#ideaYoinked,,
+239201186933112833,da0ne_,03/25/2019 12:47 AM,Jacob will DMCA the mod “took my remote idea” :OmegaPog:,,🤣 (1)
+207328818203983872,notabanana,03/25/2019 12:48 AM,"Originally when someone mentioned suicide vest to me I was gonna make the vest not even ""wearable"", it was just gonna be a ""kit"" and when you held it in hands, it would render the vest on you",,
+207328818203983872,notabanana,03/25/2019 12:48 AM,with remote in hands,,
+207328818203983872,notabanana,03/25/2019 12:48 AM,"actually I just realized, with the way you currently have it set up, thats what will happen if you carry it in hands lul",,
+207328818203983872,notabanana,03/25/2019 12:49 AM,"Since you're using the worn model for the ""ground""",,
+239201186933112833,da0ne_,03/25/2019 12:49 AM,I fixed it,,
+239201186933112833,da0ne_,03/25/2019 12:49 AM,Get on my lvl,,
+239201186933112833,da0ne_,03/25/2019 12:49 AM,I used f and m AND g model,,
+148370724900306944,jacob_mango,03/25/2019 12:49 AM,wait,,
+148370724900306944,jacob_mango,03/25/2019 12:49 AM,@Not A Banana,,
+148370724900306944,jacob_mango,03/25/2019 12:49 AM,that's how the devs do that,,
+148370724900306944,jacob_mango,03/25/2019 12:49 AM,for restraining,,
+148370724900306944,jacob_mango,03/25/2019 12:50 AM,so it's not unheard of,,
+235718406492520448,niirozz,03/25/2019 8:24 AM,"Easy to put action to player, without item",,
+235718406492520448,niirozz,03/25/2019 8:24 AM,just mod playerbase,,
+235718406492520448,niirozz,03/25/2019 8:24 AM,and getSingleUseAction or something like that,,
+235718406492520448,niirozz,03/25/2019 8:24 AM,"just mod it, and insert your id of your action",,
+235718406492520448,niirozz,03/25/2019 8:24 AM,and it's finished,,
+239201186933112833,da0ne_,03/25/2019 10:46 AM,Mod player base as in the script class or config ? @NiiRoZz,,
+239201186933112833,da0ne_,03/25/2019 10:47 AM,"If you are talking about script, I tried to override that action constructor within player base...for some reason it did not work...maybe I messed it up. It does make sense though....just adding the ID for the single use 🤔",,
+239201186933112833,da0ne_,03/25/2019 1:13 PM,i got it working sort of...the action only still triggers if i have something in my hand,,
+239201186933112833,da0ne_,03/25/2019 1:13 PM,no matter what item it is...as long as hands are not empty,,
+239201186933112833,da0ne_,03/25/2019 1:38 PM,this fixed it 💯,https://cdn.discordapp.com/attachments/492295576470290433/559717763959095296/unknown.png,
+230061386888118273,.thurston,03/25/2019 3:24 PM,"I'm having a bit of an issue with a UI, i've done some fuckery with my code, and... well.. it's closing/opening on the same frame, preventing me from closing it with the same key I open it with. Anyone have any ideas? Could probably use CallLater, but not entirely sure if that could cause issues as i'm doing it inside of an onUpdate method",,
+181560985029574656,anthonyroe,03/25/2019 3:25 PM,Is there a key up function?,,
+230061386888118273,.thurston,03/25/2019 3:25 PM,Yeah,,
+230061386888118273,.thurston,03/25/2019 3:25 PM,GetActionUp,,
+230061386888118273,.thurston,03/25/2019 3:25 PM,and GetActionDown,,
+181560985029574656,anthonyroe,03/25/2019 3:26 PM,Might work,,
+230061386888118273,.thurston,03/25/2019 3:26 PM,Tried both already,,
+230061386888118273,.thurston,03/25/2019 3:26 PM,GetActionUp doesn't do anything different,,
+230061386888118273,.thurston,03/25/2019 3:26 PM,Well.. it does,,
+181560985029574656,anthonyroe,03/25/2019 3:26 PM,Lol rip,,
+230061386888118273,.thurston,03/25/2019 3:26 PM,It prevents another function from being called,,
+230061386888118273,.thurston,03/25/2019 3:27 PM,"GetActionDown calls the closing function, but it also opens on the same frame",,
+181560985029574656,anthonyroe,03/25/2019 3:27 PM,Im guessing your checking if the ui is already opened on key down?,,
+230061386888118273,.thurston,03/25/2019 3:27 PM,Just checking if its open,,
+230061386888118273,.thurston,03/25/2019 3:28 PM,"Not specifically via a key, because iirc that's impossible to tell if it was opened via a certain key",,
+230061386888118273,.thurston,03/25/2019 3:28 PM,"(Unless i do KeyState, which is what i want to avoid)",,
+181560985029574656,anthonyroe,03/25/2019 3:29 PM,Have you checked how cot or com did it?,,
+230061386888118273,.thurston,03/25/2019 3:29 PM,"They don't do it via an action, they do it via KeyState iirc",,
+230061386888118273,.thurston,03/25/2019 3:29 PM,"Since the new input system isn't fully in, I don't believe they can create new keybinds/actions",,
+181560985029574656,anthonyroe,03/25/2019 3:31 PM,Could it be that the menu is blocking the action?,,
+230061386888118273,.thurston,03/25/2019 3:31 PM,"Nope, i'm unlocking the action",,
+230061386888118273,.thurston,03/25/2019 3:32 PM,"If the action was being blocked, i wouldn't be able to close the menu",,
+230061386888118273,.thurston,03/25/2019 3:32 PM,+ I've filled it with prints to confirm this,,
+181560985029574656,anthonyroe,03/25/2019 3:33 PM,Hmm im not sure then.,,
+228312873619816448,britto,03/25/2019 5:49 PM,Custom Recipes need update for 1.02,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:37 PM,"Anyone know how I can make a light show on the model when it is equipped aka in a slot on the character. It shows when it is in hand and turns on and off, just not on the character. the point is ""light"" on both memory lods",,
+202849035244011520,hariad,03/25/2019 7:38 PM,@BRITTO m_CacheItemMap.Clear(); is now m_CacheBasesMap.Clear();  in moddedrecipe.c,,
+202849035244011520,hariad,03/25/2019 7:40 PM,"I can't try atm , but it should work",,
+456226577798135808,Deleted User,03/25/2019 7:53 PM,hey Ammo not sure how you did your light script but there is a bool on the chemlight about turning it off automatically when its in your inventory (not sure if thats any use to ya). adam got a chemlight proxie working on backpack slot but the second he got the light to behave the way he wanted it wasnt staying on the backpack right anymore so I dont think that quite got finished,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:54 PM,well I have something that llights up,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:54 PM,"and once I put it on my character, headslot for instance",,
+226007936546111498,ctlaltdelammo,03/25/2019 7:54 PM,it stops being lit,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:55 PM,so it's a Clothing based thing,,
+456226577798135808,Deleted User,03/25/2019 7:55 PM,whats your script like? do you have that bool telling it to turn off when not in hands as well or you think its unrelated,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:56 PM,what bool is that?,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:56 PM,that might be the problem 😃,,
+226007936546111498,ctlaltdelammo,03/25/2019 7:58 PM,I have a pointlight configured that I turn on and off,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:00 PM,"which works in hands, on ground etc, but not when equipped",,
+456226577798135808,Deleted User,03/25/2019 8:06 PM,ill send an example one sec,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:06 PM,thanks a bunch,,
+456226577798135808,Deleted User,03/25/2019 8:08 PM,"```override void OnWork (float consumed_energy)
+    {
+        // Handle case when chemlight is put into cargo
+        if ( !GetGame().IsServer()  ||  !GetGame().IsMultiplayer() ) // client side
+        {
+            EntityAI container_EAI = GetHierarchyParent();
+            
+            if ( container_EAI  &&  container_EAI.IsInherited(ItemBase)  &&  !container_EAI.IsInherited(TripwireTrap) )
+            {
+                SetPilotLight(false);
+            }
+            else
+            {
+                SetPilotLight(true);
+            }
+        }
+    }```",,
+456226577798135808,Deleted User,03/25/2019 8:09 PM,"that guy tells the chemlight to turn off when added to cargo, adjusting that bool might help so that it returns true",,
+226007936546111498,ctlaltdelammo,03/25/2019 8:09 PM,it's always on for me,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:09 PM,that's the toggle I use,,
+456226577798135808,Deleted User,03/25/2019 8:10 PM,"hmm, just not when equipped in a slot (headslot for instance) and you made it return true regardless of whether its in your cargo right? im sorry i may have misunderstood from the beginning lolol",,
+226007936546111498,ctlaltdelammo,03/25/2019 8:11 PM,Regardless of slot,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:11 PM,it's always on,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:11 PM,but I'll check if OnWork changes when the slot changes,,
+226007936546111498,ctlaltdelammo,03/25/2019 8:11 PM,"probably not, because swapping it back to hands makes the light go on",,
+226007936546111498,ctlaltdelammo,03/25/2019 8:12 PM,and OnWork is overridden and doesn't change the SetPilotLight,,👌 (1)
+226007936546111498,ctlaltdelammo,03/25/2019 8:16 PM,guess I should dive into the headlamp more,,
+456226577798135808,Deleted User,03/25/2019 8:17 PM,"good thinking, am excited to see what you come up with!",,
+101690384320573440,strohkopf212,03/25/2019 9:27 PM,"```
+class CfgPatches
+{
+    class rob_tops
+    {
+        units[]={};
+        weapons[] = {};
+        requiredVersion = 0.1;
+        requiredAddons[] =
+        {
+            ""DZ_Characters_Tops"",
+            ""DZ_Characters_Headgear""
+            
+        };
+    };
+};
+
+class CfgVehicles
+{
+    class Clothing_Base;
+    class NBCHoodGray: NBCHoodBase
+    { 
+        scope=2;
+        displayName=""NBCHead"";
+        descriptionShort="""";
+        visibilityModifier=0.94999999;
+        model=""\DZ\characters\headgear\nbc_hood_g.p3d"";
+        hiddenSelections[]=
+        {
+            ""camoGround"",
+            ""camoMale"",
+            ""camoFemale""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""\NewClothes\NewClothes\Data\Yellow.paa"",
+            ""\NewClothes\NewClothes\Data\Yellow.paa"",
+            ""\NewClothes\NewClothes\Data\Yellow.paa""
+        };
+    };
+    
+    class NBCJacketGray: NBCJacketBase
+    { 
+        scope=2;
+        displayName=""NBCTop"";
+        descriptionShort="""";
+        visibilityModifier=0.94999999;
+        model=""\DZ\characters\tops\nbc_jacket_g.p3d"";
+        hiddenSelections[]=
+        {
+            ""camoGround"",
+            ""camoMale"",
+            ""camoFemale""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""\NewClothes\NewClothes\Data\top.paa"",
+            ""\NewClothes\NewClothes\Data\top.paa"",
+            ""\NewClothes\NewClothes\Data\top.paa""
+        };
+    };
+};
+```
+
+Im missing line 19 and 40 and i dont find the normal colorbase for both items, is it different?",,
+101690384320573440,strohkopf212,03/25/2019 9:27 PM,Line 19: ```class Clothing_Base;```,,
+101690384320573440,strohkopf212,03/25/2019 9:27 PM,Line 40: Above ```class NBCJacketGray: NBCJacketBase```,,
+101690384320573440,strohkopf212,03/25/2019 10:28 PM,"What are the right classes for those NBC clothes, i really struggle to find the right ones and i simply cant crunch it :/",,
+402077901174079499,munghard,03/25/2019 10:29 PM,NBCJacketBase,,
+402077901174079499,munghard,03/25/2019 10:30 PM,class NBCJacketBase: Clothing,,
+402077901174079499,munghard,03/25/2019 10:30 PM,not clothing_base,,
+101690384320573440,strohkopf212,03/25/2019 10:34 PM,"```
+class NBCJacketBase;
+class NBCJacketBase: Clothing```
+Thats for the jacket then, and the head?",,
+402077901174079499,munghard,03/25/2019 10:34 PM,class NBCHoodBase: Clothing,,
+101690384320573440,strohkopf212,03/25/2019 10:38 PM,"```
+class CfgPatches
+{
+    class rob_tops
+    {
+        units[]={};
+        weapons[] = {};
+        requiredVersion = 0.1;
+        requiredAddons[] =
+        {
+            ""DZ_Characters_Tops"",
+            ""DZ_Characters_Headgear""
+            
+        };
+    };
+};
+
+class CfgVehicles
+{
+    class NBCHoodBase;
+    class NBCHoodBase: Clothing
+    { 
+        scope=2;
+        displayName=""NBCHead"";
+        descriptionShort="""";
+        visibilityModifier=0.94999999;
+        model=""\DZ\characters\headgear\nbc_hood_g.p3d"";
+        hiddenSelections[]=
+        {
+            ""camoGround"",
+            ""camoMale"",
+            ""camoFemale""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""\NewClothes\NewClothes\Data\Yellow.paa"",
+            ""\NewClothes\NewClothes\Data\Yellow.paa"",
+            ""\NewClothes\NewClothes\Data\Yellow.paa""
+        };
+    };
+    class NBCJacketBase;
+    class NBCJacketBase: Clothing
+    { 
+        scope=2;
+        displayName=""NBCTop"";
+        descriptionShort="""";
+        visibilityModifier=0.94999999;
+        model=""\DZ\characters\tops\nbc_jacket_g.p3d"";
+        hiddenSelections[]=
+        {
+            ""camoGround"",
+            ""camoMale"",
+            ""camoFemale""
+        };
+        hiddenSelectionsTextures[]=
+        {
+            ""\NewClothes\NewClothes\Data\top.paa"",
+            ""\NewClothes\NewClothes\Data\top.paa"",
+            ""\NewClothes\NewClothes\Data\top.paa""
+        };
+    };
+};
+```
+
+It says NBCHoodBase duplicate but its nowhere else",,
+402077901174079499,munghard,03/25/2019 10:39 PM,https://pastebin.com/MeXetnUA,,
+402077901174079499,munghard,03/25/2019 10:39 PM,try that,,
+402077901174079499,munghard,03/25/2019 10:40 PM,"sorry for confusing, my orig comment was not meant to be read as a whole",,
+101690384320573440,strohkopf212,03/25/2019 10:41 PM,"gotcha, it did work! thank you very much!!!!!! ❤",,
+402077901174079499,munghard,03/25/2019 10:43 PM,np,,
+158294510080753665,gravitywolf,03/26/2019 12:05 AM,"Need help with server script logic, if anyone is free.",,
+181560985029574656,anthonyroe,03/26/2019 12:54 AM,Prob better to just post your issue,,
+99298225999056896,cashewsan,03/26/2019 1:23 AM,"trying to set up an optic only be attachable it you have a rail attachment, similar to how the weapon light works with handguards, any help?
+```
+modded class ACOGOptic extends OpticBase
+{
+    override bool CanPutAsAttachment( EntityAI parent )
+    {
+        if(!super.CanPutAsAttachment(parent)) {return false;}
+        bool M14_Rail   = false;
+
+        if ( parent.FindAttachmentBySlotName(""RailAttachment"") != NULL )
+        {
+            M14_Rail =                 parent.FindAttachmentBySlotName(""RailAttachment"").IsKindOf(""M14_Rail"");
+        }
+
+        if ( M14_Rail )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+}
+```",,
+207328818203983872,notabanana,03/26/2019 1:24 AM,super calls the unmodded class,,
+207328818203983872,notabanana,03/26/2019 1:24 AM,So basically its returning false because of that,,
+99298225999056896,cashewsan,03/26/2019 1:24 AM,so just remove `!super`?,,
+99298225999056896,cashewsan,03/26/2019 1:25 AM,or put `parent` instead?,,
+207328818203983872,notabanana,03/26/2019 1:26 AM,sec,,
+99298225999056896,cashewsan,03/26/2019 1:31 AM,also getting this,https://cdn.discordapp.com/attachments/492295576470290433/559897051257634823/Screenshot_564.png,
+148370724900306944,jacob_mango,03/26/2019 1:35 AM,I guess existed all along?,https://cdn.discordapp.com/attachments/492295576470290433/559898111426691080/image0.png,
+148370724900306944,jacob_mango,03/26/2019 1:35 AM,"proto void GetPlayerNetworkIDByIdentityID( int playerIdentityID, out int networkIdLowBits, out int networkIdHightBits );
+ 
+
+proto native Object GetObjectByNetworkId( int networkIdLowBits, int networkIdHighBits );",,
+239201186933112833,da0ne_,03/26/2019 1:35 AM,yes,,
+239201186933112833,da0ne_,03/26/2019 1:35 AM,hence the pepe reactions,,
+148370724900306944,jacob_mango,03/26/2019 1:36 AM,Wow and no one told me 😭,,
+148370724900306944,jacob_mango,03/26/2019 1:36 AM,**banning mark**,,
+239201186933112833,da0ne_,03/26/2019 1:36 AM,https://tenor.com/view/confused-whitepersanguardian-why-gif-10312546,,
+148370724900306944,jacob_mango,03/26/2019 1:37 AM,Idk look at this documentation to,https://cdn.discordapp.com/attachments/492295576470290433/559898713800179768/image0.png,
+148370724900306944,jacob_mango,03/26/2019 1:37 AM,I blame my lack of knowing on that,,
+148370724900306944,jacob_mango,03/26/2019 1:38 AM,Ok guess I'm rewriting cot and improving performance then,,
+207328818203983872,notabanana,03/26/2019 1:42 AM,@CashewSan something like this perhaps,,
+207328818203983872,notabanana,03/26/2019 1:43 AM,"```c
+modded class ACOGOptic extends OpticBase
+{
+    override bool CanPutAsAttachment( EntityAI parent )
+    {
+        bool HasRail   = false;
+        if ( parent.FindAttachmentBySlotName(""RailAttachment"") != NULL )
+        {
+            HasRail = parent.FindAttachmentBySlotName(""RailAttachment"").IsKindOf(""M14_Rail"");
+        }
+        if ( parent.IsKindOf(""weebM14"") && HasRail != true  )
+        {
+            return false;
+        } 
+        return super.CanPutAsAttachment(parent);        
+    }
+}
+```",,
+207328818203983872,notabanana,03/26/2019 1:43 AM,Someone who actually is competent fix it because its probably wrong,,
+207328818203983872,notabanana,03/26/2019 1:44 AM,@CashewSan I checked with someone competent and they said it's ok,,
+207328818203983872,notabanana,03/26/2019 1:46 AM,"no, but I assume you realized that and thats why you deleted the comment",,
+207328818203983872,notabanana,03/26/2019 1:46 AM,"weebm14 being your class, yes, but hasrail stays the same",,
+99298225999056896,cashewsan,03/26/2019 1:48 AM,"seems to work, thank you ❤ ❤ @Not A Banana",,
+239201186933112833,da0ne_,03/26/2019 1:49 AM,`parent.FindAttachmentBySlotName` is a bool 🤔,,
+207328818203983872,notabanana,03/26/2019 1:50 AM,Is that a statement or a question?,,
+239201186933112833,da0ne_,03/26/2019 1:50 AM,🤦,,
+239201186933112833,da0ne_,03/26/2019 1:51 AM,nvm,,
+239201186933112833,da0ne_,03/26/2019 1:51 AM,its not a bool,,
+99298225999056896,cashewsan,03/26/2019 1:55 AM,ur a b :OMEGALUL: :OMEGALUL: l,,
+272864393828499456,indianawinny,03/26/2019 3:51 AM,"Hey, the next experimental update has broken my mod completely, and I have to go into the scripts to fix it. I'm unfamiliar with it so I've been looking into other mods and how they modify classes, I think I've done everything correctly but for some reason it still doesn't want to work.
+```c
+modded class FlashlightLight extends SpotLightBase
+{
+    private static float il_DefaultRadius = 100;
+    
+    override void FlashlightLight()
+    {
+        SetVisibleDuringDaylight(true);
+        SetRadiusTo(il_DefaultRadius);
+        SetSpotLightAngle(120);
+        SetCastShadow(true);
+        EnableSpecular(true);
+        SetBrightnessTo(m_DefaultBrightness);
+        SetFadeOutTime(0.15);
+        SetAmbientColor(1.0, 0.85, 0.75);
+        SetDiffuseColor(1.0, 0.85, 0.75);
+    }
+    
+    override void SetIntensity( float coef, float time )
+    {
+        FadeBrightnessTo(il_DefaultRadius * coef, time);
+    }
+}```",https://cdn.discordapp.com/attachments/492295576470290433/559932491259969577/unknown.png,
+207328818203983872,notabanana,03/26/2019 3:53 AM,Are you sure your scripts are being loaded? Post your cfgmods,,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,Easiest way to check if mod is being loaded,,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,p;iko jmnfcvw;aofkmcva],,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,Save and run,,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,:FeelsGladMan:,,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,But that sometimes randomly parses sooooooooo,,
+105574798691680256,totallynotgrim,03/26/2019 3:56 AM,:peepoShrug:,,
+272864393828499456,indianawinny,03/26/2019 4:00 AM,"```c
+class CfgPatches 
+{
+    class Indi_Increased_Lumens_scripts
+    {
+        units[]={};
+        autor=""Indianawinny"";
+        weapons[]={};
+        requiredVersion=0.1;
+        requiredAddons[]=
+        {
+            ""DZ_Gear_Tools"",
+            ""DZ_Gear_Crafting"",
+            ""DZ_Gear_Consumables"",
+            ""DZ_Weapons_Lights"",
+            ""DZ_Vehicles_Wheeled""
+        };
+    };
+};
+
+class CfgMods
+{
+    class Indi_Increased_Lumens
+    {
+        dir = ""Indi_Increased_Lumens"";
+        picture = """";
+        action = """";
+        hideName = 1;
+        hidePicture = 1;
+        name = ""Indi_Increased_Lumens"";
+        credits = ""Indianawinny"";
+        author = ""Indianawinny"";
+        authorID = ""0"";
+        version = ""1.0"";
+        extra = 0;
+        type = ""mod"";
+        
+        dependencies[] = {""World""};
+        
+        class defs
+        {
+            class worldScriptModule
+            {
+                value = """";
+                files[] = {""Indi_Increased_Lumens/scripts/4_World""};
+            };
+        };
+    };
+};
+
+```",,
+148370724900306944,jacob_mango,03/26/2019 4:01 AM,What's the mod prefix?,,
+148370724900306944,jacob_mango,03/26/2019 4:01 AM,Pbo*,,
+207328818203983872,notabanana,03/26/2019 4:01 AM,Pbo name is Indi_Increased_Lumens so he probably has it right,,
+272864393828499456,indianawinny,03/26/2019 4:01 AM,Indi_Increased_Lumens.pbo,,
+148370724900306944,jacob_mango,03/26/2019 4:03 AM,That's the pbo name but I mean the prefix,,
+148370724900306944,jacob_mango,03/26/2019 4:04 AM,Unless if no prefix is defined is it the pbo name?,,
+148370724900306944,jacob_mango,03/26/2019 4:04 AM,If that case then the cfgmods is wrong,,
+207328818203983872,notabanana,03/26/2019 4:07 AM,@Indianawinny what do you pack the pbo with,,
+272864393828499456,indianawinny,03/26/2019 4:08 AM,"been just using pbo manager for testing, trying to pack with addon builder now",,
+272864393828499456,indianawinny,03/26/2019 4:13 AM,"still not working, left the addon prefix empty",,
+207328818203983872,notabanana,03/26/2019 4:14 AM,Do you have a $PREFIX$ file in your root of the pbo?,,
+272864393828499456,indianawinny,03/26/2019 4:14 AM,nope,,
+105574798691680256,totallynotgrim,03/26/2019 4:15 AM,Told you,,
+105574798691680256,totallynotgrim,03/26/2019 4:15 AM,Just smack your keyboard,,
+105574798691680256,totallynotgrim,03/26/2019 4:15 AM,Save it,,
+105574798691680256,totallynotgrim,03/26/2019 4:15 AM,And if it loads,,
+105574798691680256,totallynotgrim,03/26/2019 4:15 AM,You aint loading a mod,,
+105574798691680256,totallynotgrim,03/26/2019 4:16 AM,also your prefix should be,,
+105574798691680256,totallynotgrim,03/26/2019 4:16 AM,``Indi_Increased_Lumens/scripts/``,,
+105574798691680256,totallynotgrim,03/26/2019 4:16 AM,And that mod never loaded,,
+105574798691680256,totallynotgrim,03/26/2019 4:16 AM,Like ever,,
+105574798691680256,totallynotgrim,03/26/2019 4:16 AM,Without prefix,,
+207328818203983872,notabanana,03/26/2019 4:17 AM,There's your issue @Indianawinny,,
+207328818203983872,notabanana,03/26/2019 4:17 AM,Pbo manager doesnt create a prefix automatically,,
+207328818203983872,notabanana,03/26/2019 4:17 AM,You need to manually make one,,
+158294510080753665,gravitywolf,03/26/2019 4:28 AM,"1/3 times I respawn I am faced with a hud and a black screen; however, when I die in this black screen I can see everything around me as I fall to the ground.
+Any idea what this black screen is, and how to disable/hide it?",,
+239201186933112833,da0ne_,03/26/2019 4:30 AM,@GravityWolf happens to me as well,,
+239201186933112833,da0ne_,03/26/2019 4:30 AM,Are you running 100% Vanilla?,,
+158294510080753665,gravitywolf,03/26/2019 4:31 AM,"Yeah, well other than what I am working on, and RPCMemework.",,
+239201186933112833,da0ne_,03/26/2019 4:31 AM,:OmegaPog:,,
+239201186933112833,da0ne_,03/26/2019 4:31 AM,I think it’s base game glitch,,
+239201186933112833,da0ne_,03/26/2019 4:31 AM,Not caused by a mod. Either that or your respawn is scuffed,,
+239201186933112833,da0ne_,03/26/2019 4:32 AM,Any edits were made to DayZGame ?,,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,"No, I'm at the location, I can hear the grass and everything when I walk around, and can see it when I die.",,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,no,,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,ServerSide with a UI on client,,
+239201186933112833,da0ne_,03/26/2019 4:32 AM,"Yea I know what you mean, I had the bug multiple times",,
+239201186933112833,da0ne_,03/26/2019 4:32 AM,🤷,,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,¯\_(ツ)_/¯,,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,(╯°□°）╯︵ ┻━┻,,
+158294510080753665,gravitywolf,03/26/2019 4:32 AM,┬─┬ ノ( ゜-゜ノ),,
+239201186933112833,da0ne_,03/26/2019 4:33 AM,🍝code,,
+239201186933112833,da0ne_,03/26/2019 4:33 AM,@GravityWolf on the bright side ....,,
+239201186933112833,da0ne_,03/26/2019 4:33 AM,We can tell which surface texture is not getting loaded,,
+158294510080753665,gravitywolf,03/26/2019 4:33 AM,Lol,,
+239201186933112833,da0ne_,03/26/2019 4:33 AM,Have you seen the logs bro? I think it’s line 233 that does not load,,
+239201186933112833,da0ne_,03/26/2019 4:33 AM,Surface.OceanMan,,
+158294510080753665,gravitywolf,03/26/2019 4:34 AM,XD,,
+272864393828499456,indianawinny,03/26/2019 5:26 AM,"I've tried creating a addon prefix manually, with DayZ tools, and with the Arma 3 tools.
+
+Tried it with each one of these:
+Indi_Increased_Lumens
+Indi_Increased_Lumens/scripts/
+addons\Indi_Increased_Lumens
+Indi_Increased_Lumens/scripts/4_World
+
+Still nothing, but yeah the scripts are not loading, I smaked my keyboard and no error.",,
+207328818203983872,notabanana,03/26/2019 5:28 AM,I just scrolled up and thats because your path is wrong,,
+207328818203983872,notabanana,03/26/2019 5:28 AM,```Indi_Increased_Lumens/scripts/4_World``` is what you have in cfgmod but that directory doesnt exist @Indianawinny,,
+207328818203983872,notabanana,03/26/2019 5:29 AM,You dont have /scripts/,,
+207328818203983872,notabanana,03/26/2019 5:29 AM,Just <prefix>/4_world/etc,,
+272864393828499456,indianawinny,03/26/2019 5:34 AM,Can't believe i got that wrong 😛 thank you so much 😄,,
+207328818203983872,notabanana,03/26/2019 5:40 AM,Working now?,,
+105574798691680256,totallynotgrim,03/26/2019 5:47 AM,It should actually be ``Indi_Increased_Lumens\scripts``,,
+272864393828499456,indianawinny,03/26/2019 5:48 AM,"Error poped up so its loading, ill try fixing and creating the rest of it in the morning ty so much for your guys help",,
+148370724900306944,jacob_mango,03/26/2019 6:20 AM,The backslash and forward slash don't matter because iirc @mikero said internally the engine converts it,,
+148370724900306944,jacob_mango,03/26/2019 6:20 AM,Plus the devs use both interchangeably,,
+105574798691680256,totallynotgrim,03/26/2019 6:25 AM,Oh yes they do,,
+105574798691680256,totallynotgrim,03/26/2019 6:25 AM,Not in Arma but in DayZ they 100% do,,
+105574798691680256,totallynotgrim,03/26/2019 6:25 AM,Fuck knows why,,
+148370724900306944,jacob_mango,03/26/2019 6:26 AM,I haven't had an issue yet but that's probably because I rarely touch configs,,
+105574798691680256,totallynotgrim,03/26/2019 6:26 AM,I know that that prefix one is sketchy,,
+105574798691680256,totallynotgrim,03/26/2019 6:26 AM,If you forward slash it  path gets all fucked,,
+105574798691680256,totallynotgrim,03/26/2019 6:26 AM,Took me like an hour to figure out why its broken,,
+148370724900306944,jacob_mango,03/26/2019 6:27 AM,What do you mean fucked?,,
+105574798691680256,totallynotgrim,03/26/2019 6:28 AM,Dosent load,,
+105574798691680256,totallynotgrim,03/26/2019 6:28 AM,No errors as usual,,
+105574798691680256,totallynotgrim,03/26/2019 6:28 AM,Just dosent load,,
+148370724900306944,jacob_mango,03/26/2019 6:28 AM,Loads fine for us,https://cdn.discordapp.com/attachments/492295576470290433/559972003428433931/image0.png,
+105574798691680256,totallynotgrim,03/26/2019 6:29 AM,Prefix,,
+105574798691680256,totallynotgrim,03/26/2019 6:29 AM,in the PBO,,
+148370724900306944,jacob_mango,03/26/2019 6:29 AM,Oh,,
+148370724900306944,jacob_mango,03/26/2019 6:29 AM,Yeah that we just let make pbo figure that out for the prefix,,
+148370724900306944,jacob_mango,03/26/2019 6:30 AM,Since we symlink the github to the pdrive and make pbo builds from that,,
+148370724900306944,jacob_mango,03/26/2019 6:31 AM,Just realised that was old repo config,,
+148370724900306944,jacob_mango,03/26/2019 6:31 AM,New one on the proper repo,https://cdn.discordapp.com/attachments/492295576470290433/559972691487227905/image0.png,
+148370724900306944,jacob_mango,03/26/2019 6:31 AM,Even more fucked formatting,,
+105574798691680256,totallynotgrim,03/26/2019 6:31 AM,:pepeClap:,,
+148370724900306944,jacob_mango,03/26/2019 6:32 AM,"Thank you, thank you",,
+105574798691680256,totallynotgrim,03/26/2019 6:32 AM,Best build script world,,
+105574798691680256,totallynotgrim,03/26/2019 6:32 AM,https://dl.dropboxusercontent.com/s/cpgvdfulsp3r0sf/sublime_text_9K0CcsHKgx.png,,
+105574798691680256,totallynotgrim,03/26/2019 6:33 AM,:peepoClap:,,
+148370724900306944,jacob_mango,03/26/2019 6:33 AM,Mine best 😃,,
+148370724900306944,jacob_mango,03/26/2019 6:33 AM,Ok gtg bye,,
+105574798691680256,totallynotgrim,03/26/2019 6:33 AM,:FeelsWeirdMan:,,
+158294510080753665,gravitywolf,03/26/2019 7:00 AM,https://giphy.com/gifs/make-it-stop-9uorwgUW3jFsY,,
+126821054667554816,SmashT#7676,03/26/2019 9:27 AM,"Anyone got a quick init script to spawn with a weapon in hands (with attachments attached), tried some of the old loadout scripts that were posted months ago when modding first came out but they all seem outdated /  no longer work?",,
+181560985029574656,anthonyroe,03/26/2019 1:01 PM,Have you looked at COM?,,
+452141194169024512,niphoria,03/26/2019 1:47 PM,so what do i do now @Cleetus  ?,,
+368717325484032001,aussiecleetus,03/26/2019 1:48 PM,"let's try almost the same code you had, but PlayerBase instead of Man",,
+368717325484032001,aussiecleetus,03/26/2019 1:48 PM,sec,,
+368717325484032001,aussiecleetus,03/26/2019 1:49 PM,"```modded class PlayerBase
+{
+    override void PlayerBase()
+    {
+        DayzPlayerItemBehaviorCfg     toolsOneHanded = new DayzPlayerItemBehaviorCfg;
+        toolsOneHanded.SetToolsOneHanded();
+
+        GetDayZPlayerType().AddItemInHandsProfileIK(""SA_FlashLight"", ""dz/anims/workspaces/player/player_main/props/player_main_1h_flashlight.asi"", toolsOneHanded,         ""dz/anims/anm/player/ik/gear/flashlight.anm"");
+        super.PlayerBase();
+    }
+}```",,
+368717325484032001,aussiecleetus,03/26/2019 1:50 PM,"though, I cannot say, for certain that override and super calls work for a constructor of a class",,
+368717325484032001,aussiecleetus,03/26/2019 1:50 PM,"if that doesn't work properly, I've got another idea",,
+368717325484032001,aussiecleetus,03/26/2019 1:51 PM,"```modded class PlayerBase
+{
+    override void Init()
+    {
+        DayzPlayerItemBehaviorCfg     toolsOneHanded = new DayzPlayerItemBehaviorCfg;
+        toolsOneHanded.SetToolsOneHanded();
+
+        GetDayZPlayerType().AddItemInHandsProfileIK(""SA_FlashLight"", ""dz/anims/workspaces/player/player_main/props/player_main_1h_flashlight.asi"", toolsOneHanded, ""dz/anims/anm/player/ik/gear/flashlight.anm"");
+        super.Init();
+    }
+}```",,
+452141194169024512,niphoria,03/26/2019 1:51 PM,https://i.gyazo.com/6da6196a4dd9cca9974e411beed34353.png,,
+452141194169024512,niphoria,03/26/2019 1:51 PM,let me try the other one,,
+368717325484032001,aussiecleetus,03/26/2019 1:51 PM,yeah I had a feeling that would happen,,
+452141194169024512,niphoria,03/26/2019 1:53 PM,no error - but i need to edit it to a class i actually use,,
+368717325484032001,aussiecleetus,03/26/2019 1:53 PM,"the thing is, it's calling something very specific to the player",,
+368717325484032001,aussiecleetus,03/26/2019 1:54 PM,"so it really needs to be called inside the player somewhere, like this",,
+226007936546111498,ctlaltdelammo,03/26/2019 1:54 PM,I think he means the item class for the object in hands,,
+368717325484032001,aussiecleetus,03/26/2019 1:54 PM,OH,,
+368717325484032001,aussiecleetus,03/26/2019 1:54 PM,okay,,
+368717325484032001,aussiecleetus,03/26/2019 1:54 PM,that makes sense,,
+452141194169024512,niphoria,03/26/2019 1:55 PM,yep,,
+368717325484032001,aussiecleetus,03/26/2019 1:56 PM,"please let me know how it goes, I've been meaning to look into this for the satnagZ",,
+452141194169024512,niphoria,03/26/2019 1:58 PM,well ... it works for a can ... before it was glitchy in my hands ... now i hold it right,,
+226007936546111498,ctlaltdelammo,03/26/2019 1:59 PM,cool,,
+452141194169024512,niphoria,03/26/2019 1:59 PM,im going to test this with a weapon now - if it works,,
+368717325484032001,aussiecleetus,03/26/2019 1:59 PM,😃,,
+452141194169024512,niphoria,03/26/2019 1:59 PM,you are my hero ^^,,
+368717325484032001,aussiecleetus,03/26/2019 1:59 PM,nah it was all @Jacob_Mango,,
+368717325484032001,aussiecleetus,03/26/2019 1:59 PM,just followed his advice,,
+452141194169024512,niphoria,03/26/2019 2:00 PM,can you point this script? - since i think others are searching for a way to edit animations for items,,
+368717325484032001,aussiecleetus,03/26/2019 2:00 PM,"I'm not a moderator, I don't think I can make pins",,
+181560985029574656,anthonyroe,03/26/2019 2:02 PM,You figured out how to edit gun anims?,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:02 PM,no how to attach existing animations to new items,,
+452141194169024512,niphoria,03/26/2019 2:03 PM,yep it works,,
+452141194169024512,niphoria,03/26/2019 2:03 PM,even on guns,,
+368717325484032001,aussiecleetus,03/26/2019 2:04 PM,"that might be a way to change the combinations of animations with guns, maybe without needing to inherit to grab them",,
+452141194169024512,niphoria,03/26/2019 2:05 PM,i tested it on my duplicate of the ak101,,
+368717325484032001,aussiecleetus,03/26/2019 2:05 PM,did you inherit rifle_base or another gun?,,
+452141194169024512,niphoria,03/26/2019 2:06 PM,rifle_base,,
+368717325484032001,aussiecleetus,03/26/2019 2:06 PM,oooh,,
+368717325484032001,aussiecleetus,03/26/2019 2:06 PM,so that answers that,,
+368717325484032001,aussiecleetus,03/26/2019 2:06 PM,heck yes,,
+368717325484032001,aussiecleetus,03/26/2019 2:06 PM,that's awesome,,
+452141194169024512,niphoria,03/26/2019 2:06 PM,"```
+class CfgWeapons
+{
+    class Rifle_Base;
+    class RR_AK101_Base: Rifle_Base
+    {
+        scope=0;
+        weight=3077;
+        absorbency=0;
+        repairableWithKits[]={5,1};
+        repairCosts[]={30,25};
+        modelOptics=""-"";
+        distanceZoomMin=100;
+        distanceZoomMax=100;
+....
+
+```",,
+452141194169024512,niphoria,03/26/2019 2:06 PM,i just snapped out a part of it,,
+368717325484032001,aussiecleetus,03/26/2019 2:07 PM,nice,,
+452141194169024512,niphoria,03/26/2019 2:07 PM,"and this is the ""modified"" script im using
+
+```
+modded class PlayerBase
+{
+    override void Init()
+    {
+        DayzPlayerItemBehaviorCfg     fireArmsItemBehaviour = new DayzPlayerItemBehaviorCfg;
+        fireArmsItemBehaviour.SetFirearms();
+
+        GetDayZPlayerType().AddItemInHandsProfileIK(""RR_AK101_Base"", ""dz/anims/workspaces/player/player_main/weapons/player_main_akm.asi"", fireArmsItemBehaviour, ""dz/anims/anm/player/ik/weapons/akm.anm"", ""dz/anims/anm/player/reloads/akm/w_akm_states.anm"");
+        super.Init();
+    }
+}
+```",,
+452141194169024512,niphoria,03/26/2019 2:07 PM,well you just saved me from an endless loop of trying to add it for hours get sad - repeat,,
+368717325484032001,aussiecleetus,03/26/2019 2:07 PM,that is great news,,
+452141194169024512,niphoria,03/26/2019 2:08 PM,5 days of trying to implement it,,
+452141194169024512,niphoria,03/26/2019 2:08 PM,you solved it in 5 minutes,,
+368717325484032001,aussiecleetus,03/26/2019 2:08 PM,@Not A Banana,,
+452141194169024512,niphoria,03/26/2019 2:08 PM,nice,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:08 PM,most of this modding stuff is hours of pain :p;,,
+452141194169024512,niphoria,03/26/2019 2:08 PM,i already informed him about it ^^,,
+368717325484032001,aussiecleetus,03/26/2019 2:08 PM,you might want to know this dude,,
+368717325484032001,aussiecleetus,03/26/2019 2:08 PM,ah k cool,,
+452141194169024512,niphoria,03/26/2019 2:08 PM,because he did some work on the aug - but didnt knew how to add it as a mod so he just modified the scripts.pbo,,
+368717325484032001,aussiecleetus,03/26/2019 2:10 PM,this modding community is awesome,,
+368717325484032001,aussiecleetus,03/26/2019 2:10 PM,I really enjoy getting to learn stuff along with you all,,
+452141194169024512,niphoria,03/26/2019 2:10 PM,yep totally agree with it - you guys keep the game alive ^^,,
+368717325484032001,aussiecleetus,03/26/2019 2:13 PM,"the game won't die, even if Bohemia and modders abandoned it, there would still be players and servers",,
+368717325484032001,aussiecleetus,03/26/2019 2:13 PM,just not as many,,
+199213081170149377,zeroy99,03/26/2019 2:14 PM,"Quick Question, im used to Sublime for reading config files, etc... does Workbench support syntax highlighting? Would make it much easier to read scripts and cpp ...",,
+368717325484032001,aussiecleetus,03/26/2019 2:14 PM,it does have syntax highlighting,,
+368717325484032001,aussiecleetus,03/26/2019 2:14 PM,it also has some context menu stuff that is specific to enfscript,,
+148370724900306944,jacob_mango,03/26/2019 2:14 PM,I personally still use VS code,,
+368717325484032001,aussiecleetus,03/26/2019 2:15 PM,I am notepad++ user with my own custom syntax highlighting setup,,
+368717325484032001,aussiecleetus,03/26/2019 2:15 PM,😛,,
+452141194169024512,niphoria,03/26/2019 2:15 PM,notepad++ aswell ^^,,
+368717325484032001,aussiecleetus,03/26/2019 2:15 PM,we all do it differently,,
+239201186933112833,da0ne_,03/26/2019 2:15 PM,Sublime > VSCode,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:15 PM,"oh no, not the editor wars",,
+368717325484032001,aussiecleetus,03/26/2019 2:15 PM,I love the variety,,
+148370724900306944,jacob_mango,03/26/2019 2:15 PM,VSCode > Everything Else,,
+368717325484032001,aussiecleetus,03/26/2019 2:15 PM,"they're all just as good, if you're comfortable with it",,
+239201186933112833,da0ne_,03/26/2019 2:15 PM,COT < Re texture mods,,
+148370724900306944,jacob_mango,03/26/2019 2:16 PM,"reminds me, someone was secretly working on a thing for any text editor to support enforce script, wonder if they still are? I also forgot who it was so 🤷",,
+452141194169024512,niphoria,03/26/2019 2:16 PM,Opening the code in the editor - copying everything over to paint and highlighting everything myself > everything,,
+148370724900306944,jacob_mango,03/26/2019 2:16 PM,https://langserver.org/ one of those,,
+148370724900306944,jacob_mango,03/26/2019 2:17 PM,hope who ever it was still is or bohemia does for arma like they originally had some plans to support blender natively,,
+368717325484032001,aussiecleetus,03/26/2019 2:17 PM,"it wouldn't take much to modify a C profile for most editors
+but then you have to go through all the classes and methods... that takes quite some time",,
+368717325484032001,aussiecleetus,03/26/2019 2:17 PM,I add them as I come across ones I've missed,,
+368717325484032001,aussiecleetus,03/26/2019 2:18 PM,it's just time,,
+148370724900306944,jacob_mango,03/26/2019 2:19 PM,found what i was talking about https://youtu.be/8TncHhg__fI?t=1581,,
+148370724900306944,jacob_mango,03/26/2019 2:19 PM,with blender support,,
+148370724900306944,jacob_mango,03/26/2019 2:19 PM,though a quick google also said Bohemia only uses it for prototyping?,,
+148370724900306944,jacob_mango,03/26/2019 2:19 PM,im gonna move to #generic-dayz with this talk,,
+452141194169024512,niphoria,03/26/2019 2:20 PM,@Cleetus can you tell me how to add items of different kinds ? ...,,
+452141194169024512,niphoria,03/26/2019 2:21 PM,"```
+modded class PlayerBase
+{
+    override void Init()
+    {
+        DayzPlayerItemBehaviorCfg     fireArmsItemBehaviour = new DayzPlayerItemBehaviorCfg;
+        fireArmsItemBehaviour.SetFirearms();
+
+        GetDayZPlayerType().AddItemInHandsProfileIK(""RR_AK101_Base"", ""dz/anims/workspaces/player/player_main/weapons/player_main_akm.asi"", fireArmsItemBehaviour, ""dz/anims/anm/player/ik/weapons/akm.anm"", ""dz/anims/anm/player/reloads/akm/w_akm_states.anm"");
+        super.Init();
+    }
+    {
+        DayzPlayerItemBehaviorCfg     toolsOneHanded = new DayzPlayerItemBehaviorCfg;
+        toolsOneHanded.SetToolsOneHanded();
+        
+        GetDayZPlayerType().AddItemInHandsProfileIK(""example"", ""dz/anims/workspaces/player/player_main/player_main_1h.asi"", toolsOneHanded,                     ""dz/anims/anm/player/ik/gear/banana.anm"");
+        GetDayZPlayerType().AddItemInHandsProfileIK(""example"", ""dz/anims/workspaces/player/player_main/player_main_1h.asi"", toolsOneHanded,                     ""dz/anims/anm/player/ik/attachments/magazines/magazine_ij70.anm"");
+        super.Init();
+    }
+}
+``` 
+
+this is wrong ...",,
+226007936546111498,ctlaltdelammo,03/26/2019 2:22 PM,double super,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:22 PM,remove some { } and the double init call,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:23 PM,Super.Init(); } { remove those 3 lines from the middle,,
+368717325484032001,aussiecleetus,03/26/2019 2:23 PM,I think,,
+226007936546111498,ctlaltdelammo,03/26/2019 2:23 PM,or make it pretty like Cleetus did,,
+148370724900306944,jacob_mango,03/26/2019 2:23 PM,"```cpp
+modded class PlayerBase
+{
+    override void Init()
+    {
+        DayzPlayerItemBehaviorCfg     fireArmsItemBehaviour = new DayzPlayerItemBehaviorCfg;
+        fireArmsItemBehaviour.SetFirearms();
+
+        GetDayZPlayerType().AddItemInHandsProfileIK(""RR_AK101_Base"", ""dz/anims/workspaces/player/player_main/weapons/player_main_akm.asi"", fireArmsItemBehaviour, ""dz/anims/anm/player/ik/weapons/akm.anm"", ""dz/anims/anm/player/reloads/akm/w_akm_states.anm"");
+
+        DayzPlayerItemBehaviorCfg     toolsOneHanded = new DayzPlayerItemBehaviorCfg;
+        toolsOneHanded.SetToolsOneHanded();
+        
+        GetDayZPlayerType().AddItemInHandsProfileIK(""example"", ""dz/anims/workspaces/player/player_main/player_main_1h.asi"", toolsOneHanded,                     ""dz/anims/anm/player/ik/gear/banana.anm"");
+        GetDayZPlayerType().AddItemInHandsProfileIK(""example"", ""dz/anims/workspaces/player/player_main/player_main_1h.asi"", toolsOneHanded,                     ""dz/anims/anm/player/ik/attachments/magazines/magazine_ij70.anm"");
+        super.Init();
+
+    }
+}
+```",,
+368717325484032001,aussiecleetus,03/26/2019 2:23 PM,pretty much same same 😛,,
+452141194169024512,niphoria,03/26/2019 2:24 PM,so much at the same time xD,,
+148370724900306944,jacob_mango,03/26/2019 2:24 PM,"you need to run `SetToolsOneHanded` before making the profile IK i believe, atleast that's how the devs do it and why bother wasting time to figure out the other way?",,
+368717325484032001,aussiecleetus,03/26/2019 2:24 PM,yeah fair call,,
+368717325484032001,aussiecleetus,03/26/2019 2:24 PM,though sometimes ordering issues fix bugs that they have 😛,,
+368717325484032001,aussiecleetus,03/26/2019 2:25 PM,go with Jacob's answer to be safe though,,
+452141194169024512,niphoria,03/26/2019 2:25 PM,im trying both c:,,
+148370724900306944,jacob_mango,03/26/2019 2:25 PM,,https://cdn.discordapp.com/attachments/492295576470290433/560092064470269963/unknown.png,
+148370724900306944,jacob_mango,03/26/2019 2:25 PM,no reward,,
+368717325484032001,aussiecleetus,03/26/2019 2:26 PM,"well the way I see it, they might not even be needed, because the super calls those functions later",,
+148370724900306944,jacob_mango,03/26/2019 2:26 PM,wait so does this actually work?,,
+368717325484032001,aussiecleetus,03/26/2019 2:26 PM,yes dude,,
+452141194169024512,niphoria,03/26/2019 2:27 PM,tested on a can of ravioli and an ak101,,
+148370724900306944,jacob_mango,03/26/2019 2:27 PM,oh nice,,
+452141194169024512,niphoria,03/26/2019 2:27 PM,yes,,
+368717325484032001,aussiecleetus,03/26/2019 2:27 PM,"Niphoria has a custom gun that doesn't inherit from another gun, but uses AKM animations",,
+148370724900306944,jacob_mango,03/26/2019 2:27 PM,"@Not A Banana you can fix the way you do configs on redux weapons now, instead of being a child of AKM and such, actual independent class",,
+199213081170149377,zeroy99,03/26/2019 2:27 PM,"I should have been more precise on my question regarding Workbench, does it support colors in scripts / config, like sublime does",https://cdn.discordapp.com/attachments/492295576470290433/560092489487351808/unknown.png,
+368717325484032001,aussiecleetus,03/26/2019 2:28 PM,config... hrm  I haven't tried a config file in there,,
+199213081170149377,zeroy99,03/26/2019 2:28 PM,config are cpp so Sublime applies C highlight,,
+181560985029574656,anthonyroe,03/26/2019 2:29 PM,Vscode for the win,,
+199213081170149377,zeroy99,03/26/2019 2:29 PM,"its no big deal, ill likely keep using Sublime",,
+368717325484032001,aussiecleetus,03/26/2019 2:29 PM,nope,https://cdn.discordapp.com/attachments/492295576470290433/560093035573149706/Capture.PNG,
+148370724900306944,jacob_mango,03/26/2019 2:30 PM,if you want some batchfiles to use for compiling your mods here it is: https://github.com/jacob-mango/dayz-community-framework,,
+148370724900306944,jacob_mango,03/26/2019 2:30 PM,ill make a tutorial on how to use them sometime in 2019,,
+452141194169024512,niphoria,03/26/2019 2:32 PM,so ... @Cleetus  code actually makes the weapon/hands offset .... i dont know why,,
+368717325484032001,aussiecleetus,03/26/2019 2:32 PM,"okay, so that's not a good thing 😛",,
+368717325484032001,aussiecleetus,03/26/2019 2:32 PM,I will delete my code so it doesn't cause troubles for others,,
+368717325484032001,aussiecleetus,03/26/2019 2:33 PM,"sometimes you win some, sometimes you lose some. But without trying, nobody knows for sure, without docs on some things that are unexplored still",,
+452141194169024512,niphoria,03/26/2019 2:34 PM,the code from @Jacob_Mango works without any offset,,
+368717325484032001,aussiecleetus,03/26/2019 2:35 PM,"yeah, that was the more logical one, as he said, the ordering that the devs use is obviously for good reason",,
+368717325484032001,aussiecleetus,03/26/2019 2:36 PM,"but experimenting is what makes it fun, to me at least. Not all experiments result the way you want, but sometimes you get unexpected fun results too",,
+452141194169024512,niphoria,03/26/2019 2:36 PM,well now i have a lot of work to do - thank you all for the help - you helped me a lot~,,
+452141194169024512,niphoria,03/26/2019 2:36 PM,well i got the point where iam with experiementing ... even tho i basicly just add new items (or edit existing ones),,
+239201186933112833,da0ne_,03/26/2019 2:37 PM,,https://cdn.discordapp.com/attachments/492295576470290433/560094878415978497/unknown.png,👏 (1)
+368717325484032001,aussiecleetus,03/26/2019 2:38 PM,"if I were in unix, I'd be using xemacs all day 😛",,
+368717325484032001,aussiecleetus,03/26/2019 2:39 PM,"I look forward to linux support for the servers. I know we won't get linux tools, but that'd be amazing if we did",,
+452141194169024512,niphoria,03/26/2019 2:41 PM,i heard something about a tool wich makes windows games run on linux ... i dont know if it would work for that ... but cant you use that ? ^^,,
+452141194169024512,niphoria,03/26/2019 2:41 PM,sorry im on #general,,
+368717325484032001,aussiecleetus,03/26/2019 3:57 PM,@[DUG] Ammo our wish was granted,,
+368717325484032001,aussiecleetus,03/26/2019 3:57 PM,exp server files just downloaded,,
+226007936546111498,ctlaltdelammo,03/26/2019 4:11 PM,yeah I saw 😃,,
+239201186933112833,da0ne_,03/26/2019 4:22 PM,? server files out,,
+199213081170149377,zeroy99,03/26/2019 4:23 PM,,https://cdn.discordapp.com/attachments/492295576470290433/560121646778941455/unknown.png,
+199213081170149377,zeroy99,03/26/2019 4:24 PM,https://steamdb.info/app/223350/depots/,,
+199213081170149377,zeroy99,03/26/2019 4:24 PM,looks like it yes,,
+167370568893464576,0x346e3730,03/26/2019 4:24 PM,yes they are,,
+158294510080753665,gravitywolf,03/26/2019 8:47 PM,Is there anyway to reset the players camera?,,
+226007936546111498,ctlaltdelammo,03/26/2019 9:01 PM,"is there a way for me to determine the absolute offset from a point on a skeleton, to a point on an object attached to said skeleton",,
+226007936546111498,ctlaltdelammo,03/26/2019 9:01 PM,and output that,,
+226007936546111498,ctlaltdelammo,03/26/2019 9:02 PM,I need to determine a point for a light similar to the m_OnHeadLocalPos for the headtorch,,
+226007936546111498,ctlaltdelammo,03/26/2019 9:02 PM,(exp branch),,
+226007936546111498,ctlaltdelammo,03/26/2019 9:03 PM,"right now I'm doing it by shifting the point till it looks good, but I would like a more absolute correct way 😃",,
+226007936546111498,ctlaltdelammo,03/26/2019 9:13 PM,so I have a memory point light on the object and I want to determine the offset from the skeleton head point. so I can have the light shine from the same position as when it is in hand,,
+226007936546111498,ctlaltdelammo,03/26/2019 10:03 PM,"Also, the pointlight defined in the config used to have the heatwave effect etc available, that seems to be gone from the ScriptedLightBase, anyone know how to add that back?",,
+402438795825381376,namalsksurvivor,03/26/2019 10:17 PM,"I noticed that too recently, will ask about it tomorrow",,
+226007936546111498,ctlaltdelammo,03/26/2019 10:18 PM,"thanks, it would help my case a lot 😃",,
+158294510080753665,gravitywolf,03/27/2019 12:52 AM,Note: Use `out` parameters instead using a return type for arrays.,,
+207328818203983872,notabanana,03/27/2019 3:26 AM,"@Cleetus doesn't really help me much, plus I've been doing this as early as November by editing core files. You can't mix and match the animations, so until we can make our own it's not much use",,
+239201186933112833,da0ne_,03/27/2019 3:56 AM,@Jacob_Mango you having issues with new updates to `UAInputAPI`?,,
+239201186933112833,da0ne_,03/27/2019 3:57 AM,seems like it does not want to pick up custom XML's 🤔,,
+239201186933112833,da0ne_,03/27/2019 3:57 AM,`RegisterInput` return null...XML version change? tried already.,,
+148370724900306944,jacob_mango,03/27/2019 3:58 AM,i have not tested yet,,
+239201186933112833,da0ne_,03/27/2019 3:58 AM,well..you are gonna have problems 😦,,
+239201186933112833,da0ne_,03/27/2019 3:58 AM,`GetUApi().RegisterInput` returns null.,,
+368717325484032001,aussiecleetus,03/27/2019 4:36 AM,I would if I were asked though,,
+368717325484032001,aussiecleetus,03/27/2019 4:51 AM,"@Not A Banana I always assumed you didn't need my help, as you're among some of the best modders as far as experience goes.
+My DMs are always open for anybody who does want/need help though. Even if it's just bouncing ideas off of, or getting a different perspective.
+I don't know all the answers, but will always endeavour to help any way I can when asked if I have the time",,
+207328818203983872,notabanana,03/27/2019 4:52 AM,Lmfao cleetus I think you misunderstood,,
+207328818203983872,notabanana,03/27/2019 4:52 AM,Oof,,
+114872332719357956,hennysea,03/27/2019 4:52 AM,"Yes, Cleetus is always there to help,
+a true lad ❤",,
+207328818203983872,notabanana,03/27/2019 4:53 AM,"I'm not saying ""cleetus does not help me""",,
+207328818203983872,notabanana,03/27/2019 4:53 AM,You're one of the nicest dudes around,,
+368717325484032001,aussiecleetus,03/27/2019 4:53 AM,"(probably, I just opened my eyes and saw the ping)",,
+230061386888118273,.thurston,03/27/2019 4:53 AM,@Cleetus doesn't help :DansGame:,,
+207328818203983872,notabanana,03/27/2019 4:53 AM,My bad for not putting a comma there,,
+114872332719357956,hennysea,03/27/2019 4:54 AM,wtf Banana did you not pass English?,,🤣 (1)
+207328818203983872,notabanana,03/27/2019 4:54 AM,I was letting you know the script doesn't help much,,
+230061386888118273,.thurston,03/27/2019 4:54 AM,Bad Cleetus 😉,,
+207328818203983872,notabanana,03/27/2019 4:54 AM,I feel bad lmao,,
+368717325484032001,aussiecleetus,03/27/2019 4:54 AM,don't feel bad,,
+230061386888118273,.thurston,03/27/2019 4:54 AM,Feel awful 😂,,
+207328818203983872,notabanana,03/27/2019 4:54 AM,"Cleetus woke up ""the fuck did I do to him?""",,
+368717325484032001,aussiecleetus,03/27/2019 4:55 AM,so mixing animations doesn't work in that? that's sad,,
+368717325484032001,aussiecleetus,03/27/2019 4:55 AM,😦,,
+207328818203983872,notabanana,03/27/2019 4:55 AM,Yeah. If you see the videos I posted in #deleted-channel that's the best result I got from mixing,,
+207328818203983872,notabanana,03/27/2019 4:56 AM,The worst result is spaghetti man,,
+207328818203983872,notabanana,03/27/2019 4:56 AM,Or meatball glitch,,
+368717325484032001,aussiecleetus,03/27/2019 4:56 AM,sounds like fun,,
+368717325484032001,aussiecleetus,03/27/2019 4:56 AM,I was just saying yesterday experiments sometimes lead to unexpected amusing results,,
+368717325484032001,aussiecleetus,03/27/2019 4:57 AM,"it was stated as a waste of time, but honestly if someone doesn't try the 'wrong' thing, we'll never know for sure if it's truly 'wrong'",,
+114872332719357956,hennysea,03/27/2019 4:58 AM,"Are there any looping animations I can use as a reference on how to loop an animation? 
+All I can think of is the reloading animation?",,
+368717325484032001,aussiecleetus,03/27/2019 4:58 AM,almost all the continuous actions are looped,,
+368717325484032001,aussiecleetus,03/27/2019 4:58 AM,but that's a system being completely overhauled,,
+456226577798135808,Deleted User,03/27/2019 4:58 AM,:oog:,,
+114872332719357956,hennysea,03/27/2019 4:58 AM,Umm was hoping I didn't have to do it that way lol,,
+368717325484032001,aussiecleetus,03/27/2019 5:00 AM,"others may know of other sections, that's just an answer I know to be the case off the top of my head",,
+402438795825381376,namalsksurvivor,03/27/2019 2:49 PM,"Just to give an update on the heathaze effect @[DUG] Ammo  mentioned yesterday, got confirmed that it is indeed not part of the scripted light API at the moment along with some other things (such as varied brightness for fire-based lights). Will be added later (1.03+).",,
+226007936546111498,ctlaltdelammo,03/27/2019 2:50 PM,"ah ok, well it worked fine and I think I achieved the effect I wanted, see #dayz-showcase-archive",,
+226007936546111498,ctlaltdelammo,03/27/2019 2:53 PM,thanks for the update,,
+402438795825381376,namalsksurvivor,03/27/2019 3:07 PM,Looking good! 😃 Had to adjust my gamma to truly see it though 😄,,
+239201186933112833,da0ne_,03/27/2019 3:08 PM,on my phone blasted the brightness to see lol. Looks great @[DUG] Ammo,,
+226007936546111498,ctlaltdelammo,03/27/2019 3:08 PM,it looks better in game 😃,,
+235718406492520448,niirozz,03/27/2019 3:20 PM,@DaOne(Mark) I think we have no problem with UAInputAPI,,
+239201186933112833,da0ne_,03/27/2019 3:20 PM,no it was sorted out.,,
+235718406492520448,niirozz,03/27/2019 3:20 PM,"with new update, but can't confirm it for now, we are using it for our heli",,
+239201186933112833,da0ne_,03/27/2019 3:21 PM,they changed group name from default `infantry` to `core` 😃,,
+239201186933112833,da0ne_,03/27/2019 3:21 PM,so when you register a group that does not existed it would return null.,,
+235718406492520448,niirozz,03/27/2019 3:21 PM,"Ho, thx for the info",,
+235718406492520448,niirozz,03/27/2019 3:21 PM,I will fix it on our end so,,👌 (1)
+235718406492520448,niirozz,03/27/2019 3:22 PM,"Yeah, I'm waiting my fix for the new input system, so it can be easily moddable for us",,
+158294510080753665,gravitywolf,03/27/2019 4:45 PM,But the plug-in manager,,
+235718406492520448,niirozz,03/27/2019 4:48 PM,?,,
+356557233578049537,dr_j0nes,03/27/2019 5:23 PM,Nice since the last Experimental Update placing objects from script like Houses is broken. It only spawns in the Collision,,
+356557233578049537,dr_j0nes,03/27/2019 5:23 PM,Doesnt work with Trader Mod or Community Online Tools Exp,,
+368717325484032001,aussiecleetus,03/27/2019 5:25 PM,oh dear,,
+158294510080753665,gravitywolf,03/27/2019 5:25 PM,Woot,,
+356557233578049537,dr_j0nes,03/27/2019 5:25 PM,yeah.. :/,,
+356557233578049537,dr_j0nes,03/27/2019 5:26 PM,Cant have a deeper look at that because I am not at home the next few Hours,,
+356557233578049537,dr_j0nes,03/27/2019 5:27 PM,Lets hope its fixed before experimental hits stable or we just have to use a new function to spawn in houses and such,,
+235718406492520448,niirozz,03/27/2019 5:42 PM,What exactly is broken ?,,
+207328818203983872,notabanana,03/27/2019 5:44 PM,Wait what?,,
+207328818203983872,notabanana,03/27/2019 5:45 PM,Are you saying the house is invisible @Dr_J0nes,,
+207328818203983872,notabanana,03/27/2019 5:45 PM,But the collisions are there,,
+226007936546111498,ctlaltdelammo,03/27/2019 5:45 PM,might be related to the fact I can't make a garden plot,,
+226007936546111498,ctlaltdelammo,03/27/2019 5:45 PM,it flattens the ground but is invisilble,,
+207328818203983872,notabanana,03/27/2019 5:53 PM,Well that's good. If it affects vanilla stuff they have to address it before update,,
+207328818203983872,notabanana,03/27/2019 5:54 PM,If it was just a modding issue they could get away with it not being high priority,,
+226007936546111498,ctlaltdelammo,03/27/2019 6:00 PM,as soon as you start digging with the shovel the white outline goes away and yeah,,
+356557233578049537,dr_j0nes,03/27/2019 6:00 PM,Right the house is invisible but collision is there. Haven't tested vanilla mechanics. Trader and COT uses the CreateObject Function to spawn Houses/Objects btw.,,
+226007936546111498,ctlaltdelammo,03/27/2019 6:01 PM,tried finding a shovel on vanilla server to see if mods had anything to do with it but no luck 😃,,
+356557233578049537,dr_j0nes,03/27/2019 6:01 PM,Lets hope it also affects vanilla items,,
+368717325484032001,aussiecleetus,03/27/2019 6:02 PM,"I'm just testing completely vanilla now, as soon as exp finishes installing on steam",,
+356557233578049537,dr_j0nes,03/27/2019 6:02 PM,Have red in the last patch notes that there was a problem with base objects and collision. They said they fixed it. Likely they broke normal spawning with that,,
+368717325484032001,aussiecleetus,03/27/2019 6:03 PM,2 mins 😦,,
+368717325484032001,aussiecleetus,03/27/2019 6:04 PM,I've set it up to spawn a shovel and a tent for me when I fresh spawn,,
+368717325484032001,aussiecleetus,03/27/2019 6:04 PM,"ironically, using the CreateObject function",,
+368717325484032001,aussiecleetus,03/27/2019 6:04 PM,so we'll see,,
+235718406492520448,niirozz,03/27/2019 6:05 PM,"Mhh, We are running fine CreateObject with last exp",,
+235718406492520448,niirozz,03/27/2019 6:05 PM,everything working fine,,
+368717325484032001,aussiecleetus,03/27/2019 6:06 PM,it might have something to do with whatever they had to fix to stop the houses tilting when doors were opened?,,
+235718406492520448,niirozz,03/27/2019 6:07 PM,"Don't know, but it's running fine on our end",,
+368717325484032001,aussiecleetus,03/27/2019 6:07 PM,hrm,,
+356557233578049537,dr_j0nes,03/27/2019 6:07 PM,Can you show me the line of code you are using?,,
+356557233578049537,dr_j0nes,03/27/2019 6:07 PM,I have in mind that there were two bool parameters to put in,,
+356557233578049537,dr_j0nes,03/27/2019 6:08 PM,Would be awesome if it's just my server or the parameters 😁,,
+368717325484032001,aussiecleetus,03/27/2019 6:08 PM,"there are 3 in the proto native, but they have defaults to false",,
+368717325484032001,aussiecleetus,03/27/2019 6:09 PM,doing a search on CreateObject shows them using it with and without various levels of them,,
+356557233578049537,dr_j0nes,03/27/2019 6:09 PM,I have in mind that I have set both to false,,
+368717325484032001,aussiecleetus,03/27/2019 6:10 PM,"```proto native Object CreateObject( string type, vector pos, bool create_local = false, bool init_ai = false, bool create_physics = true );```",,
+368717325484032001,aussiecleetus,03/27/2019 6:10 PM,oh sorry the last is defaulted to true,,
+368717325484032001,aussiecleetus,03/27/2019 6:10 PM,create_physics,,
+356557233578049537,dr_j0nes,03/27/2019 6:10 PM,Ah okay,,
+356557233578049537,dr_j0nes,03/27/2019 6:10 PM,Hmmm,,
+356557233578049537,dr_j0nes,03/27/2019 6:10 PM,Seems right what I am doing in Trader,,
+368717325484032001,aussiecleetus,03/27/2019 6:11 PM,"```void SpawnObject(string objectName, vector position, vector orientation)
+{
+    Object obj;
+    obj = Object.Cast(GetGame().CreateObject(objectName, ""0 0 0""));
+    obj.SetPosition(position);
+    obj.SetOrientation(orientation);
+    
+    // Force update collisions
+    if (obj.CanAffectPathgraph())
+    {
+        obj.SetAffectPathgraph(true, false);
+        GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(GetGame().UpdatePathgraphRegionByObject, 100, false, obj);
+    }
+}```",,
+368717325484032001,aussiecleetus,03/27/2019 6:11 PM,"this is the one I've been using a while now, and is what COM export has been updated to",,
+368717325484032001,aussiecleetus,03/27/2019 6:17 PM,"completely vanilla. Garden plot leaves the cluttercutter6x6, but not the actual garden bed",https://cdn.discordapp.com/attachments/492295576470290433/560512636366618635/20190328011616_1.jpg,
+235718406492520448,niirozz,03/27/2019 6:17 PM,Fine for us at DayZ Expansion,,
+235718406492520448,niirozz,03/27/2019 6:17 PM,working as excepted,,
+99298225999056896,cashewsan,03/27/2019 6:17 PM,I actually like that lol,,
+99298225999056896,cashewsan,03/27/2019 6:18 PM,Now change the shovel to a lawnmower model and we’ll be good,,
+368717325484032001,aussiecleetus,03/27/2019 6:19 PM,"I've literally just booted up a 1.02.150958 server and client, running no mods (only change was init.c to spawn a shovel at my feet on respawn)
+
+that's the effect I'm having",,
+99298225999056896,cashewsan,03/27/2019 6:20 PM,"Modding support in Q1, amiright? :haHAA:",,
+207328818203983872,notabanana,03/27/2019 6:20 PM,"I mean, it's experimental",,
+207328818203983872,notabanana,03/27/2019 6:21 PM,I'm just as bitter as the next guy but you cant fault them for breaking exp,,
+368717325484032001,aussiecleetus,03/27/2019 6:21 PM,yeah exactly,,
+99298225999056896,cashewsan,03/27/2019 6:21 PM,"Yeah, but not sure why they touch unnecessary things",,
+368717325484032001,aussiecleetus,03/27/2019 6:21 PM,and it's not coming to stable for a short bit yet at least,,
+207328818203983872,notabanana,03/27/2019 6:21 PM,thats not how development works,,
+207328818203983872,notabanana,03/27/2019 6:21 PM,They didnt touch unnecessary things,,
+207328818203983872,notabanana,03/27/2019 6:21 PM,they changed what they needed to and this is an unexpected/unintentional side effect,,
+99298225999056896,cashewsan,03/27/2019 6:22 PM,What were they even changing though?,,
+99298225999056896,cashewsan,03/27/2019 6:22 PM,Recipes?,,
+356557233578049537,dr_j0nes,03/27/2019 6:23 PM,Like I said there was a problem with base objects and their collision. I guess that's why they touched it.,,
+356557233578049537,dr_j0nes,03/27/2019 6:23 PM,Yeah let's just hope it's fixed soon :),,
+99298225999056896,cashewsan,03/27/2019 6:23 PM,Hopefully,,
+356557233578049537,dr_j0nes,03/27/2019 6:24 PM,If there is a new way to spawn objects and you find it feel free to tag me 😅,,
+356557233578049537,dr_j0nes,03/27/2019 6:24 PM,Thanks boys,,
+207328818203983872,notabanana,03/27/2019 6:24 PM,@CashewSan Who knows what it was specifically that broke this,,
+207328818203983872,notabanana,03/27/2019 6:25 PM,"But in general, literally tens of thousands of things",,
+207328818203983872,notabanana,03/27/2019 6:25 PM,anyone have a link to the script diff?,,
+207328818203983872,notabanana,03/27/2019 6:25 PM,A lot of code changes update to update,,
+356557233578049537,dr_j0nes,03/27/2019 6:26 PM,I am not at home :(,,
+356557233578049537,dr_j0nes,03/27/2019 6:26 PM,But it wasn't much,,
+356557233578049537,dr_j0nes,03/27/2019 6:26 PM,But that doesn't matter xD,,
+368717325484032001,aussiecleetus,03/27/2019 6:28 PM,"```        Object obj;
+        obj = GetGame().CreateObject(""LargeTent"", pos);
+        obj = GetGame().CreateObject(""Shovel"", pos);```
+
+well this didn't spawn invisible items, so I think it's something engine-side, not script side",,
+368717325484032001,aussiecleetus,03/27/2019 6:28 PM,they spawned successfully,,
+368717325484032001,aussiecleetus,03/27/2019 6:28 PM,"yet, that was all grass, there are no garden plots for sure",,
+207328818203983872,notabanana,03/27/2019 6:29 PM,"This includes all text files (unfortunately I forgot to also delete the rap.txt files in the files I deleted to do this, so these numbers are inflated) so it's not just the scripts but here's an example of how much can change in an update @CashewSan",,
+207328818203983872,notabanana,03/27/2019 6:29 PM,,https://cdn.discordapp.com/attachments/492295576470290433/560515723131093002/5a2f69ec2d091ae493e73d4bca1e7e7f.png,
+207328818203983872,notabanana,03/27/2019 6:30 PM,Ah here it is,,
+207328818203983872,notabanana,03/27/2019 6:30 PM,This is the scripts changes @CashewSan,https://cdn.discordapp.com/attachments/492295576470290433/560516043601346591/98663e42a84f90893c523ceb08a1911e.png,

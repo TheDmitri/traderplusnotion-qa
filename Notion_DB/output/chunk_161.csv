@@ -1,0 +1,385 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+665471546525220875,Zedmag#7576,08/20/2023 2:27 AM,there are also some A/C units on the roof..,,
+330475826158108674,mikkbenelis,08/20/2023 3:25 PM,"Sorry for pinging to a two years old message, but seems like they have not fixed it yet...
+It works for items with its own cargo (like barrel), but it doesn't work for attachments
+
+I'm trying to attach a jacket/pants to a custom item, but its inventory is still visible
+Moreover, it breaks the UI  of a parent item (wrong item name, wrong cargo item name)
+
+Found your issue here which is closed due to duplicate: https://feedback.bistudio.com/T160303
+And the original issue is still open since 2020: https://feedback.bistudio.com/T151046
+
+Am I missing something or have to give up on it?",,
+330475826158108674,mikkbenelis,08/20/2023 3:28 PM,"The first screenshot is without any code changes (vanilla)
+The second one with `override bool CanDisplayCargo()` set to `false`
+
+```C++
+modded class NBCJacketBase // same for NBCPantsBase 
+{
+    override bool CanDisplayCargo()
+    {
+        if (!super.CanDisplayCargo())
+            return false;
+
+        auto parent = GetHierarchyParent();
+        if (parent && parent.IsInherited(mia_nbcbag_base))
+            return false;
+
+        return true;
+    }
+};
+```","https://cdn.discordapp.com/attachments/492295576470290433/1142812369962156122/image.png,https://cdn.discordapp.com/attachments/492295576470290433/1142812370280906884/image.png",
+94225995581620224,itsatreee,08/20/2023 3:59 PM,Are you using Windstride? I recently found a rather large bug inside that mod regarding show/hide or attachments within the GUI.,,
+330475826158108674,mikkbenelis,08/20/2023 4:00 PM,"No, I'm not using it, just a couple of my own mods + CF + VPPAdminTools",,
+251796151760715777,remoz_,08/20/2023 4:01 PM,"Hello, please, from init.c is it possible to have Player Environment object available? With player parameters like temperature, wheater, inside/outside building, etc....?",,
+94225995581620224,itsatreee,08/20/2023 4:02 PM,"Player has a ""range"" of ""acceptable"" temperatures. The environment exists on its own and the player queries the current temperature and calculates how ""comfortable"" the player is.",,
+251796151760715777,remoz_,08/20/2023 4:03 PM,"yeah, i see in PlayerBase that Environment are created and put in m_Environment, but no GetEnvironment() that give access outside",,
+94225995581620224,itsatreee,08/20/2023 4:06 PM,Not 100% sure what you are wanting to do.,,
+94225995581620224,itsatreee,08/20/2023 4:06 PM,if you return just false it still displays cargo?,,
+251796151760715777,remoz_,08/20/2023 4:07 PM,"something like logging i.e. if player is cold, or sick, or is in building, and something similar 🙂 (OnUpdate)",,
+94225995581620224,itsatreee,08/20/2023 4:07 PM,You don't need init.c for that then,,
+251796151760715777,remoz_,08/20/2023 4:08 PM,"yeah, was only to not pack into pbo mod server side",,
+330475826158108674,mikkbenelis,08/20/2023 4:08 PM,"I can test it in a while, but pretty sure it'll hide NBC inventory even if it'll not be attached to this suit bag",,
+127026046326407168,mambozambo,08/20/2023 4:10 PM,"Bit of wall of text coming. Sorry. I need bit help with enumerators. 
+```cs
+enum EStaminaRealismConsumers: EStaminaConsumers
+{
+    RUN, // New one
+}
+```
+Can I just use `bool CanConsumeStamina(EStaminaConsumers consumer) {};` and the `RUN` is also readable? Or do I need to change it to `bool CanConsumeStamina(EStaminaRealismConsumers consumer) {};`? Or I just make a new `bool CanConsumeStaminaRealism(EStaminaRealismConsumers consumer) {};` Here's how it's originally:
+```cs
+class DayZPlayerImplement extends DayZPlayer
+{
+    //! Implementations only! - used on PlayerBase
+    bool CanConsumeStamina(EStaminaConsumers consumer) {};
+        // Needs to change -> override bool CanConsumeStamina(EStaminaRealismConsumers consumer) {}?
+        // Or do I need to make a new bool CanConsumeStaminaRealism(EStaminaRealismConsumers consumer) {} and use that?
+}
+```",,
+127026046326407168,mambozambo,08/20/2023 4:10 PM,"I need the `RUN` to work in here in my modded PlayerBase
+```cs
+modded class PlayerBase extends ManBase
+{
+    override void CommandHandler(float pDt, int pCurrentCommandID, bool pCurrentCommandFinished)    
+    {
+            super.CommandHandler(pDt,pCurrentCommandID,pCurrentCommandFinished);
+            HumanInputController hic = GetInputController();
+ 
+            if (m_StaminaHandler && hic)
+        {
+            //! SPRINT: enable/disable - based on stamina; disable also when raised
+            if (!CanConsumeStamina(EStaminaConsumers.SPRINT) || !CanSprint())
+            {
+                hic.LimitsDisableSprint(true);
+            }
+            else
+            {
+                hic.LimitsDisableSprint(false);
+            }
+            //! RUN: enable/disable - based on stamina; disable also when raised
+            if (!CanConsumeStamina(EStaminaConsumers.RUN) || !CanRun())
+            {
+                GetUApi().GetInputByName(""UAWalkRunTemp"").ForceEnable(true);// force walk on!
+            }
+            else
+            {
+                GetUApi().GetInputByName(""UAWalkRunTemp"").ForceEnable(false);
+            }
+        }
+    override bool CanConsumeStamina(EStaminaConsumers consumer)
+    {
+            if (!GetStaminaHandler()) return false;
+        
+        bool val = (GetStaminaHandler().HasEnoughStaminaFor(consumer) /*&& !IsOverloaded()*/ && !IsRestrained() && !IsInFBEmoteState());
+        
+        if (!val)
+            StaminaHUDNotifier(false);
+
+        return val;
+    }
+}
+```",,
+127026046326407168,mambozambo,08/20/2023 4:16 PM,"The StaminaHandler side is already done, so I just need to know how to deal with this efficiently.",,
+94225995581620224,itsatreee,08/20/2023 4:20 PM,Started a thread.,,
+582657474159575050,lankycraig,08/20/2023 6:34 PM,"human.c has 
+```c
+  OverrideMovementSpeed(bool pOverride, float pVal);
+```
+i wonder if  rather than checking on every command  
+If `OverrideMovementSpeed` is able to e set once then when the player regens stamina set it back to default 
+so its something that the StaminaHandler class is controlling",,
+582657474159575050,lankycraig,08/20/2023 6:52 PM,"ok scratch that 
+
+thats moving the player even with out any inputs",,
+764943115487805491,krat.davaham,08/20/2023 8:19 PM,anyone know where i can find the class Backpack_Base?,,
+764943115487805491,krat.davaham,08/20/2023 8:23 PM,this alicebag_colorbase seems to extend into it,https://cdn.discordapp.com/attachments/492295576470290433/1142886683591852163/8986f29a1545139fc582bfb3c43004d8.png,
+764943115487805491,krat.davaham,08/20/2023 8:23 PM,so it must exist,,
+764943115487805491,krat.davaham,08/20/2023 8:23 PM,but i cant find it,,
+127026046326407168,mambozambo,08/20/2023 8:31 PM,"I've done the force stop and force walks other way, but now I'm seeking to do it with the StaminaConumers",,
+141917748476248064,bugs11,08/20/2023 8:47 PM,Try the config.cpp of the data folder,,
+141917748476248064,bugs11,08/20/2023 8:48 PM,Or the first config.cpp in gears/containers,,
+141917748476248064,bugs11,08/20/2023 8:48 PM,Somewhere over there,,
+127026046326407168,mambozambo,08/20/2023 8:53 PM,"Lol so if there's
+```cs
+/*/
+some code in here
+/*/```
+The code between doesn't work, though the Workbench shows it doesn't comment out that stuff 😅  Took me a while to figure out when I was doing those marks to quickly comment in and out stuff... was wondering why something suddenly stopped to work",,
+171256035296673793,antihax,08/20/2023 9:00 PM,If only there were better tools for writing code 🤔,,
+171256035296673793,antihax,08/20/2023 9:01 PM,"I am dying inside trying to deal with strings atm, going to take a break from it though.",,
+561680015578759196,wrdg,08/20/2023 9:01 PM,Strings in workbench can get pretty broken looking in terms of syntax highlighting sometimes :megakek:,,
+171256035296673793,antihax,08/20/2023 9:02 PM,"oh no, i mean just working with strings in code",,
+171256035296673793,antihax,08/20/2023 9:02 PM,i need that grandpa cringe smile emoji...,,
+561680015578759196,wrdg,08/20/2023 9:02 PM,:exTwitchPain:,,
+171256035296673793,antihax,08/20/2023 9:02 PM,https://discord.com/channels/452035973786632194/492295576470290433/1142608652524597348,,
+171256035296673793,antihax,08/20/2023 9:02 PM,That killed me,,
+171256035296673793,antihax,08/20/2023 9:03 PM,you know any sane language that's `variable[n] = 'c';`,,
+561680015578759196,wrdg,08/20/2023 9:03 PM,Make a feedback request,,
+171256035296673793,antihax,08/20/2023 9:03 PM,"Planning to, throw that into C... the problem is what's UTF and what isn't 😄",,
+171256035296673793,antihax,08/20/2023 9:04 PM,"they also likely need like StringBuilding in Java... I need a string that's 100 in lenght, but make it empty.",,
+148370724900306944,jacob_mango,08/20/2023 9:04 PM,That's changed in 1.22,,
+171256035296673793,antihax,08/20/2023 9:04 PM,Oh sweet,,
+561680015578759196,wrdg,08/20/2023 9:04 PM,Oh wait yeah it is,,
+561680015578759196,wrdg,08/20/2023 9:05 PM,I remember Arkensor asking me to change my PR about it,,
+171256035296673793,antihax,08/20/2023 9:05 PM,"that helps, i can skip compression until that is out.",,
+561680015578759196,wrdg,08/20/2023 9:05 PM,"At least for a getter, didn't test for setter",,
+148370724900306944,jacob_mango,08/20/2023 9:06 PM,https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/main/scripts/1_core/proto/enstring.c#L460,,"meow_party (2),dogdance (1)"
+561680015578759196,wrdg,08/20/2023 9:06 PM,"1.22 is right around the corner, I speculate this week",,
+171256035296673793,antihax,08/20/2023 9:08 PM,So `Insert` will act like the old `Set` and be the expensive one,,
+171256035296673793,antihax,08/20/2023 9:09 PM,oh the old copies the behavior too,,
+561680015578759196,wrdg,08/20/2023 9:09 PM,`OldSet` will act like the old `Set`,,
+171256035296673793,antihax,08/20/2023 9:11 PM,What was that other UTF thing which was missing.. i think i made a report for that one,,
+171256035296673793,antihax,08/20/2023 9:13 PM,There is no GetRune.. that was it.,,
+561680015578759196,wrdg,08/20/2023 9:15 PM,Rune? What is this? Physics?,,
+171256035296673793,antihax,08/20/2023 9:15 PM,:kekw:,,
+171256035296673793,antihax,08/20/2023 9:15 PM,"Rune is a UTF character, in a string its a sequence of bytes.",,
+171256035296673793,antihax,08/20/2023 9:16 PM,There is no way to iterate over them currently that i see,,
+171256035296673793,antihax,08/20/2023 9:18 PM,"```c
+        for (int i =0 ; i < str.LengthUtf8(); ++i) {
+            Print(str.Get(i)); // RIP
+        }
+        for (int i =0 ; i < str.Length(); ++i) {
+            Print(str.Get(i)); // OK
+        }```",,
+171256035296673793,antihax,08/20/2023 9:19 PM,maybe i am missing it somewhere,,
+127026046326407168,mambozambo,08/20/2023 9:31 PM,"So the answer to this is in the PlayerBase I can just use `CanConsumeStamina(EStaminaRealismConsumers.CONSUMERNAME)` when I need even though the original method is `bool CanConsumeStamina(EStaminaConsumers consumer)`
+```cs
+enum EStaminaRealismConsumers: EStaminaConsumers
+{
+    RUN,
+    WALK,
+}```
+```cs
+modded class PlayerBase extends ManBase
+{
+    override void CommandHandler(float pDt, int pCurrentCommandID, bool pCurrentCommandFinished)    
+    {
+        super.CommandHandler(pDt,pCurrentCommandID,pCurrentCommandFinished);
+        HumanInputController hic = GetInputController();
+ 
+        if (m_StaminaHandler && hic)
+        {
+            //! SPRINT: enable/disable - based on stamina; disable also when raised
+            if (!CanConsumeStamina(EStaminaRealismConsumers.SPRINT) || !CanSprint())
+            {
+                hic.LimitsDisableSprint(true);
+            }
+            else
+            {
+                hic.LimitsDisableSprint(false);
+            }
+            //! RUN: enable/disable - based on stamina;
+            if (!CanConsumeStamina(EStaminaRealismConsumers.RUN) || !CanRun())
+            {
+                GetUApi().GetInputByName(""UAWalkRunTemp"").ForceEnable(true);// force walk on!
+            }
+            else
+            {
+                GetUApi().GetInputByName(""UAWalkRunTemp"").ForceEnable(false);
+            }
+            //! WALK: enable/disable - based on stamina;
+            if (!CanConsumeStamina(EStaminaRealismConsumers.WALK) || !CanWalk())
+            {
+                hic.OverrideMovementSpeed(true, 0);// to activate 0 movement
+                //Print(""Walk disabled!"");
+            }
+            else
+            {
+                hic.OverrideMovementSpeed(false, 0);
+                //Print(""Walk enabled!"");
+            }
+         }
+     }
+}``` I don't need to touch the ```cs
+override bool CanConsumeStamina(EStaminaConsumers consumer)``` stuff in the PlayerBase (or in DayZPlayerImplment)",,
+127026046326407168,mambozambo,08/20/2023 9:51 PM,"likely need to implement something that it doesn't spam ```cs
+GetUApi().GetInputByName(""UAWalkRunTemp"").ForceEnable(false);
+``` and ```cs
+hic.OverrideMovementSpeed(false, 0);
+``` all the time like in my previous code",,
+295995523658285066,truedolphin,08/20/2023 9:58 PM,"It's a shame you couldn't do like..
+```foreach (char letter : str) {
+    Print(letter);
+    }
+```",,
+255452506950336512,jxhn_01,08/20/2023 9:58 PM,"well, after 3 days i fully can't understand why this shit doesn't work. server just doesn't spawn what i write in another script.",https://cdn.discordapp.com/attachments/492295576470290433/1142910625077530624/I_Fully_fucked_this_shit.c,
+255452506950336512,jxhn_01,08/20/2023 9:59 PM,"```c
+//test script mapping inside building
+modded class land_nv_building_7
+{
+    override bool HasInterior()
+    {
+        return true;
+    }
+    
+    override void SpawnInterior()
+    {    
+//SpawnInteriorObject
+
+SpawnInteriorObject( ""BarrelHoles_Blue"", ""-1.041234 35.268898 -3.060701"", ""-14.999991 0.000000 0.000000"" );
+SpawnInteriorObject( ""BarrelHoles_Blue"", ""-4.374091 35.583597 -3.452033"", ""91.999672 0.000000 0.000000"" );
+SpawnInteriorObject( ""BarrelHoles_Blue"", ""-0.516670 35.168898 1.587870"", ""-90.000000 0.000000 0.000000"" );
+SpawnInteriorObject( ""BarrelHoles_Blue"", ""-4.732612 36.367157 4.182182"", ""-90.000000 0.000000 0.000000"" );
+SpawnInteriorObject( ""BarrelHoles_Blue"", ""0.857881 36.230000 1.983440"", ""90.000000 0.000000 0.000000"" );
+    }
+}
+
+class land_nv_building_7_2 extends land_nv_building_7 {};
+class land_nv_building_7_3 extends land_nv_building_7 {};
+
+/*SpawnInteriorObject( ""Land_mr_box3"", ""-1.041234 0.268898 -3.060701"", ""-14.999991 0.000000 0.000000"" );
+SpawnInteriorObject( ""land_wood_boxes_3"", ""-4.374091 0.583597 -3.452033"", ""91.999672 0.000000 0.000000"" );
+SpawnInteriorObject( ""Land_dzF_library_a_open"", ""-0.516670 0.168898 1.587870"", ""-90.000000 0.000000 0.000000"" );
+SpawnInteriorObject( ""Land_dzF_lekarnicka"", ""-4.732612 1.367157 4.182182"", ""-90.000000 0.000000 0.000000"" );
+SpawnInteriorObject( ""Land_dzF_Kicthen_desk_A"", ""0.857881 1.230000 1.983440"", ""90.000000 0.000000 0.000000"" );
+*/```",,
+171256035296673793,antihax,08/20/2023 9:59 PM,"That would look nice, same problem though. Need to flip between byte and rune.",,
+295995523658285066,truedolphin,08/20/2023 10:01 PM,"I guess the other would be charUtf8
+But that definitely doesn't exist... And the other probably doesn't work either.",,
+171256035296673793,antihax,08/20/2023 10:01 PM,is `land_nv_building_7` actually a class?,,
+171256035296673793,antihax,08/20/2023 10:01 PM,Or are you mixing config and script classes?,,
+255452506950336512,jxhn_01,08/20/2023 10:02 PM,classname of building on map,,
+295995523658285066,truedolphin,08/20/2023 10:02 PM,It's 99% not calling SpawnInterior(),,
+295995523658285066,truedolphin,08/20/2023 10:03 PM,"Or it is, and it's being called too early..",,
+295995523658285066,truedolphin,08/20/2023 10:06 PM,"Or its spawning to truepos..
+Which I'd probably also go check map position 0 0 0 for some random stuff.",,
+255452506950336512,jxhn_01,08/20/2023 10:11 PM,"SpawnInterior is called earlier still. Collision correction is also earlier, plus conversion to those coordinates so that it sucks up the position of houses in different places on the map.
+
+And, yeah i checked on 0,0,0 position too. Nothing. :pls:",https://cdn.discordapp.com/attachments/492295576470290433/1142913768871952455/message.txt,
+295995523658285066,truedolphin,08/20/2023 10:17 PM,Wh...why are you..you don't need to spawn anything clientside..,,
+295995523658285066,truedolphin,08/20/2023 10:18 PM,That's weird..,,
+295995523658285066,truedolphin,08/20/2023 10:19 PM,"Just add a ```void classname``` function, add a CallLater calling SpawnInterior, 300 delay and false.",,🫡 (1)
+255452506950336512,jxhn_01,08/21/2023 2:26 AM,finally works!!!!@TrueDolphin thx mate ❤️,,
+255452506950336512,jxhn_01,08/21/2023 2:27 AM,but required fix only position after all:carlos:,https://cdn.discordapp.com/attachments/492295576470290433/1142978222271766638/image.png,
+255452506950336512,jxhn_01,08/21/2023 5:46 AM,"After testing. It seems that the script places not in the position that is required. Rather, it simply minus or plus to the coordinates of the construction (in the script -1 by Y in the game 32, and if 0, then 33).",,
+665471546525220875,Zedmag#7576,08/21/2023 5:59 AM,"```
+vector offset = (“1 0 3”);
+obj.SetPosition(obj.GetPosition()) + offset;
+```",,
+665471546525220875,Zedmag#7576,08/21/2023 6:00 AM,will add offsets to current pos,,
+255452506950336512,jxhn_01,08/21/2023 6:35 AM,incompatible parameter 'offset':thinkgun:,,
+561680015578759196,wrdg,08/21/2023 6:40 AM,"```
+vector offset = Vector(1, 0, 3)  + obj.GetPosition();
+obj.SetPosition(offset);
+```",,
+295995523658285066,truedolphin,08/21/2023 6:47 AM,"```
+vector offset = (""1 0 3"");
+obj.SetPosition(obj.GetPosition() + offset);
+```",,
+665471546525220875,Zedmag#7576,08/21/2023 6:55 AM,that’s how long it’s been. Hahaha. 🤦‍♂️🤷‍♂️,,
+665471546525220875,Zedmag#7576,08/21/2023 6:55 AM,😂🤣,,
+665471546525220875,Zedmag#7576,08/21/2023 6:59 AM,"This part is wrong.. 
+it’s outside the SetPos method. I corrected mine for the incomparable format in the offset vector.",,
+665471546525220875,Zedmag#7576,08/21/2023 7:00 AM,```obj.SetPosition(obj.GetPosition()) + “1 0 3”; ``` is the same thing.,,
+255452506950336512,jxhn_01,08/21/2023 7:12 AM,finally fully works fine:dogdance:,https://cdn.discordapp.com/attachments/492295576470290433/1143049982488870993/image.png,
+255452506950336512,jxhn_01,08/21/2023 7:12 AM,https://cdn.discordapp.com/emojis/495314191700197439.gif?size=64&quality=lossless,,
+255452506950336512,jxhn_01,08/21/2023 7:22 AM,thanks to all of you guys 🫡,,
+127026046326407168,mambozambo,08/21/2023 8:06 AM,"Meh not really worth it to do it this way. I had it better. Can use the consumer enumerators though if needed.
+
+There's some odd problem that StaminaConsumer isn't working like it's suppose to be. It only takes threshold but doesn't for some reason have the second threshold saying when it can be activated again even though it should've it...",,
+295995523658285066,truedolphin,08/21/2023 8:39 AM,You're uh...outside the brackets.. you'd adjust the value in them...no?,,
+665471546525220875,Zedmag#7576,08/21/2023 8:49 AM,When you add an offset to the method it’s outside the brackets and you use a plus or minus,https://cdn.discordapp.com/attachments/492295576470290433/1143074272483483748/image0.jpg,
+295995523658285066,truedolphin,08/21/2023 8:55 AM,Can you give any examples of vanilla modifying a variable in a function outside the function at EoL?,,
+295995523658285066,truedolphin,08/21/2023 8:56 AM,Instead of just in the function Param?,,
+295995523658285066,truedolphin,08/21/2023 9:00 AM,"when setting variables, sure.
+but in function params?
+vanilla examples:
+```
+result2.SetPosition(ingredient1.GetPosition() + ""0 0.12 0.1"");
+SetPosition( owner_player.GetPosition() + trapPos );
+m_soundObject.SetPosition(GetGame().GetPlayer().GetPosition() + posOffset);
+GetIntroCamera().LookAt( GetIntroCharacter().GetPosition() + Vector( 0, 1, 0 ) );
+```",,
+295995523658285066,truedolphin,08/21/2023 9:02 AM,"I'd understand if you where talking about..
+```
+vector from = m_ProcuringItem.GetPosition() + size;
+```",,
+295995523658285066,truedolphin,08/21/2023 9:03 AM,but not in function params..,,
+585131310486388781,veter_ap,08/21/2023 11:53 AM,@𝓛𝓪𝓷𝓴𝔂 do you have some time? 🙂,,
+444384782931984414,n3msi,08/21/2023 12:51 PM,"So I´m a little uncertain and don´t like to edit Baseclasses: is an overwrite like that ok or am I provoking conflicts with other mods? ( added a Check for IsHeavyBehaviour to the backpack, formerly it was only for InHands ) Or is there even a way to prevent sprinting on the backpack itself?``modded class PlayerBase    
+{
+    overwrite bool CanSprint()
+    {
+        ItemBase item = GetItemInHands();
+        ItemBase backpack = FindAttachmentBySlotName(""Back"");
+        
+        if (IsRaised() || (item && item.IsHeavyBehaviour()) || (backpack && backpack.IsHeavyBehaviour()))
+        {
+            return false;
+        }
+        
+        if (GetBrokenLegs() != eBrokenLegs.NO_BROKEN_LEGS)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}``",,
+127026046326407168,mambozambo,08/21/2023 1:35 PM,"You could just do like this I believe and it would have even less of a chance to cause anything.
+```cs
+modded class PlayerBase    
+{
+    overwrite bool CanSprint()
+    {
+        super.CanSprint();
+        ItemBase backpack = FindAttachmentBySlotName(""Back"");
+        
+        if (backpack && backpack.IsHeavyBehaviour())
+        {
+            return false;
+        }
+    }
+}```",,♥️ (1)
+295995523658285066,truedolphin,08/21/2023 1:38 PM,"If you don't call super, be prepared for issues with anything else overriding it.",,
+295995523658285066,truedolphin,08/21/2023 1:39 PM,But typically you'd add the super return as the end.,,
+127026046326407168,mambozambo,08/21/2023 1:39 PM,ah so super.CanSprint(); after the if backpack stuff?,,
+127026046326407168,mambozambo,08/21/2023 1:40 PM,so the return true is the last one then,,
+295995523658285066,truedolphin,08/21/2023 1:40 PM,"```c
+modded class PlayerBase    
+{
+    overwrite bool CanSprint()
+    {
+        ItemBase backpack = FindAttachmentBySlotName(""Back"");
+        
+        if (backpack && backpack.IsHeavyBehaviour())
+        {
+            return false;
+        }
+      return super.CanSprint();
+    }
+}```
+Something like that.",,♥️ (1)
+127026046326407168,mambozambo,08/21/2023 1:41 PM,ah,,
+295995523658285066,truedolphin,08/21/2023 1:41 PM,"Damn phone formatting...
+But yeah.",,
+444384782931984414,n3msi,08/21/2023 1:43 PM,"Thanks a lot, I´ll go with your version then.",,
+444384782931984414,n3msi,08/21/2023 1:53 PM,"note: if anyone else want to use this: ""overwrite"" = override :carlos:",,
+295995523658285066,truedolphin,08/21/2023 2:06 PM,"""something like that""",,
+255452506950336512,jxhn_01,08/21/2023 2:47 PM,hmmmm... well i actually something missed again. cuz mapping despawn after short time on server. + broken spawn every modded items:pls:,,
+330475826158108674,mikkbenelis,08/21/2023 3:10 PM,"Is it possible to override a player spawn point in script (only during the fresh character spawn or respawn, not just loading from DB) except using the following method?
+`override PlayerBase CreateCharacter(PlayerIdentity i, vector p, ParamsReadContext c, string n)`
+
+It can be overridden or even replaced by the `init.c` file of mission and I don't want it to happen
+Seems like the `CreatePlayer` method used like `GetGame().CreatePlayer(i, n, p, 0, ""NONE"")` will be triggered at logon of existing player as well",,

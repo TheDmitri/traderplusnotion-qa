@@ -1,0 +1,1719 @@
+AuthorID,Author,Date,Content,Attachments,Reactions
+135226527473336320,inclementdab,10/16/2020 8:53 PM,```GetGame().GetWorld().GetDate();```,,🍻 (1)
+171256035296673793,antihax,10/16/2020 9:01 PM,"anyone know why i am not seeing events passthrough to children widgets? I have a UIScriptedMenu which i am adding widgets to with `.CreateWidgets(anotherLayout, parentWidget)`. All the events go to the UIScriptedMenu and not the created widgets. Tried multiple ways... `extend ScriptedWidgetEventHandler`, `this.SetHandler` on sub, `widget.SetHandler` etc..",,
+135226527473336320,inclementdab,10/16/2020 9:02 PM,call the ScriptedWidgetEventHandler in your ScriptClass on creation,,
+135226527473336320,inclementdab,10/16/2020 9:02 PM,easiest way to guarantee passthrough,,
+135226527473336320,inclementdab,10/16/2020 9:02 PM,"also be sure you are returning false, otherwise propagation will stop",,
+171256035296673793,antihax,10/16/2020 9:05 PM,like fire a fake event at it?,,
+135226527473336320,inclementdab,10/16/2020 9:08 PM,no give the ScriptClass parameter in the layout editor the classname of your scripted widget event handler,,
+135226527473336320,inclementdab,10/16/2020 9:08 PM,sec,,
+135226527473336320,inclementdab,10/16/2020 9:09 PM,,https://cdn.discordapp.com/attachments/492295576470290433/766739525228953630/unknown.png,
+135226527473336320,inclementdab,10/16/2020 9:09 PM,scriptclass,,
+171256035296673793,antihax,10/16/2020 9:09 PM,"yeah, i just realized what your mean.",,
+135226527473336320,inclementdab,10/16/2020 9:09 PM,"```
+class TestScriptClass: ScriptedWidgetEventHandler
+{
+    override bool OnMouseButtonDown(Widget w, int x, int y, int button)
+    {
+        return false;
+    }
+}
+```",,
+171256035296673793,antihax,10/16/2020 9:09 PM,I should prob start using the workbench for UI,,
+135226527473336320,inclementdab,10/16/2020 9:09 PM,,https://cdn.discordapp.com/attachments/492295576470290433/766739734088253470/unknown.png,
+135226527473336320,inclementdab,10/16/2020 9:09 PM,yes,,
+135226527473336320,inclementdab,10/16/2020 9:10 PM,lol,,
+171256035296673793,antihax,10/16/2020 9:10 PM,it keeps crashing on me for stupid reasons,,
+135226527473336320,inclementdab,10/16/2020 9:10 PM,yes you need to read your logs to figure out why lol,,
+171256035296673793,antihax,10/16/2020 9:11 PM,have to baby it.. especially when changing parameters and saving.,,
+135226527473336320,inclementdab,10/16/2020 9:11 PM,"if you try to do operations like GetGame() in the workbench, it can return null since the WB is running a VM of the game",,
+135226527473336320,inclementdab,10/16/2020 9:11 PM,just read the console that comes with the workbench. any text in red you need to fix,,
+171256035296673793,antihax,10/16/2020 9:13 PM,i'll look next time.. last couple were strange. i would change something and click off and it would crash... go back do exactly the same but save right after changing and it wouldn't crash,,
+171256035296673793,antihax,10/16/2020 9:13 PM,¯\_(ツ)_/¯,,
+171256035296673793,antihax,10/16/2020 9:36 PM,haha looks like i am sticking with the parent taking all the events... it's crashing the game trying to make one for each entry,,
+135226527473336320,inclementdab,10/16/2020 9:39 PM,read the console... lol,,
+171256035296673793,antihax,10/16/2020 9:43 PM,`Stack overflow`,,
+171256035296673793,antihax,10/16/2020 9:44 PM,interesting,,
+135226527473336320,inclementdab,10/16/2020 9:44 PM,thatll do it,,
+366659468232097822,jdfnc24,10/16/2020 11:01 PM,"Ok, please help with quick sanity check... Does anyone know where I can find how the game manages to read the cfgplayerspawnpoints.xml file? I.e. that xml file has the entry ```<fresh>``` so how does the game read that and all the params? Is it a .C file in scripts?",,
+171256035296673793,antihax,10/17/2020 3:44 AM,omfg... it's because the class with the event handler went out of scope and got deleted by the GC,,
+171256035296673793,antihax,10/17/2020 3:44 AM,works now...,,
+715421650744770600,jimmybonds,10/17/2020 4:12 AM,Does the game still support persistent days/months? or does it load the date from the init.c every restart?,,
+715421650744770600,jimmybonds,10/17/2020 4:13 AM,Only persistent time now?,,
+665471546525220875,Zedmag#7576,10/17/2020 5:05 AM,It’s in your server config,,
+715421650744770600,jimmybonds,10/17/2020 6:35 AM,"I may not have that line for some reason, would it just be serverDatePersistent=1?",,
+665471546525220875,Zedmag#7576,10/17/2020 6:38 AM,"```serverTime = ""SystemTime"";    // Initial in-game time of the server. ""SystemTime"" means the local time of the machine. Another possibility is to set the time to some value in ""YYYY/MM/DD/HH/MM"" format, e.g ""2015/4/8/17/23"".
+serverTimeAcceleration = 1;    // Accelerated Time - The numerical value being a multiplier (0.1-64). Thus, in case it is set to 24, time would move 24 times faster than normal. An entire day would pass in one hour.
+serverNightTimeAcceleration = 1;// Accelerated Nigh Time - The numerical value being a multiplier (0.1-64) and also multiplied by serverTimeAcceleration value.
+                                // Thus, in case it is set to 4 and serverTimeAcceleration is set to 2, night time would move 8 times faster than normal.
+                                // An entire night would pass in 3 hours.
+serverTimePersistent = 0;    // Persistent Time (value 0-1)// The actual server time is saved to storage, so when active, the next server start will use the saved time value.
+```",,
+715421650744770600,jimmybonds,10/17/2020 6:38 AM,right there's nothing about the date in there unless you're referring to SystemTime,,
+715421650744770600,jimmybonds,10/17/2020 6:39 AM,"and that doesn't set the reset day as far as I can tell, it's been loading what's in the init.c which is default to Sept 20",,
+665471546525220875,Zedmag#7576,10/17/2020 6:39 AM,It includes date,,
+715421650744770600,jimmybonds,10/17/2020 6:39 AM,"okay so if I set the time there, and have persistent time set, that will get me my goal?",,
+665471546525220875,Zedmag#7576,10/17/2020 6:40 AM,It should. It’s been awhile since I’ve seen a vanillia init.c. What line wre@you referring to for date?,,
+715421650744770600,jimmybonds,10/17/2020 6:40 AM,one sec,,
+715421650744770600,jimmybonds,10/17/2020 6:40 AM,"`//DATE RESET AFTER ECONOMY INIT-------------------------
+    int year, month, day, hour, minute;
+    int reset_month = 6, reset_day = 1;
+    GetGame().GetWorld().GetDate(year, month, day, hour, minute);`",,
+715421650744770600,jimmybonds,10/17/2020 6:41 AM,"I set mine to June 1st but the default is reset_month = 9, reset_day = 20",,
+665471546525220875,Zedmag#7576,10/17/2020 6:41 AM,Back in the day people would just use a date with a full moon. Over and over.,,
+715421650744770600,jimmybonds,10/17/2020 6:41 AM,"right, I would like to actually have a moon cycle",,
+665471546525220875,Zedmag#7576,10/17/2020 6:42 AM,You may just comment that out.,,
+715421650744770600,jimmybonds,10/17/2020 6:42 AM,I missed the pitch black nights of a no-moon,,
+715421650744770600,jimmybonds,10/17/2020 6:42 AM,"hm, you think?",,
+715421650744770600,jimmybonds,10/17/2020 6:42 AM,the whole Date reset section?,,
+715421650744770600,jimmybonds,10/17/2020 6:42 AM,I guess that would just use the server time date at that point wouldn't it,,
+665471546525220875,Zedmag#7576,10/17/2020 6:42 AM,It’s creating the variable ‘reset_’,,
+665471546525220875,Zedmag#7576,10/17/2020 6:43 AM,Seems logical,,
+715421650744770600,jimmybonds,10/17/2020 6:43 AM,right right,,
+715421650744770600,jimmybonds,10/17/2020 6:43 AM,I'll give it a shot,,
+665471546525220875,Zedmag#7576,10/17/2020 6:43 AM,🤷‍♂️,,
+715421650744770600,jimmybonds,10/17/2020 6:50 AM,"yeah as far as I can tell, isn't every single formula in that init.c just constantly resetting the date back to the reset date?",,
+715421650744770600,jimmybonds,10/17/2020 6:50 AM,"No matter what the If { statement is, the function each time is `GetGame().GetWorld().SetDate(year, reset_month, reset_day, hour, minute)`",,
+715421650744770600,jimmybonds,10/17/2020 6:50 AM,"which to me just reads as, no matter what month or day it is, reset back to the date written here",,
+715421650744770600,jimmybonds,10/17/2020 6:58 AM,"yep, that did it",,
+715421650744770600,jimmybonds,10/17/2020 6:58 AM,just commented out the reset functions in the init.c file and it held the date on restart,,
+665471546525220875,Zedmag#7576,10/17/2020 7:05 AM,🤙🤙,,
+279773337721241601,foxtrot55,10/17/2020 8:28 AM,"How do I change the damage on an item, for expample I have a custom hatchet that I want to kill in one hit",,
+181560985029574656,anthonyroe,10/18/2020 3:06 AM,So I am trying to add a keybind for my mod. I add the Inputs.xml and I add it to the config.cpp but its still not working. I got it to show my mod name in the keybind list but no keybinds are listed.,,
+135226527473336320,inclementdab,10/18/2020 3:13 AM,@Anthony Roe take a look at this https://github.com/InclementDab/DayZ-Editor/blob/master/DayZEditor/Scripts/Data/Inputs.xml,,
+135226527473336320,inclementdab,10/18/2020 3:13 AM,use as an example.,,
+181560985029574656,anthonyroe,10/18/2020 3:15 AM,https://pastebin.com/zH9mqZs9,,
+181560985029574656,anthonyroe,10/18/2020 3:15 AM,@dab this is my inputs.xml,,
+135226527473336320,inclementdab,10/18/2020 3:16 AM,"make sure you do this in your config.cpp ```inputs = ""DayZEditor/Scripts/Data/Inputs.xml"";```",,
+135226527473336320,inclementdab,10/18/2020 3:16 AM,CfgMods,,
+181560985029574656,anthonyroe,10/18/2020 3:16 AM,im an idiot. i forgot to end the line with the ;,,
+181560985029574656,anthonyroe,10/18/2020 3:16 AM,hopefully thats it,,
+135226527473336320,inclementdab,10/18/2020 3:16 AM,:KEKW:,,
+135226527473336320,inclementdab,10/18/2020 3:16 AM,are you using pboproject to build? that should've errored out,,
+181560985029574656,anthonyroe,10/18/2020 3:17 AM,no because i cant get my settings to save so i just use addon builder,,
+135226527473336320,inclementdab,10/18/2020 3:17 AM,dunno bout that. mikero might be able to help in #tools-dayz,,
+278878275588194304,includelow,10/18/2020 4:11 AM,"Is it possible to get information about the server from the main menu? Using class GetServersResultRow or class OnlineServices, but at a specific IP address.",,
+665471546525220875,Zedmag#7576,10/18/2020 4:36 AM,I’ve been asking this for months. No real answer. 🤷‍♂️,,
+135226527473336320,inclementdab,10/18/2020 4:36 AM,reverse engineer the mainmenu ui and see how it gets the data when you hover over the 'play' button 🙂,,
+278878275588194304,includelow,10/18/2020 4:47 AM,"It is possible through the API, but the question is, does the client part support sending API requests?",,
+135226527473336320,inclementdab,10/18/2020 4:52 AM,"```
+int charID = m_ScenePC.GetIntroCharacter().GetCharacterID();
+m_ScenePC.GetIntroCharacter().GetLastPlayedServer(charID, ip, name, port);
+```",,
+135226527473336320,inclementdab,10/18/2020 4:52 AM,this is in MainMenu.c,,
+278878275588194304,includelow,10/18/2020 4:56 AM,"This I know, but this method does not get the status of a server, its online and so on. API issue still relevant)",,
+135226527473336320,inclementdab,10/18/2020 4:59 AM,then reverse engineer the server browser 😄,,
+135226527473336320,inclementdab,10/18/2020 4:59 AM,lemme look,,
+278878275588194304,includelow,10/18/2020 5:03 AM,"I tried, but there is too much)",,
+135226527473336320,inclementdab,10/18/2020 5:11 AM,OnlineServices looks to be a bit of a 🤮,,
+135226527473336320,inclementdab,10/18/2020 5:13 AM,might have a solution,,
+225304935355383808,[S.C.] Zedmag#7605,10/18/2020 6:00 AM,ive only been able to grab server info from a client side RCP back to server... i cant grab server info from a server side with NO client.. which is kinda dumb,,
+225304935355383808,[S.C.] Zedmag#7605,10/18/2020 6:00 AM,lol,,
+239201186933112833,da0ne_,10/18/2020 6:11 AM,"```csharp
+modded class ServerBrowserEntry
+{
+    override void SetPopulation( int population, int slots )
+    {
+        string pop_text    = ""#server_browser_entry_empty"";
+
+        Print(""SERVER POP: "" + population + "" name: "" + m_ServerData.m_Name); //Print exact number of pop
+        
+
+        if ( slots > 0 )
+        {
+            float pop_percentage = population / slots;
+            if( population == 0 )
+                pop_text    = ""#server_browser_entry_empty"";
+            else if( pop_percentage < 0.33 )
+                pop_text    = ""#server_browser_entry_low"";
+            else if( pop_percentage < 0.66 )
+                pop_text    = ""#server_browser_entry_medium"";
+            else if( pop_percentage != 1 )
+                pop_text    = ""#server_browser_entry_high"";
+            else
+                pop_text    = ""#server_browser_entry_full"";
+        }
+
+        m_ServerPopulation.SetText( pop_text );
+    }
+};
+```
+have fun :weirdEg: 👍",,
+239201186933112833,da0ne_,10/18/2020 6:11 AM,Work backwards and find your way to the root of information,,
+135226527473336320,inclementdab,10/18/2020 6:16 AM,everything is static,,
+135226527473336320,inclementdab,10/18/2020 6:16 AM,:monkaomega:,,
+665471546525220875,Zedmag#7576,10/18/2020 6:17 AM,This won’t work server side only. That’s what I was saying,,
+715421650744770600,jimmybonds,10/18/2020 6:40 AM,"does anyone know how to check to see if a GUID is online, what the syntax from Bohemia is?",,
+715421650744770600,jimmybonds,10/18/2020 6:41 AM,like player.ConnectionStatus or something like that?,,
+665471546525220875,Zedmag#7576,10/18/2020 6:46 AM,I’m pretty sure for ￼ security reasons there is NO way to back check online status of a guid from a scripted point of view from a game server side of things.,,
+665471546525220875,Zedmag#7576,10/18/2020 6:47 AM,Only once the client connects to the server can you do anything with the client. Seems kinda obvious really.,,
+715421650744770600,jimmybonds,10/18/2020 6:48 AM,well PartyMe checks and populates a list of online players,,
+715421650744770600,jimmybonds,10/18/2020 6:48 AM,that's all I'm really trying to do tbh,,
+715421650744770600,jimmybonds,10/18/2020 6:49 AM,"I just want to populate that list, and then give everyone on that list xyzitem",,
+665471546525220875,Zedmag#7576,10/18/2020 6:49 AM,If a player is IN game or in steam?,,
+715421650744770600,jimmybonds,10/18/2020 6:50 AM,in game,,
+715421650744770600,jimmybonds,10/18/2020 6:50 AM,connected to the server,,
+665471546525220875,Zedmag#7576,10/18/2020 6:50 AM,Exactly.,,
+715421650744770600,jimmybonds,10/18/2020 6:50 AM,exactly what?,,
+665471546525220875,Zedmag#7576,10/18/2020 6:51 AM,just like I said..,,
+715421650744770600,jimmybonds,10/18/2020 6:51 AM,You realize every admin tool does this as well right?,,
+715421650744770600,jimmybonds,10/18/2020 6:51 AM,Shows you the list of players connected to the server...?,,
+715421650744770600,jimmybonds,10/18/2020 6:51 AM,I'm not sure what you think is backdooring there but okay,,
+665471546525220875,Zedmag#7576,10/18/2020 6:51 AM,You asked if a player is online.,,
+715421650744770600,jimmybonds,10/18/2020 6:51 AM,Yes I need to do a check to see if a player is online on my server,,
+715421650744770600,jimmybonds,10/18/2020 6:52 AM,Connected,,
+715421650744770600,jimmybonds,10/18/2020 6:52 AM,Correct,,
+715421650744770600,jimmybonds,10/18/2020 6:52 AM,All different ways of saying the same thing,,
+715421650744770600,jimmybonds,10/18/2020 6:52 AM,Literally never mentioned anything about steam versus DayZ,,
+715421650744770600,jimmybonds,10/18/2020 6:52 AM,No idea why you're assuming Steam and not directly connected to my server,,
+665471546525220875,Zedmag#7576,10/18/2020 6:52 AM,You mean if a past player is connected to your server currently vs not but has a player save then?,,
+715421650744770600,jimmybonds,10/18/2020 6:53 AM,no dude,,
+715421650744770600,jimmybonds,10/18/2020 6:53 AM,"Let's just keep it simple, say upon connect to the server, I want to give a player a pear",,
+715421650744770600,jimmybonds,10/18/2020 6:54 AM,"but instead of just every single player *when* they connect to the server, I want to be able to check all the online players right this second",,
+715421650744770600,jimmybonds,10/18/2020 6:54 AM,"and whoever is online, give them a pear",,
+665471546525220875,Zedmag#7576,10/18/2020 6:55 AM,🤦‍♂️,,
+665471546525220875,Zedmag#7576,10/18/2020 6:55 AM,Just say exactly what you want ‘dude’,,
+715421650744770600,jimmybonds,10/18/2020 6:56 AM,"pretty sure I haven't been ambiguous about it, I'm not sure what you're on about tbh",,
+715421650744770600,jimmybonds,10/18/2020 6:56 AM,When I press P with PartyMod it's showing me a list of every online player,,
+715421650744770600,jimmybonds,10/18/2020 6:56 AM,where is that being pulled from?,,
+715421650744770600,jimmybonds,10/18/2020 6:57 AM,Is that not exactly what I want?,,
+715421650744770600,jimmybonds,10/18/2020 6:57 AM,a list of online players? maybe you can explain to me how I'm explaining what I want unclearly,,
+665471546525220875,Zedmag#7576,10/18/2020 6:59 AM,"So as an admin, you want to pull a list of players currently In game on your server.. and then do what with them? This is what I mean. Every admin tool does this. What is your end goal? Do you want to give them ‘pears’ then give them pears.",,
+715421650744770600,jimmybonds,10/18/2020 6:59 AM,I'm trying to write this out with a buddy but apparently I'm being accused of great shenanigans and tom-foolery,,
+715421650744770600,jimmybonds,10/18/2020 6:59 AM,holy shit thank you so much for your helpful wisdom,,
+715421650744770600,jimmybonds,10/18/2020 7:00 AM,🙄,,
+665471546525220875,Zedmag#7576,10/18/2020 7:00 AM,Alright cool. Peace. Good luck. Can’t wait to see your helpful ‘pear giving’ contribution,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,Who shit in your cereal today dude,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,seriously,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,Why don't you stop beating around the bush and come out and say what you EXACTLY think I seem to be up to,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,for wanting a player list,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,holy fuck,,
+665471546525220875,Zedmag#7576,10/18/2020 7:01 AM,I’m trying fucking help you dude. There has been urging helpful in your explanation of what you are actually trying to do.,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,no you aren't,,
+135226527473336320,inclementdab,10/18/2020 7:01 AM,damn guys chill lol,,
+715421650744770600,jimmybonds,10/18/2020 7:01 AM,you're sitting here bashing me for not knowing the syntax to use,,
+715421650744770600,jimmybonds,10/18/2020 7:02 AM,which is the complete irony of the entire situation,,
+715421650744770600,jimmybonds,10/18/2020 7:02 AM,considering that's my entire question,,
+715421650744770600,jimmybonds,10/18/2020 7:02 AM,christ almighty,,
+715421650744770600,jimmybonds,10/18/2020 7:02 AM,take your cereal box back to the grocery store dude you've been eating shit,,
+665471546525220875,Zedmag#7576,10/18/2020 7:02 AM,Do you just want a list of players?,,
+715421650744770600,jimmybonds,10/18/2020 7:02 AM,"yes, that are currently connected to the server",,
+561680015578759196,wrdg,10/18/2020 7:03 AM,there is no way of getting the playerlist without being in the mission,,
+715421650744770600,jimmybonds,10/18/2020 7:03 AM,what do you mean by being in the mission?,,
+715421650744770600,jimmybonds,10/18/2020 7:03 AM,I'm a complete noob so I just don't know what that's referring to,,
+561680015578759196,wrdg,10/18/2020 7:04 AM,you have to be connected to the server pretty much,,
+561680015578759196,wrdg,10/18/2020 7:04 AM,unless you have rcon access,,
+715421650744770600,jimmybonds,10/18/2020 7:04 AM,"I do, it's my server",,
+561680015578759196,wrdg,10/18/2020 7:05 AM,"from base game, you can't get the playerlist via script. you can do a handful of things to make the player list available outside of the game",,
+715421650744770600,jimmybonds,10/18/2020 7:05 AM,"okay, that's exactly what I was asking about",,
+715421650744770600,jimmybonds,10/18/2020 7:05 AM,thanks,,
+561680015578759196,wrdg,10/18/2020 7:07 AM,"you can make a server side script to export the playerlist data to some backend on an interval, and then have the client side of the mod read the web export of that data. if that makes any sense, because we have access to cURL/RestAPI which allows us to make ""webrequests"" while in game",,
+561680015578759196,wrdg,10/18/2020 7:07 AM,"overcomplicated since we don't have a way to query player data, only player count",,
+150883360019972096,hunterzcz,10/18/2020 9:15 AM,Is possible somehow using scripts get info about spawn positions of items in some area and force to spawn items there? I would like create some small high loot bunker for example.,,
+665471546525220875,Zedmag#7576,10/18/2020 10:17 AM,What would be your trigger? Do you want to get loot/items in an area around regular loot spawn locations? And increase it?,,
+665471546525220875,Zedmag#7576,10/18/2020 10:19 AM,"Hunter you have my dm info so you can pm me if you want, to avoid any mis communication and the likes. 😏🙄",,
+665471546525220875,Zedmag#7576,10/18/2020 10:29 AM,"But to simply answer your question, yes.",,
+196845794513518592,shaggoth,10/18/2020 10:46 AM,is there any available examples of different temperature zones scripts? i know some people did it. like some zone of extreme cold or extreme heat,,
+196845794513518592,shaggoth,10/18/2020 10:47 AM,i'm trying to make different temperatures on the map,,
+709720976308306012,[SVS] Mosta#9856,10/18/2020 10:58 AM,"Hi all, i serch for someone can make scripts to have message whene players join server, vanilla no mods thx !!!",,
+211779129924780032,hlynge,10/18/2020 11:53 AM,"Trying to make my ""Music"" mod better, I have a few questions:
+1) is it possible to make the sound play on the server side, currently I think it is triggered by the player and not all players hear the same sound/song on the same time?
+2) is it possible to make a configurable reference to another mod to load different sound/music from a custom mod that the sever owners can make them self?",,
+150883360019972096,hunterzcz,10/18/2020 12:04 PM,yes and propably yes 🙂,,
+141917748476248064,bugs11,10/18/2020 12:13 PM,"1. Not sure if it's a good idea 
+2. Search ""RPC""",,
+173448803578281984,inkihh,10/18/2020 12:36 PM,"If I press esc from the game, is there a hotkey to activate ""Exit""?",,
+173448803578281984,inkihh,10/18/2020 12:37 PM,I hate that I have to click it with the mouse every time.,,
+135226527473336320,inclementdab,10/18/2020 12:39 PM,Alt + F4,,
+135226527473336320,inclementdab,10/18/2020 12:39 PM,:PepeLaugh:,,
+173448803578281984,inkihh,10/18/2020 12:43 PM,omg,,
+173448803578281984,inkihh,10/18/2020 12:43 PM,that happens if you're too focused 😄,,
+173448803578281984,inkihh,10/18/2020 1:01 PM,"`(E): ScriptCallQueue::Call: Incompatible parameter '0', expected 'vector', got 'vector'`",,
+173448803578281984,inkihh,10/18/2020 1:01 PM,:smiletear:,,
+173448803578281984,inkihh,10/18/2020 1:06 PM,"I guess I have to cast it to string, and then back to vector in the callback..",,
+135226527473336320,inclementdab,10/18/2020 1:16 PM,Yeah I've had this issue too. Its the BEST,,
+173448803578281984,inkihh,10/18/2020 1:16 PM,how would I do the convert back?,,
+135226527473336320,inclementdab,10/18/2020 1:17 PM,There's a ToVector() function for strings,,
+173448803578281984,inkihh,10/18/2020 1:17 PM,nice,,
+135226527473336320,inclementdab,10/18/2020 1:18 PM,Make sure you call vector.ToString(false) otherwise it will beautify it and make it useless,,
+173448803578281984,inkihh,10/18/2020 1:19 PM,thx,,
+173448803578281984,inkihh,10/18/2020 1:20 PM,I'm working on a feature for ZomBerry bzw 😉,,
+173448803578281984,inkihh,10/18/2020 1:37 PM,And this was the final touch,,
+173448803578281984,inkihh,10/18/2020 3:24 PM,Anyone active who's using ZomBerry Admin?,,
+278878275588194304,includelow,10/18/2020 3:41 PM,"Found in the game files. Will the client side be able to send overgrowth and receive data?
+```c
+        RestCallback cbx1 = new RestCallback;
+        RestContext ctx = GetRestApi().GetRestContext(""http://somethingsomewhere.com/path/"");
+        ctx.GET(cbx1,""RequestPath?Argument=Something"");
+```",,
+235718406492520448,niirozz,10/18/2020 4:06 PM,yes,,
+404677195013947392,.droppoint,10/18/2020 5:08 PM,"hi guys , i don't know if this is the right chanel for asking this but hey...maybe someone can help me...so i did my custom loading screen, packed in a pbo, made a key , published the mod, load it to my server, works...but...how do i add multiple pictures there? like in expansion for expample...wich sadly i can;t use anymore...because of to many issues , so i am using defauld chernarus mission now",,
+404677195013947392,.droppoint,10/18/2020 5:14 PM,"@Not A Banana i know you made the ExpansionSample-LoadingScreen mod that allows you to add multiple pics there, is there any way to make that work without expanion?",,
+404677195013947392,.droppoint,10/18/2020 5:15 PM,and it uses edds like mine uses,,
+404677195013947392,.droppoint,10/18/2020 5:15 PM,the only thing is difrent is the script,,
+144973944271798272,mandibull,10/18/2020 11:30 PM,"I get a ""Formula too complex"" error in unrelated files when trying to declare (unused) static const arrays... what the fuck?",,
+144973944271798272,mandibull,10/18/2020 11:31 PM,"```class MyConstants
+{
+    static const float TEST_1[4] = {-2.0, 1.0, 1.0, 1.0};
+    static const float TEST_2[4] = {-2.0, 1.0, 1.0, 1.0};
+    static const float TEST_3[4] = {-2.0, 1.0, 1.0, 1.0};
+}```",,
+144973944271798272,mandibull,10/18/2020 11:31 PM,,https://cdn.discordapp.com/attachments/492295576470290433/767500035029991434/unknown.png,
+144973944271798272,mandibull,10/18/2020 11:31 PM,Any ideas?,,
+135226527473336320,inclementdab,10/18/2020 11:32 PM,static const has a habit of throwing these errors,,
+135226527473336320,inclementdab,10/18/2020 11:32 PM,you can try using a dynamic array,,
+135226527473336320,inclementdab,10/18/2020 11:32 PM,array<float>,,
+144973944271798272,mandibull,10/18/2020 11:34 PM,Thanks! How do you cast between a dynamic array and a static array? @dab,,
+135226527473336320,inclementdab,10/18/2020 11:35 PM,"just do ```static const ref array<float> TEST_1 = { -2.0, 1.0, 1.0, 1.0 };```",,
+135226527473336320,inclementdab,10/18/2020 11:35 PM,= {}; is an array initalizer,,
+144973944271798272,mandibull,10/18/2020 11:35 PM,automagic :smoketvPog:,,
+135226527473336320,inclementdab,10/18/2020 11:36 PM,"actually what could be happening is its casting a dynamic array to a static array, and thats why its giving you a formula too complex",,
+135226527473336320,inclementdab,10/18/2020 11:36 PM,"since ```{ -2.0, 1.0, 1.0, 1.0 };``` is dynamic",,
+144973944271798272,mandibull,10/18/2020 11:36 PM,"oh really, surprising",,
+144973944271798272,mandibull,10/18/2020 11:36 PM,thanks for the help 🙂,,
+135226527473336320,inclementdab,10/18/2020 11:36 PM,np!,,
+112061091072266240,nishiko,10/19/2020 12:27 AM,Is it possible to draw circles on the map? Been looking around but could only find the MapMarker class.,,
+561680015578759196,wrdg,10/19/2020 12:55 AM,"also if you don't want inline arrays, the only way to have arrays as multiline is like this
+```cs
+static const ref array<float> TEST_1 = {
+    -2.0,
+    1.0,
+    1.0,
+    1.0 
+};
+```",,
+561680015578759196,wrdg,10/19/2020 12:56 AM,"the initial `{` has to be inline, and can't have it's own line. it's a silly compiler issue",,
+186245774575796224,rezin9024,10/19/2020 12:50 PM,"I'm in the process of making my first mod and want to get an array of all the players from the server. I'm confused why the code inside of the MonitorPlayers function is not executed - I am not receiving any null pointers exceptions when calling ```GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(MonitorPlayers, 10000, true);```  and the code reaches the print statement in the constructor. I am currently calling this function from a modded playerbase class through the OnJumpStart override. My friend told me this code wasn't working as I was calling it through the client instead of the server.  Can someone point me to where I might call this class so that the code inside of MonitorPlayers is executed. Thank you for taking the time to read this. ```void AfkServerHandler(int kickTimeout=60, bool kickOnCapacity=true)
+    {
+        GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(MonitorPlayers, 10000, true);
+        Print(""Called get call queue successfully"");
+    }
+    
+    // Monitor all players for idle status
+    void MonitorPlayers()
+    {
+        Print(""hit timer event"");
+        GetGame().GetPlayers( m_PlayersArray );
+        for (int i = 0; i < m_PlayersArray.Count(); ++i)
+        {
+            Print(m_PlayersArray[i]);
+            m_AfkPlayersArray.Insert(m_PlayersArray[i]);
+        }
+        KickAFKPlayers(m_AfkPlayersArray);
+    }```",,
+150883360019972096,hunterzcz,10/19/2020 12:56 PM,"create some instance of class on serverside, inside this new class call yours check every some specified interval of time",,
+186245774575796224,rezin9024,10/19/2020 1:04 PM,"@Hunterz I'm afraid this is my problem, I don't know where the entry point to the server-side code exists. Is there some class that is used by convention or how do I go about creating a instance of a class on the server-side?",,
+150883360019972096,hunterzcz,10/19/2020 1:05 PM,you can look into my mods there are examples howto to do,,
+186245774575796224,rezin9024,10/19/2020 1:05 PM,what are your mods? I'll look at them now,,
+150883360019972096,hunterzcz,10/19/2020 1:06 PM,airraid for example,,
+150883360019972096,hunterzcz,10/19/2020 1:06 PM,start at MissionServer.c,,
+186245774575796224,rezin9024,10/19/2020 1:06 PM,Thank you man 🙂,,
+150883360019972096,hunterzcz,10/19/2020 1:06 PM,you are welcome,,
+214092275272122368,appeazethecheese,10/19/2020 2:48 PM,"How would I go about displaying an image on screen? I'm trying to get used to modding, so I'm making a little mod that just changed the burlap sack to have a texture when you put it on your head rather than just being black",,
+222711381210824704,quadley,10/19/2020 3:49 PM,maybe set up a new gui containing only an image,,
+222711381210824704,quadley,10/19/2020 3:50 PM,thats only up while you have burlap blindness,,
+214092275272122368,appeazethecheese,10/19/2020 3:58 PM,I tried that but I can't figure out how to put the image into a layout file which as far as I can tell is the easiest way to show gui,,
+216045334697213952,dtacgaming,10/19/2020 5:14 PM,What's the class of the Alicebag base? So i can add inventory space to ALL Field Backpacks in 1 edit,,
+216045334697213952,dtacgaming,10/19/2020 5:23 PM,i think i just found it. BagAliceBase?,,
+589265326697611275,3ntr0pia,10/19/2020 5:31 PM,anyone know where is the leather tanning script?,,
+265198066255134720,dannydoomno1,10/19/2020 5:37 PM,@DTACFrostfire just use itembase,,
+222711381210824704,quadley,10/19/2020 5:49 PM,@3ntr0pia try P:\scripts\4_world\entities\itembase\barrel_colorbase.c,,
+216045334697213952,dtacgaming,10/19/2020 5:49 PM,"@DannyDoomno1 
+https://gyazo.com/8e878258b743213b2fb7ed4865a5d7e7
+
+This happens only to the UKAssVest items. Are they classed as another class other than clothing?",,
+589265326697611275,3ntr0pia,10/19/2020 5:51 PM,@Quadley THANKS !! 😄,,
+265198066255134720,dannydoomno1,10/19/2020 5:53 PM,@DTACFrostfire how are you spawning it?,,
+265198066255134720,dannydoomno1,10/19/2020 5:53 PM,send the line of code here,,
+216045334697213952,dtacgaming,10/19/2020 5:54 PM,"class cfgVehicles
+{
+
+    class Clothing;
+
+        class AliceBag_Black: Clothing  
+            {
+            itemsCargoSize[]={10,35};  
+            };
+        class AliceBag_Camo: Clothing  
+            {
+            itemsCargoSize[]={10,35};  
+            };
+        class AliceBag_Green: Clothing  
+            {
+            itemsCargoSize[]={10,35};  
+            };
+        class UKAssVest_Black: Clothing  
+            {
+            itemsCargoSize[]={10,14};  
+            };
+        class UKAssVest_Camo: Clothing 
+            {
+            itemsCargoSize[]={10,14};  
+            };
+        class UKAssVest_Khaki: Clothing  
+            {
+            itemsCargoSize[]={10,14};  
+            };
+        class UKAssVest_Olive: Clothing  
+            {
+            itemsCargoSize[]={10,14};  
+            };
+};",,
+216045334697213952,dtacgaming,10/19/2020 5:54 PM,backpacks work,,
+216045334697213952,dtacgaming,10/19/2020 5:55 PM,Or maybe they cannot support that inventory size?,,
+265198066255134720,dannydoomno1,10/19/2020 5:55 PM,"you need to use the actual classes the defaults use, not just clothing class",,
+265198066255134720,dannydoomno1,10/19/2020 5:55 PM,"it takes some work, but it will stop bugs",,
+216045334697213952,dtacgaming,10/19/2020 5:55 PM,thats what i asked,,
+216045334697213952,dtacgaming,10/19/2020 5:55 PM,and you said no,,
+216045334697213952,dtacgaming,10/19/2020 5:56 PM,"> @DTACFrostfire just use itembase
+@DannyDoomno1",,
+265198066255134720,dannydoomno1,10/19/2020 5:56 PM,"I thought you were trying to spawn the item, not resize",,
+216045334697213952,dtacgaming,10/19/2020 5:56 PM,How to find the itembase classnames then?,,
+265198066255134720,dannydoomno1,10/19/2020 5:56 PM,my bad,,
+265198066255134720,dannydoomno1,10/19/2020 5:57 PM,you gotta find the config.bin file in the server files for the item,,
+216045334697213952,dtacgaming,10/19/2020 5:57 PM,these are vanilla items btw,,
+265198066255134720,dannydoomno1,10/19/2020 5:57 PM,then convert it in DayZTools,,
+216045334697213952,dtacgaming,10/19/2020 5:58 PM,"class UKAssVest_ColorBase: Clothing
+    {
+        displayName=""$STR_CfgVehicles_UKAssVest_ColorBase0"";
+        descriptionShort=""$STR_CfgVehicles_UKAssVest_ColorBase1"";
+        model=""\DZ\characters\vests\UKAssVest_g.p3d"";
+        inventorySlot[]=
+        {
+            ""Vest""
+        };
+        attachments[]=
+        {
+            ""VestGrenadeA"",
+            ""VestGrenadeB"",
+            ""VestGrenadeC"",
+            ""VestGrenadeD""
+        };
+        simulation=""clothing"";
+        vehicleClass=""Clothing"";
+        itemInfo[]=
+        {
+            ""Clothing"",
+            ""Vest""
+        };",,
+216045334697213952,dtacgaming,10/19/2020 5:59 PM,that's from P:\DZ\characters\vests,,
+216045334697213952,dtacgaming,10/19/2020 6:02 PM,I got it to work 😄,,
+216045334697213952,dtacgaming,10/19/2020 6:02 PM,i used UKAssVest_ColorBase,,
+216045334697213952,dtacgaming,10/19/2020 6:02 PM,i must of typed it wrong firstly,,
+216045334697213952,dtacgaming,10/19/2020 6:03 PM,At least now i know how to get the class names. Thanks @DannyDoomno1,,
+379048644860706816,sense5000,10/19/2020 6:04 PM,"Hello, could someone help me with a calculation?
+I have a house with the position x y z plus the rotation. In this house i want to spawn a container via a menu. the position in the house i have but how do i calculate this because the position of the house is not always the same because there are more of them on the map.",,
+265198066255134720,dannydoomno1,10/19/2020 6:14 PM,"you need to use Object.ModelToWorld(""0 -7 0"")
+@*SΞΠSΞ",,
+265198066255134720,dannydoomno1,10/19/2020 6:15 PM,"the model to world is the offset coords from the house, will always be the same no matter what position the house is in",,
+379048644860706816,sense5000,10/19/2020 6:28 PM,"@DannyDoomno1 
+thanks for your help.",,
+214092275272122368,appeazethecheese,10/19/2020 6:33 PM,"how would i go about adding an image to an image widget? like what format should it be in, how do i include it in config.cpp, and how would i pass it to the widget?",,
+265198066255134720,dannydoomno1,10/19/2020 6:43 PM,"should be just in the config for the widget, a link to the path of the image",,
+214092275272122368,appeazethecheese,10/19/2020 8:40 PM,"bear with me because im kinda new to c, but could someone tell me why this isnt working? it keeps saying `BurlapMenu` is a bad type
+```c
+modded class PlayerBase{
+    override void OnConnect(){
+        super.OnConnect();
+        GetGame().ChatPlayer(""m_burlapMenu: "" + m_burlapMenu.ToString()); 
+        if(m_burlapMenu == null){
+            m_burlapMenu = new ref BerlapMenu;
+            m_burlapMenu.Init();
+        }
+    };
+};
+
+class BurlapMenu extends UIScriptedMenu{
+    
+    void BurlapMenu(){
+    
+    };
+    void ~BurlapMenu(){
+    
+    };
+    
+    override Widget Init(){
+        GetGame().ChatPlayer(""BurlapMenu::Init()"");
+        layoutRoot = GetGame().GetWorkspace().CreateWidgets(""ModTesting\\Layouts\\BurlapLayout.layout"");
+        
+        return layoutRoot;
+    };
+};
+```",,
+135226527473336320,inclementdab,10/19/2020 9:30 PM,@AppeazeTheCheese get rid of the 'ref' after new it does nothing. Also remove semi colons after your closing brackets. It's not like config editing you dont need it.,,
+135226527473336320,inclementdab,10/19/2020 9:31 PM,And use workbench since it will tell you exactly which line u fucked up,,
+214092275272122368,appeazethecheese,10/19/2020 9:31 PM,I am using workbench and it doesnt have any errors,,
+214092275272122368,appeazethecheese,10/19/2020 9:33 PM,,https://cdn.discordapp.com/attachments/492295576470290433/767832769442086932/unknown.png,
+135226527473336320,inclementdab,10/19/2020 9:34 PM,Press F7 to recompile scripts. If it doesn't throw that same error then you arent loading your mod correctly,,
+135226527473336320,inclementdab,10/19/2020 9:34 PM,I dont have the luxury of line numbers on mobile so its on you to see whats fucked on line 56,,
+214092275272122368,appeazethecheese,10/19/2020 9:35 PM,its the line in the if statement under `OnConnect()` where it creates a new instance of `BurlapMenu`,,
+214092275272122368,appeazethecheese,10/19/2020 9:36 PM,"also i recompiled, built the pbo, and tried again and it still crashed",,
+214092275272122368,appeazethecheese,10/19/2020 9:36 PM,"but if i remove that one line it loads, but obviously doesnt do what i want",,
+135226527473336320,inclementdab,10/19/2020 9:36 PM,You spelled BurlapMenu wrong,,
+135226527473336320,inclementdab,10/19/2020 9:36 PM,Lol,,
+214092275272122368,appeazethecheese,10/19/2020 9:37 PM,yup that would do it :facepalm:,,
+135226527473336320,inclementdab,10/19/2020 9:37 PM,:exTwitchPain:,,
+379692574426005504,liquidrock,10/19/2020 11:16 PM,"Given this script:
+```c++
+class FooBar
+{
+    protected static string FOOBAR = ""$profile:\\FooBar.json"";
+
+    ref map<string, float> Bar = new map<string, float>;
+    ref map<string, float> Foo = new map<string, float>;
+
+    void FooBar()
+    {
+        Bar[""Foo""] = 0.1;
+        Foo[""Bar""] = 1.0;
+
+        if ( FileExist( FOOBAR ) )
+        {
+            // Read existing JSON config
+             JsonFileLoader<FooBar>.JsonLoadFile( FOOBAR, this );
+        }
+        else
+        {
+            // Create JSON config
+             JsonFileLoader<FooBar>.JsonSaveFile( FOOBAR, this );
+        }
+    }
+}
+
+modded class DayZGame
+{
+    void DayZGame()
+    {
+        FooBar foobar = new FooBar;
+    }
+}```
+and JSON file in $profile, I always get the following crash.log:
+```JSON ERROR:
+Reading variable: data
+Expecting instance
+Reading variable: Foo
+Expecting map
+Map's key type can be only int, string and enum
+Function: 'Error'
+Stack trace:
+scripts/1_Core/proto\endebug.c:44
+scripts/3_Game/tools\jsonfileloader.c:29
+FooBar/Scripts/3_Game/foobar.c:16
+FooBar/Scripts/3_Game/foobar.c:30
+scripts/3_Game/game.c:7```
+The weird thing is, if I swap the two `ref map<...>` lines, then it complains about the other variable. Is this a known problem? Is it me?",,
+456226577798135808,Deleted User,10/19/2020 11:34 PM,Need someone to help me create a server hmu,,
+384850738355896321,ragtyson,10/19/2020 11:34 PM,@Deleted User spamming channels wont help you. Ask in the proper channel,,
+384850738355896321,ragtyson,10/19/2020 11:34 PM,#looking-for-creators-archive,,
+456226577798135808,Deleted User,10/19/2020 11:34 PM,Not sure what channel to post in so posted in the relative ones,,
+135226527473336320,inclementdab,10/19/2020 11:44 PM,ive never seen so many foo's and bar's in one example before in my life,,
+135226527473336320,inclementdab,10/19/2020 11:44 PM,im impressed,,
+379692574426005504,liquidrock,10/19/2020 11:45 PM,"I'm *very* uncreative 😂
+What really gets me that the code above can't read a JSON file that it generates itself and writes out succesfully. Wth.",,
+135226527473336320,inclementdab,10/19/2020 11:52 PM,json + maps are broken atm afaik,,
+135226527473336320,inclementdab,10/19/2020 11:52 PM,im having strange issues with the serializer aswell,,
+379692574426005504,liquidrock,10/19/2020 11:52 PM,Yeah if I take one of them out it works.,,
+135226527473336320,inclementdab,10/19/2020 11:52 PM,¯\_(ツ)_/¯,,
+379692574426005504,liquidrock,10/19/2020 11:53 PM,"But thanks for confirming it's not necessarily me in this case. Was beginning to doubt myself.
+🤦‍♂️ Oh doh, now I realize there's a ticket for it: https://feedback.bistudio.com/T142438",,
+589265326697611275,3ntr0pia,10/20/2020 12:03 AM,"I want to change the skin tan result , anyone know how i can do?```
+
+ void TanPelts( ItemBase lime, PlayerBase player )
+    {
+        EntityAI item;        
+        int item_count = GetInventory().GetCargo().GetItemCount();
+        int pelt_count = 0;
+        int lime_amount = Math.Floor(lime.GetQuantity()/GameConstants.BAREL_LIME_PER_PELT);
+        
+            
+        for (int i = 0; i < item_count; i++)
+        {
+            item = GetInventory().GetCargo().GetItem(i);
+            if ( item.IsPeltBase() )
+            {
+                pelt_count = g_Game.ConfigGetInt(""cfgVehicles "" + item.GetType() + "" peltGain"");
+                if ( pelt_count <= lime_amount )
+                {
+                    TanLeatherLambda lambda = new TanLeatherLambda(item, ""TannedLeather"", player, pelt_count);
+                    lambda.SetTransferParams(true, true, true);
+                    player.ServerReplaceItemWithNew(lambda);
+                                        
+                    lime_amount -= pelt_count;
+                    if ( lime_amount <= 0 )
+                    {
+                        lime.Delete();
+                        break;
+                    }
+                }
+            }
+        }    
+        if ( lime ) 
+        {
+            lime.SetQuantity(lime_amount*GameConstants.BAREL_LIME_PER_PELT);        
+        }
+        if ( pelt_count > 0 ) 
+        {
+            Lock(30);
+        }
+    } ```",,
+188628645928108033,rauuuuul,10/20/2020 12:20 AM,"@◣ ▲▼▲ (liquidrock) make a static function called toJSON(T obj) just to convert objects into json. for some reason, serializing within the class itself do not work for some reason",,👍 (1)
+379692574426005504,liquidrock,10/20/2020 12:33 AM,"@rauuuuul thanks, I'll keep that in mind. For my original problem I altered things a bit so could make do with only one map now.",,
+414169679385460737,ctg_gaming,10/20/2020 1:08 AM,"everytime i try to spawn my gun into offline mode, as soon as i go to click on the gun in spawn menu it crashes straight to desktop...anyone have any pointers on where to look for this issue?",,
+135226527473336320,inclementdab,10/20/2020 1:08 AM,use the bldr items variant of the gun,,
+135226527473336320,inclementdab,10/20/2020 1:08 AM,theres some simulation that happens with actual guns that fucks with offline afaik,,
+414169679385460737,ctg_gaming,10/20/2020 1:10 AM,There is no bldr variant. This is a gun I’m making,,
+135226527473336320,inclementdab,10/20/2020 1:11 AM,oh sorry misread that,,
+135226527473336320,inclementdab,10/20/2020 1:11 AM,in the spawn menu?,,
+414169679385460737,ctg_gaming,10/20/2020 1:12 AM,As soon as I click it in the spawn menu it crashes lol. I don’t even get to see if it displays the gun at all,,
+414169679385460737,ctg_gaming,10/20/2020 1:23 AM,"just not sure if its in the model, or the config of the gun thats causing it",,
+135226527473336320,inclementdab,10/20/2020 1:23 AM,compile with pbo project. it will tell you errors if you have them in your config,,
+135226527473336320,inclementdab,10/20/2020 1:24 AM,"i dont know much about modelling in this game but as long as it bins, it should load",,
+414169679385460737,ctg_gaming,10/20/2020 1:24 AM,"somethings been going on with my pboproject...i have the paid version. but lately, if i try to pack my backpack mod, it fucks everything up. i had to send the folder to someone else to pack the other day. so not sure whats up with that. but i'll give it a shot",,
+414169679385460737,ctg_gaming,10/20/2020 1:28 AM,packs fine with mikero,,
+414169679385460737,ctg_gaming,10/20/2020 1:28 AM,no errors anyways,,
+414169679385460737,ctg_gaming,10/20/2020 1:30 AM,still crashes the game though haha. even using zomberry in offline to spawn it. dont want to crash a live server testing it lol,,
+135226527473336320,inclementdab,10/20/2020 1:30 AM,Probably a config issue then.,,
+414169679385460737,ctg_gaming,10/20/2020 1:31 AM,"yeah, just not sure what. i've looked through it.",,
+135226527473336320,inclementdab,10/20/2020 1:31 AM,I'm gonna say look at how the game does m4 / ak guns and compare,,
+135226527473336320,inclementdab,10/20/2020 1:31 AM,Maybe you're missing n entry,,
+414169679385460737,ctg_gaming,10/20/2020 1:31 AM,copied config over from my other gun. changed paths,,
+414169679385460737,ctg_gaming,10/20/2020 1:31 AM,its a working gun config. just have to find whats causing the crash for THIS one.,,
+135226527473336320,inclementdab,10/20/2020 1:33 AM,Well use process of elimination.,,
+135226527473336320,inclementdab,10/20/2020 1:33 AM,Whats different between the entries,,
+414169679385460737,ctg_gaming,10/20/2020 1:53 AM,nothing that should make it crash...paths to rvmats/model and changed it from calling m4 to ump45,,
+135226527473336320,inclementdab,10/20/2020 1:54 AM,drop a functioning p3d in its place and see if it doesnt crash,,
+414169679385460737,ctg_gaming,10/20/2020 1:54 AM,true...,,
+414169679385460737,ctg_gaming,10/20/2020 1:58 AM,not the p3d. def. in config im thinking,,
+414169679385460737,ctg_gaming,10/20/2020 2:59 AM,was model.cfg. all set now 🙂,,
+414169679385460737,ctg_gaming,10/20/2020 2:59 AM,https://prnt.sc/v2pfsk,,
+135226527473336320,inclementdab,10/20/2020 3:30 AM,:Pog:,,
+317819428848926730,_luchini,10/20/2020 6:59 AM,"Hi All, does **Print()** works inside onStoreSave?
+I create a *override void onStoreSave* in a *modded class Edible_Base* but the code is not working, so I added some Prints to debug but it looks like it's not being called at all. Any ideas?",,
+135226527473336320,inclementdab,10/20/2020 7:01 AM,Print works everywhere.,,
+317819428848926730,_luchini,10/20/2020 7:06 AM,so any idea why onStoreSave is not being called? I read somewhere here there's a flag to set which items will persist in DB,,
+665471546525220875,Zedmag#7576,10/20/2020 7:32 AM,onStoreSave has to be called some how. So look at vanillin stuff and work backwards.,,
+135226527473336320,inclementdab,10/20/2020 9:01 AM,Ctrl + F is your best friend,,
+171486280683618304,oytun,10/20/2020 12:53 PM,It would be nice if a logistics mode was built,,
+171486280683618304,oytun,10/20/2020 12:54 PM,"for example, automatically add logistics inventory to vehicles.",,
+171486280683618304,oytun,10/20/2020 12:54 PM,so that we could put the airdrop box directly into this logistics inventory.,,
+171486280683618304,oytun,10/20/2020 12:58 PM,For Example: https://www.youtube.com/watch?v=kgv69DNofOA,,
+137658517615149056,helkhiana,10/20/2020 1:43 PM,what's causing sometimes to not detect the ActionData m_MainItem (basically item in hands) in actions?,,
+137658517615149056,helkhiana,10/20/2020 1:43 PM,is it due to the action not getting assigned to the item itself?,,
+137658517615149056,helkhiana,10/20/2020 1:57 PM,"on server only, works on client",,
+216045334697213952,dtacgaming,10/20/2020 3:28 PM,What program do you guys use for making/editing your scripts? I've seen 1 that some people use that has black background and is color coded,,
+499525883296743425,Erdem#3051,10/20/2020 3:28 PM,XD,,
+499525883296743425,Erdem#3051,10/20/2020 3:28 PM,Almost every editor is like that,,
+216045334697213952,dtacgaming,10/20/2020 3:29 PM,well i use notepad++ hence why i asked XD,,
+499525883296743425,Erdem#3051,10/20/2020 3:29 PM,"Use, notepad ++, i use atom, visual studio",,
+148370724900306944,jacob_mango,10/20/2020 3:29 PM,vs code and workbench,,
+499525883296743425,Erdem#3051,10/20/2020 3:29 PM,I prefer atom cuz its better for my eyes,,
+148370724900306944,jacob_mango,10/20/2020 3:30 PM,@Helkhiana probably desync between what the client thinks is in the players hand and what is actually in the hands,,
+216045334697213952,dtacgaming,10/20/2020 3:30 PM,also i have a problem trying to edit inventory sizes on vanilla items and other mods. Can anyone help? 😦,,
+499525883296743425,Erdem#3051,10/20/2020 3:31 PM,What problems?,,
+216045334697213952,dtacgaming,10/20/2020 3:31 PM,Its not working,,
+196845794513518592,shaggoth,10/20/2020 3:37 PM,"> What program do you guys use for making/editing your scripts? I've seen 1 that some people use that has black background and is color coded
+@DTACFrostfire VSCodium",,
+196845794513518592,shaggoth,10/20/2020 3:37 PM,Basically visual studio without studio ),,
+196845794513518592,shaggoth,10/20/2020 3:38 PM,"Nothing gets installed, only editor",,
+216045334697213952,dtacgaming,10/20/2020 3:39 PM,Atom looks cool 🙂,,
+196845794513518592,shaggoth,10/20/2020 3:39 PM,But it somehow connects with github desktop and shows me latest pushes and reminds me that I still didn't push last edits 😋,,
+171256035296673793,antihax,10/20/2020 4:01 PM,most of them do now,,
+171256035296673793,antihax,10/20/2020 4:01 PM,except prob notepad++,,
+171256035296673793,antihax,10/20/2020 4:02 PM,has a plugin for it 😛,,
+216045334697213952,dtacgaming,10/20/2020 4:19 PM,So you can't call and change values of the colorbase (lets say AliceBag_ColorBase) and you have to do it for each individual bag?,,
+216045334697213952,dtacgaming,10/20/2020 4:20 PM,"Oh well, made it work. managed to change the name and inventory size of MSFC alice bags 😄",,
+216045334697213952,dtacgaming,10/20/2020 4:35 PM,"where it says         requiredAddons[] = {
+I put ""DZ_Data"", ""DZ_BlahBlahBlah"", ""ModularVestSystem""
+if im modifying the inventory slot sizes of MVS gear?",,
+173448803578281984,inkihh,10/20/2020 4:37 PM,"Anyone who needs help in development? I'm not going to start developing the 11th admin interface, but I'd like to help with a complex modding product.",,
+173448803578281984,inkihh,10/20/2020 4:38 PM,"Ideally, joining a team",,
+137658517615149056,helkhiana,10/20/2020 4:38 PM,@Jacob_Mango weirdly player.GetItemInHands() works perfectly fine,,
+137658517615149056,helkhiana,10/20/2020 4:39 PM,i'm sure there's something more than just desync,,
+216045334697213952,dtacgaming,10/20/2020 4:49 PM,"https://gyazo.com/fc9b634cf6268cebc1cab81712559d11
+
+Can you not put shoulder weapon attachments onto vanila alicebackpack?",,
+216045334697213952,dtacgaming,10/20/2020 5:17 PM,ok it was my bad class code XD,,
+216045334697213952,dtacgaming,10/20/2020 5:17 PM,"https://gyazo.com/2178878dc7fbd623658c197745e2e0b4
+
+it has space for a gun and a tag",,
+216045334697213952,dtacgaming,10/20/2020 5:20 PM,Might have to skip the flag tag as idk how to make it actually visible on the backpack,,
+279773337721241601,foxtrot55,10/20/2020 6:43 PM,,https://cdn.discordapp.com/attachments/492295576470290433/768152351239307284/unknown.png,
+279773337721241601,foxtrot55,10/20/2020 6:43 PM,What is liquidcontainertype?,,
+216045334697213952,dtacgaming,10/20/2020 6:44 PM,gas/water/alcohol ect? idk,,
+226007936546111498,ctlaltdelammo,10/20/2020 6:51 PM,bitmask for type of liquid,,
+211779129924780032,hlynge,10/20/2020 9:53 PM,"Any hint for how to read the last songs list would be welcome:
+```
+{
+    ""MusicLocations"": [{
+            ""obje"": ""JukeboxMusicObject"",
+            ""name"": ""Trader Jukebox"",
+            ""songs"": [1, 3, 4, 5, 6, 7]
+        },
+        {
+            ""obje"": ""RadioMusicObject"",
+            ""name"": ""Trader Radio"",
+            ""songs"": [2, 8, 9, 10, 15, 22]
+        }
+    ]
+}
+```",,
+135226527473336320,inclementdab,10/20/2020 9:56 PM,"Get arrays named MusicLocations, get index 1 of the array, then get array named ""songs""",,
+204255627235557376,benedikz,10/21/2020 12:54 AM,"So I have this bad boy here, which should be supposed to play sound after spawning it via tools for now. But I am not sure how should I actually make it simulate itself when the object `SPL_AnomalyIntermission` is spawned. Script looks okay to me, dunno where the problem is. I have this item also in config. I'll share, if needed.
+```c
+class SPL_AnomalyIntermission extends BuildingSuper
+{
+  const string SFX_ANOMALY = ""RPL_SoundSet_AnomalyIntermission"";
+
+  protected EffectSound m_AnomalySoundsetLoop;
+  protected bool m_AnomalyActive = true;
+
+  void Anomaly()
+    {
+    Print(""Anomaly Done"");
+    RegisterNetSyncVariableBool(""m_AnomalyActive"");
+    SetEventMask( EntityEvent.SIMULATE );
+
+    if ( GetGame().IsClient()  ||  !GetGame().IsMultiplayer() )
+            GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(EFX_Init, 15, false);
+  }
+
+  override void EOnSimulate( IEntity owner, float dt )
+    {
+    Print(""EOnSimulate Done"");
+        if (!m_AnomalyActive)
+        {
+            EFX_Stop();
+            if ( GetGame().IsServer() )
+            {
+                GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(EFX_Destroy, 7000, false);
+            }
+        }
+    }
+
+  void EFX_Init()
+    {
+        Print(""Výskyt anomálie v: {"" + GetPosition() + ""}"");
+        PlaySoundSetLoop( m_AnomalySoundsetLoop, SFX_ANOMALY, 0.5, 5.8 );
+        m_AnomalySoundsetLoop.SetSoundLoop(true);
+        m_AnomalySoundsetLoop.SetSoundAutodestroy( true );
+  }
+
+  void EFX_Destroy()
+  {
+    GetGame().ObjectDelete(this);
+  }
+
+  void EFX_Stop()
+    {
+        StopSoundSet(m_AnomalySoundsetLoop);
+        SetSynchDirty();
+    }
+};
+```",,
+561680015578759196,wrdg,10/21/2020 12:59 AM,EEOnInit,,
+561680015578759196,wrdg,10/21/2020 1:03 AM,I’ll get you an example in a minute,,
+204255627235557376,benedikz,10/21/2020 1:10 AM,"I'd really appreciate that, thanks in advance 😊",,
+561680015578759196,wrdg,10/21/2020 1:24 AM,"```cs
+/**
+ * Expansion_GraveBase.c
+ *
+ * DayZ Expansion Mod
+ * www.dayzexpansion.com
+ * © 2020 DayZ Expansion Mod Team
+ *
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. 
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
+ *
+*/
+
+class Expansion_GraveBase extends Inventory_Base
+{
+    protected int m_FliesIndex = -1;
+
+    protected ref EffectParticle m_FliesEffect;
+    protected ref EffectSound m_SoundFliesEffect;
+
+    override void EOnInit(IEntity other, int extra)
+    {
+        super.EOnInit(other, extra);
+
+        if (GetGame().IsClient() || !GetGame().IsMultiplayer())
+        {
+            if (!m_FliesEffect)
+                m_FliesEffect = new EffSwarmingFlies();
+                    
+            if (m_FliesEffect && !SEffectManager.IsEffectExist(m_FliesIndex))
+            {
+                m_FliesEffect.SetDecalOwner(this);
+                m_FliesIndex = SEffectManager.PlayOnObject(m_FliesEffect, this, ""0 0.25 0"");
+
+                Particle part = m_FliesEffect.GetParticle();
+                AddChild(part, -1);
+
+                if (!m_SoundFliesEffect)
+                    PlaySoundSetLoop(m_SoundFliesEffect, ""Flies_SoundSet"", 1.0, 1.0);
+            }
+        }
+    }
+    
+    override void EEDelete(EntityAI parent)
+    {
+        if (m_FliesEffect)
+            m_FliesEffect.Stop();
+
+        if (m_SoundFliesEffect)
+            StopSoundSet(m_SoundFliesEffect);
+    }
+}
+```",,
+561680015578759196,wrdg,10/21/2020 1:25 AM,@benedi.kz I changed it a bit but it's pretty much the same principle,,👍 (1)
+456226577798135808,Deleted User,10/21/2020 11:59 AM,Can someone quick explain how proxies work in object builder and how i can make magazines show and scopes etc on my rifle? 🙂,,
+141917748476248064,bugs11,10/21/2020 12:11 PM,@Deleted User Let's start with : https://discordapp.com/channels/452035973786632194/492295593075539993/551825813645950976,,
+211779129924780032,hlynge,10/21/2020 12:12 PM,"Is there a way to check if a ""PlaySoundSetLoop"" is playing. I am trying to start the next sound after the previous if finished + a wait time ?",,
+141917748476248064,bugs11,10/21/2020 12:13 PM,if(PlaySoundSetLoop) ? or if(PlaySoundSetLoop== NULL),,
+141917748476248064,bugs11,10/21/2020 12:13 PM,something like that,,
+141917748476248064,bugs11,10/21/2020 12:14 PM,"Use some ``Print();`` in your code, that you can check in your scripts.logs",,
+135226527473336320,inclementdab,10/21/2020 12:18 PM,Not running workbench :WeirdChamp:,,
+181864632216977408,arkensor,10/21/2020 12:28 PM,,https://cdn.discordapp.com/attachments/492295576470290433/768420483443458048/unknown.png,
+181864632216977408,arkensor,10/21/2020 12:28 PM,POGGERS - finally ...,,
+135226527473336320,inclementdab,10/21/2020 12:29 PM,Inb4 they just moved the statics to 3_game instead of fixing the compiler issue,,
+135226527473336320,inclementdab,10/21/2020 12:29 PM,:pepeLaughers:,,
+181864632216977408,arkensor,10/21/2020 12:29 PM,I hope not ...,,
+402438795825381376,namalsksurvivor,10/21/2020 12:41 PM,"no, the fix is in compiler",,
+135226527473336320,inclementdab,10/21/2020 12:41 PM,❤️ ❤️,,
+181864632216977408,arkensor,10/21/2020 12:41 PM,Did Mirek fix that or someone from enfusion team?,,
+402438795825381376,namalsksurvivor,10/21/2020 12:41 PM,@Arkensor enfusion team,,
+181864632216977408,arkensor,10/21/2020 12:42 PM,Lovely,,
+137658517615149056,helkhiana,10/21/2020 12:42 PM,:FeelsShocked:,,
+137658517615149056,helkhiana,10/21/2020 12:42 PM,default finally fixed in 1.10,,
+137658517615149056,helkhiana,10/21/2020 12:42 PM,?,,
+211779129924780032,hlynge,10/21/2020 12:43 PM,https://tenor.com/view/monkey-ape-dance-dancing-orangutan-gif-13620205,,
+211779129924780032,hlynge,10/21/2020 12:43 PM,When will we get it ?,,
+141917748476248064,bugs11,10/21/2020 12:44 PM,*Soon ™*,,
+211779129924780032,hlynge,10/21/2020 12:47 PM,"**Any other ideas ???**
+
+Is there a way to check if a ""PlaySoundSetLoop"" is playing. I am trying to start the next sound after the previous if finished + a wait time ?
+
+Not: if(PlaySoundSetLoop) ? or if(PlaySoundSetLoop== NULL)",,
+181864632216977408,arkensor,10/21/2020 12:47 PM,No need to do that in script 🙂,,
+181864632216977408,arkensor,10/21/2020 12:47 PM,Use loop=1 in the sound config,,
+211779129924780032,hlynge,10/21/2020 12:48 PM,@Arkensor How do i then know when the sound bit is done and I can start the next sound ?,,
+181864632216977408,arkensor,10/21/2020 12:48 PM,ok is the same sound repeated or different ones after each other?,,
+211779129924780032,hlynge,10/21/2020 12:48 PM,different sounds ... randomized from a list,,
+181864632216977408,arkensor,10/21/2020 12:48 PM,randomized ... perfect,,
+181864632216977408,arkensor,10/21/2020 12:48 PM,then sound sets are the way to go for you,,
+181864632216977408,arkensor,10/21/2020 12:49 PM,"```    class TurnoutChangeTrack_SoundShader
+    {
+        samples[] =
+        {
+            { ""\DZ\sounds\environment\buildings\doors\metal\doorMetalGateOpenABit_1"", 1 },
+            { ""\DZ\sounds\environment\buildings\doors\metal\doorMetalGateOpenABit_2"", 1 },
+            { ""\DZ\sounds\environment\buildings\doors\metal\doorMetalGateOpenABit_3"", 1 },
+            { ""\DZ\sounds\environment\buildings\doors\metal\doorMetalGateOpenABit_4"", 1 },
+        };
+        volume = 1.0;
+        range = 30;
+    };```",,
+181864632216977408,arkensor,10/21/2020 12:49 PM,"```    class TurnoutChangeTrack_SoundSet: baseTrain_SoundSet
+    {
+        soundShaders[] = { ""TurnoutChangeTrack_SoundShader"" };
+        loop = 1;
+    };
+```",,
+181864632216977408,arkensor,10/21/2020 12:50 PM,i am not sure if it will select one thing and loop that then. or use a different one on next loop,,
+137658517615149056,helkhiana,10/21/2020 12:51 PM,it's one random every time it tries to play a sound,,
+137658517615149056,helkhiana,10/21/2020 12:51 PM,it won't really solve his issue,,
+196845794513518592,shaggoth,10/21/2020 12:51 PM,Train_soundset :uhhuh:,,
+181864632216977408,arkensor,10/21/2020 12:51 PM,but its worth a try. if that doesnt work go the script way. there is a eventhandler called ```Event_OnSoundWaveEnded```,,
+181864632216977408,arkensor,10/21/2020 12:51 PM,In the effect sound class,,
+181864632216977408,arkensor,10/21/2020 12:52 PM,there you could go with a call later for delay and start the next one,,
+137658517615149056,helkhiana,10/21/2020 12:52 PM,also,,
+137658517615149056,helkhiana,10/21/2020 12:52 PM,`IsSoundPlaying()`,,
+181864632216977408,arkensor,10/21/2020 12:53 PM,Yeah but then you need some check loop to see when it happens. it would be easier to intercept the event handler,,
+137658517615149056,helkhiana,10/21/2020 12:56 PM,i think also using Loop is not good for this case,,
+137658517615149056,helkhiana,10/21/2020 12:56 PM,it should be manually handled,,
+141917748476248064,bugs11,10/21/2020 12:56 PM,"```cpp
+for(i=0;i<X;i++)
+{
+  if(!songisplaying)
+  {
+    playanothertrack
+    i++;
+  };
+};```.",,
+141917748476248064,bugs11,10/21/2020 12:56 PM,something like that ?,,
+137658517615149056,helkhiana,10/21/2020 12:56 PM,not really,,
+141917748476248064,bugs11,10/21/2020 12:57 PM,that discussion interesst me also xD,,
+137658517615149056,helkhiana,10/21/2020 12:57 PM,it's best to use some other timed event,,
+135226527473336320,inclementdab,10/21/2020 12:57 PM,Events are always going to be better,,
+137658517615149056,helkhiana,10/21/2020 12:57 PM,e.g. OnUpdate,,
+137658517615149056,helkhiana,10/21/2020 12:58 PM,it depends where and how you wanna use it,,
+135226527473336320,inclementdab,10/21/2020 12:58 PM,OuUpdate is still an update thread. Any time you can avoid doing it. Do it,,
+135226527473336320,inclementdab,10/21/2020 12:58 PM,Engineer around it,,
+135226527473336320,inclementdab,10/21/2020 12:58 PM,Because update threads are what really cause lag,,
+148370724900306944,jacob_mango,10/21/2020 12:59 PM,"yeah use the events if you are working with sounds, if you want a little bit of overlap then set fade ins/outs",,
+137658517615149056,helkhiana,10/21/2020 12:59 PM,@hlynge what u want this for? you got some radio going on?,,
+137658517615149056,helkhiana,10/21/2020 1:00 PM,whenever using sounds 2 things you gotta be careful,,
+137658517615149056,helkhiana,10/21/2020 1:00 PM,1. always have a way to destroy the sound when the object is destroyed,,
+137658517615149056,helkhiana,10/21/2020 1:00 PM,2. do not play loop unless you 150% have to,,
+137658517615149056,helkhiana,10/21/2020 1:01 PM,i've seen several times where things got bad and they had radios playing non-stop until server restart due to bad loop handling,,
+141917748476248064,bugs11,10/21/2020 1:02 PM,1. Are you pointing the destructor ? ``void ~itename();`` ?,,
+135226527473336320,inclementdab,10/21/2020 1:02 PM,@Helkhiana that sounds like a dope ass party,,
+137658517615149056,helkhiana,10/21/2020 1:02 PM,that's one way yes,,
+137658517615149056,helkhiana,10/21/2020 1:02 PM,destroy the sound in the destructor,,
+141917748476248064,bugs11,10/21/2020 1:03 PM,What would be the other ways ?,,
+137658517615149056,helkhiana,10/21/2020 1:03 PM,PlaySoundOnObject,,
+135226527473336320,inclementdab,10/21/2020 1:03 PM,There are auto desroy parameters,,
+137658517615149056,helkhiana,10/21/2020 1:03 PM,"playing any sound or particle or light on an object it will tie it to that..so when parent (ur object) gets destroyed, it will destroy that as well",,
+135226527473336320,inclementdab,10/21/2020 1:04 PM,I use them personally cause I cba to ref and delete it,,
+137658517615149056,helkhiana,10/21/2020 1:05 PM,i learned that with enscript is just better to double check everything,,
+141917748476248064,bugs11,10/21/2020 1:05 PM,"I got a question about it, since we here
+
+if I declare : 
+```c
+itemname_base extends ItemBase
+{
+    void ~itemname_base()
+    {
+    };
+};
+
+ItemNameA extends itemname_base {};```",,
+137658517615149056,helkhiana,10/21/2020 1:05 PM,so i tend to use playonobject and tell it in destructor to delete it,,
+141917748476248064,bugs11,10/21/2020 1:05 PM,Is that okay for the destructor of ItemA or should I put the constructor/destructor in the itemA ?,,
+137658517615149056,helkhiana,10/21/2020 1:06 PM,depends?,,
+148370724900306944,jacob_mango,10/21/2020 1:06 PM,depends,,
+137658517615149056,helkhiana,10/21/2020 1:06 PM,xD,,
+148370724900306944,jacob_mango,10/21/2020 1:06 PM,what you cleaning up?,,
+137658517615149056,helkhiana,10/21/2020 1:06 PM,constructor/destructor get inherited,,
+148370724900306944,jacob_mango,10/21/2020 1:06 PM,"clean up itemname_base stuff in the itemname_base destructor, clean up itemnamea stuff in the itemnamea destructor",,
+141917748476248064,bugs11,10/21/2020 1:07 PM,so the name will be wrong right ?,,
+148370724900306944,jacob_mango,10/21/2020 1:07 PM,no,,
+141917748476248064,bugs11,10/21/2020 1:07 PM,just making sure,,
+137658517615149056,helkhiana,10/21/2020 1:07 PM,no,,
+137658517615149056,helkhiana,10/21/2020 1:07 PM,lol,,
+141917748476248064,bugs11,10/21/2020 1:07 PM,mmh,,
+141917748476248064,bugs11,10/21/2020 1:07 PM,"```c
+itemname_base extends ItemBase
+{
+    void ~itemname_base()
+    {
+    };
+};
+
+ItemNameA extends itemname_base 
+{
+    void ~itemnameA()
+    {
+    };
+};
+```",,
+135226527473336320,inclementdab,10/21/2020 1:08 PM,"If you ref a variable in itemname_base, delete it in the destructor",,
+135226527473336320,inclementdab,10/21/2020 1:08 PM,Unless you want nasty memleaks,,
+137658517615149056,helkhiana,10/21/2020 1:08 PM,"```
+class box_parent extends ItemBase
+{
+    void ~box_parent ()
+    {
+Print(""i am destructing box_parent"");
+    };
+};
+
+class box extends box_parent {};
+```
+
+You spawn and delete ""box"" and it will still print what's in box_parent",,
+141917748476248064,bugs11,10/21/2020 1:09 PM,"Okay, good to know, I wasn't sure of it",,
+141917748476248064,bugs11,10/21/2020 1:09 PM,Thanks for clarification,,
+137658517615149056,helkhiana,10/21/2020 1:09 PM,"```class box_parent extends ItemBase
+{
+    void ~box_parent ()
+    {
+Print(""i am destructing box_parent"");
+    };
+};
+
+class box extends box_parent 
+{
+
+    void ~box ()
+    {
+Print(""i am destructing box "");
+    };
+};
+```
+
+It will print:
+`i am destructing box_parent`
+`i am destructing box`",,
+137658517615149056,helkhiana,10/21/2020 1:10 PM,does it make sense?,,
+135226527473336320,inclementdab,10/21/2020 1:11 PM,Helk,,
+137658517615149056,helkhiana,10/21/2020 1:11 PM,what,,
+135226527473336320,inclementdab,10/21/2020 1:12 PM,What,,
+135226527473336320,inclementdab,10/21/2020 1:12 PM,Is that indentation,,
+137658517615149056,helkhiana,10/21/2020 1:12 PM,i can't tab in discord,,
+141917748476248064,bugs11,10/21/2020 1:12 PM,"```class box_parent extends ItemBase
+{
+    void ~box_parent ()
+    {
+Print(""i am destructing box_parent"");
+    };
+};
+
+class box extends box_parent {};```
+
+In this exemple, would the ``box`` be destructed ?",,
+135226527473336320,inclementdab,10/21/2020 1:13 PM,The destructor gets called *when* the object gets destroyed,,
+135226527473336320,inclementdab,10/21/2020 1:13 PM,It doest destroy the object,,
+141917748476248064,bugs11,10/21/2020 1:13 PM,"yeah, i'm asking all of this for the turntable",,
+141917748476248064,bugs11,10/21/2020 1:13 PM,Making sure I don't go for endless loops and shit,,
+141917748476248064,bugs11,10/21/2020 1:14 PM,since i'm working with a Class_base for all my items,,
+137658517615149056,helkhiana,10/21/2020 1:14 PM,your question doesn't make sense in the way you say it which is why he said that,,
+141917748476248064,bugs11,10/21/2020 1:14 PM,yep,,
+141917748476248064,bugs11,10/21/2020 1:14 PM,I do agree,,
+137658517615149056,helkhiana,10/21/2020 1:14 PM,when you delete an item (your turntable) it will call the destructor and execute the stuff there for cleanups,,
+141917748476248064,bugs11,10/21/2020 1:14 PM,"I saw a picture about that earlier this month, about not asking the main question and asking question that don't lead to that",,
+141917748476248064,bugs11,10/21/2020 1:14 PM,I try to think about that more and more frequently xd,,
+141917748476248064,bugs11,10/21/2020 1:15 PM,let make sure I got it with real example,,
+141917748476248064,bugs11,10/21/2020 1:16 PM,"```cpp
+class PartyOn_TurnTable_Base extends ItemBase
+{
+    void ~PartyOn_TurnTable_Base()
+    {
+        StopSoundSet(m_SoundMusic);    
+        SoundTurnOff();
+    }
+}
+
+class PartyOn_TurnTable: PartyOn_TurnTable_Base{};```",,
+141917748476248064,bugs11,10/21/2020 1:17 PM,"okay, got it",,
+137658517615149056,helkhiana,10/21/2020 1:17 PM,yea that's correct way of using destructor,,
+137658517615149056,helkhiana,10/21/2020 1:18 PM,what's that soundturnoff for?,,
+141917748476248064,bugs11,10/21/2020 1:18 PM,"Sounds, Particles. Is there something else I should be aware to use the destructor for ?",,
+135226527473336320,inclementdab,10/21/2020 1:18 PM,Anything you ref in the class context,,
+135226527473336320,inclementdab,10/21/2020 1:18 PM,Needs to be deleted,,
+141917748476248064,bugs11,10/21/2020 1:18 PM,the clics sounds when turned on/off ^^,,
+137658517615149056,helkhiana,10/21/2020 1:19 PM,ugh,,
+137658517615149056,helkhiana,10/21/2020 1:19 PM,think about this,,
+141917748476248064,bugs11,10/21/2020 1:19 PM,"yeah okay, that could be gone ^^",,
+137658517615149056,helkhiana,10/21/2020 1:19 PM,when your object gets deleted you don't wanna play a sound on it,,
+137658517615149056,helkhiana,10/21/2020 1:19 PM,lol,,
+141917748476248064,bugs11,10/21/2020 1:20 PM,"I over did it at first, don't trow me in the fire 😄",,
+141917748476248064,bugs11,10/21/2020 1:21 PM,"> Anything you ref in the class context
+
+May you elaborate just a bit ? ^^",,
+137658517615149056,helkhiana,10/21/2020 1:21 PM,it really depends on your case,,
+137658517615149056,helkhiana,10/21/2020 1:21 PM,for example when you have UIs like the trader layout,,
+137658517615149056,helkhiana,10/21/2020 1:21 PM,you might wanna re-enable cursor,,
+137658517615149056,helkhiana,10/21/2020 1:21 PM,put blur back to 0,,
+137658517615149056,helkhiana,10/21/2020 1:22 PM,it is used for very different things for different types of objects,,
+141917748476248064,bugs11,10/21/2020 1:22 PM,that's a good example,,
+137658517615149056,helkhiana,10/21/2020 1:22 PM,"but most important ones for objects that are tied to something in game e.g. a box then you need to always ensure light, particles and sounds get destroyed with your object",,
+141917748476248064,bugs11,10/21/2020 1:25 PM,"Allright, those are the one i'm using a lots, made sure everything are destroy ^^",,
+141917748476248064,bugs11,10/21/2020 1:25 PM,just wasn't fully sure how it was working,,
+141917748476248064,bugs11,10/21/2020 1:25 PM,Thanks guys for the guidance,,
+211779129924780032,hlynge,10/21/2020 1:26 PM,"@Helkhiana  - I am trying to make a enhancement to my music mod where you based on config can spawn objects on the map and play sound from a playlist in the config....
+My current challenge is triggering the next ""song"" from the list:
+```
+{
+    ""Configversion"": 0.1,
+    ""NightBegin"": 23,
+    ""NightEnd"": 6,
+    ""MusicLocations"": [
+        {
+            ""obje"": ""JukeboxMusicObject"",
+            ""name"": ""Trader Zone 1"",
+            ""soundpos"": ""5654 368.516 14546"",
+            ""soundrot"": ""10 0 0"",
+            ""nightonly"": 0,
+            ""soundinterval"": -1,
+            ""random"": 1,
+            ""songList"": [1,2,3,4,5,6]
+        }
+    ]
+}
+```",,
+456226577798135808,Deleted User,10/21/2020 1:43 PM,Is there triggers in dayz like this for arma 3  ? https://community.bistudio.com/wiki/Eden_Editor:_Trigger,,
+456226577798135808,Deleted User,10/21/2020 1:44 PM,I realize thats done in eden editor,,
+148370724900306944,jacob_mango,10/21/2020 1:49 PM,"Yes, but all through script and you have to basically code it all yourself",,
+665471546525220875,Zedmag#7576,10/21/2020 1:50 PM,"@BuGs another good example is the heli wreck. Check out its scripted class. When it is created, the smoke particles are as well. Then when it’s deleted, you also have to delete them.... or they just sit there not attached to anything.",,
+141917748476248064,bugs11,10/21/2020 1:50 PM,"I have all of these already, I wasn't sure about the inherence tho ^^",,
+665471546525220875,Zedmag#7576,10/21/2020 1:51 PM,Ahhh.,,
+141917748476248064,bugs11,10/21/2020 1:51 PM,if I had to adpat names or not ^^,,
+141917748476248064,bugs11,10/21/2020 1:51 PM,"seems in my case, I don't 🙂",,
+665471546525220875,Zedmag#7576,10/21/2020 1:55 PM,"Oh and by the way guys... (and gal) ..... I had submitted a ticket for some class defied issues... 
+
+https://feedback.bistudio.com/T154417 
+And noticed the person that changed it to new to assigned ALSO made a comment in another very important ticket... so good news on the horizon .... ```    Geez closed T149789: server wont start - error in scripts - Can't find variable 'DEFAULT' as Resolved.
+Hello everyone.
+The issue with Can't find variable 'DEFAULT' has been fixed internally and will be fixed on Steam in one of the upcoming updates.
+Regards,
+Geez ```",,
+141917748476248064,bugs11,10/21/2020 1:55 PM,https://discordapp.com/channels/452035973786632194/492295576470290433/768420486710558761,,
+141917748476248064,bugs11,10/21/2020 1:55 PM,you late :p,,
+665471546525220875,Zedmag#7576,10/21/2020 1:56 PM,Haha. Guess so... that pesky sleep thing is always making me late. Haha.,,
+665471546525220875,Zedmag#7576,10/21/2020 1:57 PM,"(I was also bringing attention to my ticket, hehe)",,
+150883360019972096,hunterzcz,10/21/2020 2:27 PM,"nice ""DEFAULT"" will be fixed hopefully never appear again 😛",,
+456226577798135808,Deleted User,10/21/2020 2:28 PM,@Jacob_Mango know of any reference materials I could look at that may help as far as triggers,,
+389021593042681862,johnmclane666,10/21/2020 3:49 PM,"Anyone knows if its (theroreticaly) possible to apply a force via script to a player/AI to ""push them back"" realting to the applied force?",,
+141917748476248064,bugs11,10/21/2020 3:50 PM,My brain just melted with that possibility 😄,,
+141917748476248064,bugs11,10/21/2020 3:51 PM,https://tenor.com/view/spongebob-squarepants-spongebob-imagination-rainbow-happy-gif-4596954,,
+196845794513518592,shaggoth,10/21/2020 3:51 PM,Is there any examples of different  temperature zones?,,
+196845794513518592,shaggoth,10/21/2020 3:51 PM,I mean some circled zone and inside it's colder or warmer,,
+272245679013888011,marioe,10/21/2020 4:19 PM,"> Anyone knows if its (theroreticaly) possible to apply a force via script to a player/AI to ""push them back"" realting to the applied force?
+@JohnMcLane  (Benni) Yes
+```csharp
+proto void dBodyApplyImpulse(notnull IEntity body, vector impulse);
+
+```",,
+389021593042681862,johnmclane666,10/21/2020 4:20 PM,@MarioE thx!,,
+141917748476248064,bugs11,10/21/2020 4:22 PM,"Let me bookmark this for later use, Thanks Mario 😄",,
+272245679013888011,marioe,10/21/2020 4:22 PM,You know whats funny @BuGs,,
+272245679013888011,marioe,10/21/2020 4:22 PM,I told you about this before in #animations-secret,,
+272245679013888011,marioe,10/21/2020 4:22 PM,😆,,
+141917748476248064,bugs11,10/21/2020 4:22 PM,Really ?,,
+141917748476248064,bugs11,10/21/2020 4:22 PM,😦,,
+141917748476248064,bugs11,10/21/2020 4:23 PM,"I try to put notes of everything I found useful , I did not saw that one 😦",,
+272245679013888011,marioe,10/21/2020 4:23 PM,https://discordapp.com/channels/452035973786632194/495236936148189204/760458471849721866,,
+141917748476248064,bugs11,10/21/2020 4:23 PM,Haaaaa,,
+141917748476248064,bugs11,10/21/2020 4:23 PM,"I saw that, I tought It was for the sounddddddddd",,
+141917748476248064,bugs11,10/21/2020 4:24 PM,Like residual noise when getting closer of the speakers,,
+141917748476248064,bugs11,10/21/2020 4:24 PM,that part is noted,,
+141917748476248064,bugs11,10/21/2020 4:24 PM,xD,,
+141917748476248064,bugs11,10/21/2020 4:24 PM,"well, guess i'll rewrite it now 😄",,
+272245679013888011,marioe,10/21/2020 4:24 PM,I was referring to how to easily simulate the impulse from the video lol,,
+141917748476248064,bugs11,10/21/2020 4:26 PM,I'll get you that done !,,
+141917748476248064,bugs11,10/21/2020 4:26 PM,https://tenor.com/view/shin-jimin-jimin-whip-whiplash-whipping-gif-12463359,,
+414169679385460737,ctg_gaming,10/22/2020 3:55 AM,I have an issue with my custom barrels despawning when people try to craft them into fire barrels(never intended for that anyways). Is there a way to disable the fire barrel portion of my barrels?,,
+329672086358458368,chopppper,10/22/2020 3:59 AM,"That's a recipe rather than an action, pretty sure you can still mod a recipe and add a rule for your barrels",,
+329672086358458368,chopppper,10/22/2020 4:00 AM,,https://cdn.discordapp.com/attachments/492295576470290433/768655030965239828/SPOILER_PokeHolesBarrel.c,
+329672086358458368,chopppper,10/22/2020 4:00 AM,opps spoiler 🙂,,
+329672086358458368,chopppper,10/22/2020 4:02 AM,"you can override
+```    override bool CanDo(ItemBase ingredients[], PlayerBase player)
+    {
+        //HACK: until server-> client syncing of ""LocalDropEntity"" gets sortet out
+        ItemBase parent = ingredients[0];
+        if (parent.IsEmpty())
+            return true;
+        return false;
+        //return true;
+    }```",,
+329672086358458368,chopppper,10/22/2020 4:04 AM,"to
+```    override bool CanDo(ItemBase ingredients[], PlayerBase player)
+    {
+        //HACK: until server-> client syncing of ""LocalDropEntity"" gets sortet out
+        ItemBase parent = ingredients[0];
+        if (parent.IsEmpty() && !parent.IsInherited(YourCustomBarrelClass))
+            return true;
+        return false;
+        //return true;
+    }```",,
+171256035296673793,antihax,10/22/2020 4:21 AM,is there another way of serializing structures down other than JSON? running into issues reloading them and appears to be a documented bug,,
+414169679385460737,ctg_gaming,10/22/2020 4:22 AM,Thank you,,
+171256035296673793,antihax,10/22/2020 4:25 AM,i guess i could just flatten it to one level,,
+312948232021868545,landum,10/22/2020 4:41 AM,"Hey guys any modder here could know how to make an effect of screen swing or shake like for a drunk effect for the mod Medical Attention
+Cause the only thing that Medical Attention do for drunkness is to blurry from time to time the screen, make player laugh and turn the player unconscious
+Medical Attention original modder authorized the repack, modifying and repost of his mod so it seems okay for the changes
+
+The screen could spin, move randomly, changing colors, etc. 'funny' things like that",,
+561680015578759196,wrdg,10/22/2020 4:42 AM,Simonvic is pretty much the go to for PPEffects,,
+171256035296673793,antihax,10/22/2020 4:43 AM,"you could introduce random input on the client, maybe randomly move the head around",,
+312948232021868545,landum,10/22/2020 4:45 AM,"yeah, maybe even that, but i guess PostProcess is easier to call",,
+312948232021868545,landum,10/22/2020 4:45 AM,"i mean i don't know so, yeah",,
+171256035296673793,antihax,10/22/2020 4:45 AM,"indeed, not sure how you would get off render stuff to make it look like it is spinning though",,
+312948232021868545,landum,10/22/2020 4:46 AM,"Got some ideas or something on your mind @simonvic ?
+Like is it do-able",,
+665471546525220875,Zedmag#7576,10/22/2020 4:51 AM,"I made a mod back in sqf days that did just this. The more Kavas you drank, the screen would blur. Then shake. Then forward would randomly switch to left or right, so on and so on. Then would puke, then pass out. I never moved it over to enfusion and have since lost that hard drive. But it’s been on my mind since covid started. Would be interested in revisiting it.",,
+312948232021868545,landum,10/22/2020 11:30 AM,That would be so so dope !,,
+196845794513518592,shaggoth,10/22/2020 11:32 AM,:emoji_15:,,
+196845794513518592,shaggoth,10/22/2020 11:33 AM,@ƃɐɯnɐΛ | פɐɹ | Release the Drunken!,,
+196845794513518592,shaggoth,10/22/2020 11:34 AM,could be nice if we have a chance to put some classnames and multipliers in a json :exPepeHey:,,
+207902577713479680,simonvic,10/22/2020 12:02 PM,"> Got some ideas or something on your mind @simonvic ?
+> Like is it do-able
+@Landum idk how MedicalAttention implemented the ""drunkenness"", I suppose he created a new `Modifier` and then `OnActivate` and `OnDeactivate` manages the PPEffects; that's how I did some of my effects for the epinephrine.
+But if you want to add shakes or something, you'll probably have to play around with the `Camera` of the player. There should be a method called `CamShake()` or something, I don't remember, but I'd suggest you to make your own implementation with the camera tranformation matrix",,
+312948232021868545,landum,10/22/2020 12:03 PM,Yeah thats how he did it,,
+312948232021868545,landum,10/22/2020 12:03 PM,But i didn't find any mention of PPEffects on the files actually,,
+207902577713479680,simonvic,10/22/2020 12:05 PM,maybe he didn't use the `PPEffects` class. Are you allowed to unpack it?,,
+312948232021868545,landum,10/22/2020 12:07 PM,"On his workshop page of the mod he said in big letters  ""You ARE allowed to repack, reupload, modify or reproduce any portions of this mod.
+It would be appreciated if you include link to this original mod page.
+""",,
+207902577713479680,simonvic,10/22/2020 12:07 PM,oh ok ok,,
+312948232021868545,landum,10/22/2020 12:07 PM,"That's what i've done, i opened and search around for a bit by myself but my modding knowledge is very very limited",,
+312948232021868545,landum,10/22/2020 12:08 PM,Same for coding,,
+207902577713479680,simonvic,10/22/2020 12:08 PM,"could you send me the `OnActivate` method in his mod? (I'm not at computer right now, I can't check myself)",,
+312948232021868545,landum,10/22/2020 12:09 PM,"Concerning Drukness, right ?",,
+207902577713479680,simonvic,10/22/2020 12:10 PM,yep,,
+312948232021868545,landum,10/22/2020 12:11 PM,"```
+    override protected void OnActivate(PlayerBase player)
+    {
+        //player.IncreaseDiseaseCount();
+        if (player.GetNotifiersManager()) player.GetNotifiersManager().ActivateByType(eNotifiers.NTF_PILLS);
+        // copy from PainKillersMdfr
+        m_Player.m_InjuryHandler.m_ForceInjuryAnimMask = m_Player.m_InjuryHandler.m_ForceInjuryAnimMask | eInjuryOverrides.PAIN_KILLERS_LVL0;
+    }
+```",,
+312948232021868545,landum,10/22/2020 12:12 PM,"there is also, just above a ""ActivateCondition""  but i dont think that one might be useful",,
+207902577713479680,simonvic,10/22/2020 12:13 PM,"it's something inside the notifiers manager.
+Give me 15 minutes and I'll give it a look, so we don't spam this channel lol",,
+312948232021868545,landum,10/22/2020 12:13 PM,"Alright, thanks  for you help !",,
+207902577713479680,simonvic,10/22/2020 12:13 PM,np 🙂,,
+207902577713479680,simonvic,10/22/2020 12:56 PM,"I gave a brief look at the code. As far as I could understand he used the vanilla `FeverBlurSymptom` (and only changed some values); you could change it and add whatever PPEffects you want in here `OnUpdateClient`, but it will also affect the vanilla fever effects.
+If you want to do it properly you should create your own symptom
+``` 
+class MySymptom extends SymptomBase{
+  blah blah blah
+}
+```
+and use this instead of the `FeverBlurSymptom`",,
+207902577713479680,simonvic,10/22/2020 12:57 PM,@Landum,,
+312948232021868545,landum,10/22/2020 1:02 PM,"Oh.. Alright thanks for the informations
+Where have you find the FeverBlurSymptom ?",,
+312948232021868545,landum,10/22/2020 1:03 PM,"Sounds very tricky to me, i may stick to the standard modder values tho haha",,
+312948232021868545,landum,10/22/2020 1:03 PM,just being curious,,
+207902577713479680,simonvic,10/22/2020 1:07 PM,"in DrunkennessMdfr.OnActivate() :
+```csharp
+m_Player.m_InjuryHandler.m_ForceInjuryAnimMask = m_Player.m_InjuryHandler.m_ForceInjuryAnimMask | eInjuryOverrides.PAIN_KILLERS_LVL0;
+```
+is where he activates the ""Drunkenness"". Then the vanilla code takes care of the symptoms",,
+312948232021868545,landum,10/22/2020 1:08 PM,oh okay i see,,
+207902577713479680,simonvic,10/22/2020 1:10 PM,"> Sounds very tricky to me, i may stick to the standard modder values tho haha
+@Landum The ""diseases"" system in dayz is pretty well made, it's made of multiple ""pieces"", but if you don't have programming experience it will be a bit tough to understand it and implement something correctly.",,
+312948232021868545,landum,10/22/2020 1:11 PM,"Yeah haha that's why i said it souded tricky, the only ""experience"" i have is tweaking XMLs values and it barely stops here",,
+312948232021868545,landum,10/22/2020 1:11 PM,"A bit of json too, but thats it",,
+207902577713479680,simonvic,10/22/2020 1:12 PM,"well, you can always learn to code 😄 that's where the fun begins :party:",,
+312948232021868545,landum,10/22/2020 1:12 PM,True :),,
+312948232021868545,landum,10/22/2020 1:14 PM,"Anyway thank you a lot simon, you've lightened up some dark places but yeah i gotta really work on this to get something working !",,
+207902577713479680,simonvic,10/22/2020 1:15 PM,np 👍,,
+137658517615149056,helkhiana,10/22/2020 1:23 PM,if i want to teleport a player 200m away from a specific place how do i do it? i am not sure how to get the ground pos,,
+207902577713479680,simonvic,10/22/2020 1:32 PM,there should be a method somewhere called `SurfaceY` or something,,
+137658517615149056,helkhiana,10/22/2020 1:33 PM,👍,,
+137658517615149056,helkhiana,10/22/2020 1:33 PM,thanks,,
+137658517615149056,helkhiana,10/22/2020 1:33 PM,found it,,
+207902577713479680,simonvic,10/22/2020 1:33 PM,🙂,,
+137658517615149056,helkhiana,10/22/2020 1:48 PM,@Jacob_Mango where is it,,
+137658517615149056,helkhiana,10/22/2020 1:48 PM,gib,,
+137658517615149056,helkhiana,10/22/2020 1:48 PM,gib,,
+137658517615149056,helkhiana,10/22/2020 1:48 PM,diff,,
+135226527473336320,inclementdab,10/22/2020 1:50 PM,Moldable clothingbase,,
+135226527473336320,inclementdab,10/22/2020 1:50 PM,Fixed default,,
+135226527473336320,inclementdab,10/22/2020 1:50 PM,Its like Christmas,,
+148370724900306944,jacob_mango,10/22/2020 1:52 PM,@Helkhiana is the update out yet?,,
+148370724900306944,jacob_mango,10/22/2020 1:53 PM,https://tenor.com/view/tonton-tonton-sticker-no-nope-gif-13636081,,
+137658517615149056,helkhiana,10/22/2020 1:53 PM,:LUL:,,
+137658517615149056,helkhiana,10/22/2020 1:53 PM,it's not but better be ready,,
+148370724900306944,jacob_mango,10/22/2020 1:57 PM,@thurston give @Helkhiana access to do gitdiff on the repo 🙂,,
+137658517615149056,helkhiana,10/22/2020 1:57 PM,:pepesweating:,,
+137658517615149056,helkhiana,10/22/2020 1:57 PM,oh hell no,,
+137658517615149056,helkhiana,10/22/2020 1:57 PM,i get messaged just for my mods like 2 min after exp is up: hey your mod is broken for 1.10 please fix,,
+137658517615149056,helkhiana,10/22/2020 1:58 PM,i don't need the diff too,,
+148370724900306944,jacob_mango,10/22/2020 1:58 PM,"@Helkhiana your mod is broken with 1.10, please fix",,
+137658517615149056,helkhiana,10/22/2020 1:59 PM,pay me :meow_sip:,,
+141917748476248064,bugs11,10/22/2020 1:59 PM,xD,,
+148370724900306944,jacob_mango,10/22/2020 2:02 PM,buy me a coffee so i can stay up that late to do it @Helkhiana 🙂,,
+135226527473336320,inclementdab,10/22/2020 2:02 PM,"@Helkhiana your mod is broken for 1.10, please fix",,
+137658517615149056,helkhiana,10/22/2020 2:03 PM,:Shovel:,,
+135226527473336320,inclementdab,10/22/2020 2:07 PM,:inclemClose: do it,,
+137658517615149056,helkhiana,10/22/2020 2:08 PM,imma slap you with that shovel,,
+137658517615149056,helkhiana,10/22/2020 2:08 PM,don't make me,,
+148370724900306944,jacob_mango,10/22/2020 2:08 PM,fine ill do it,,
+135226527473336320,inclementdab,10/22/2020 2:08 PM,:GunL: :inclemClose: :GunR:,,
+135226527473336320,inclementdab,10/22/2020 2:09 PM,Takes two to tango,,
+181864632216977408,arkensor,10/22/2020 2:10 PM,"@Helkhiana your mod is working for 1.10, please break.",,
+137658517615149056,helkhiana,10/22/2020 2:10 PM,:LUL:,,
+222711381210824704,quadley,10/22/2020 2:24 PM,can you guys think of an example that uses a basic continuous action to transfer energy/ charge something,,
+148370724900306944,jacob_mango,10/22/2020 2:24 PM,"steam decided to download experimental to my harddrive and then copy from there to my ssd, it's gonna take a while",,
+148370724900306944,jacob_mango,10/22/2020 2:24 PM,but @dab,https://cdn.discordapp.com/attachments/492295576470290433/768812059839168532/unknown.png,
+135226527473336320,inclementdab,10/22/2020 2:25 PM,ITS IN,,
+135226527473336320,inclementdab,10/22/2020 2:25 PM,:exPogU:,,
+148370724900306944,jacob_mango,10/22/2020 2:27 PM,There's also a Backend API added now. Seems to be the hive interface,,
+148370724900306944,jacob_mango,10/22/2020 2:33 PM,"just to confirm, where are they?",https://cdn.discordapp.com/attachments/492295576470290433/768814216236761108/unknown.png,
+135226527473336320,inclementdab,10/22/2020 2:34 PM,Hmmmm. This code appears to be made of code,,
+196845794513518592,shaggoth,10/22/2020 2:34 PM,do they change the way you walk and ability to climb/vault?,,
+196845794513518592,shaggoth,10/22/2020 2:35 PM,i'm still downloading 😐,,
+137658517615149056,helkhiana,10/22/2020 2:37 PM,took like 5 steps with broken leg and i'm uncon haha,,
+196845794513518592,shaggoth,10/22/2020 2:37 PM,ooh,,
+196845794513518592,shaggoth,10/22/2020 2:37 PM,cool coool,,
+196845794513518592,shaggoth,10/22/2020 2:38 PM,but you can jog and run ?,,
+137658517615149056,helkhiana,10/22/2020 2:38 PM,diff anim for crawling,,
+137658517615149056,helkhiana,10/22/2020 2:38 PM,you can't run,,
+196845794513518592,shaggoth,10/22/2020 2:38 PM,i mean after you put splint,,
+137658517615149056,helkhiana,10/22/2020 2:38 PM,oh i haven't tried yet,,
+137658517615149056,helkhiana,10/22/2020 2:38 PM,one sec,,
+196845794513518592,shaggoth,10/22/2020 2:38 PM,i hope you can't ),,
+196845794513518592,shaggoth,10/22/2020 2:38 PM,players must suffer :E,,
+137658517615149056,helkhiana,10/22/2020 2:39 PM,after splint you can't run,,
+137658517615149056,helkhiana,10/22/2020 2:39 PM,you jog slowly,,
+137658517615149056,helkhiana,10/22/2020 2:40 PM,you can vault over small fence but i don't think anything bigger,,
+196845794513518592,shaggoth,10/22/2020 2:40 PM,awesome 🙂 thankye helki,,
+196845794513518592,shaggoth,10/22/2020 2:40 PM,"not that awesome, but we can manage",,
+207902577713479680,simonvic,10/22/2020 2:40 PM,"brokenlegs, leather tanning, food decay... is it christmas yet?",,🥳 (1)
+148370724900306944,jacob_mango,10/22/2020 2:40 PM,so hmm,https://cdn.discordapp.com/attachments/492295576470290433/768816150351183872/unknown.png,
+207902577713479680,simonvic,10/22/2020 2:42 PM,also fixed clothing temperature 😍,,
+137658517615149056,helkhiana,10/22/2020 2:54 PM,is it done yet? @Jacob_Mango i need to go take my nap,,
+135226527473336320,inclementdab,10/22/2020 2:54 PM,:adamSleepy:,,
+135226527473336320,inclementdab,10/22/2020 2:54 PM,Nappies,,
+148370724900306944,jacob_mango,10/22/2020 3:00 PM,pushing,,
+239201186933112833,da0ne_,10/22/2020 3:00 PM,:HR_ThinkLoad:,,
+148370724900306944,jacob_mango,10/22/2020 3:02 PM,https://github.com/Thurston00/DayZSAEnfScript/commit/c34948d78035fa7c606ff711fc44290da23b159a,,
+148370724900306944,jacob_mango,10/22/2020 3:02 PM,@Helkhiana @LieutenantMaster @Wardog @dab,,❤️ (5)
+207902577713479680,simonvic,10/22/2020 3:02 PM,i was there spamming F5 lol,,
+141917748476248064,bugs11,10/22/2020 3:23 PM,Slots for the truck have been added,,
+561680015578759196,wrdg,10/22/2020 3:32 PM,Hold up.,,
+561680015578759196,wrdg,10/22/2020 3:32 PM,BackendApi,,
+171256035296673793,antihax,10/22/2020 3:45 PM,"maybe they fixed this JSON issue then, looks like it uses it quite a bit",,
+202828762310508554,daemonforge,10/22/2020 3:47 PM,@Wardog  wait what? Im just see that too? what is it?,,
+561680015578759196,wrdg,10/22/2020 3:48 PM,What’s the json issue?,,
+561680015578759196,wrdg,10/22/2020 3:48 PM,Haven’t ran into issues with it at all,,
+171256035296673793,antihax,10/22/2020 3:48 PM,"nested maps serialize, but wont deserialize",,
+171256035296673793,antihax,10/22/2020 3:49 PM,theres two bugs posted for it already,,
+135226527473336320,inclementdab,10/22/2020 3:49 PM,serializer sucks :WeirdChamp:,,
+561680015578759196,wrdg,10/22/2020 3:49 PM,"Ah yeah, I don’t nest maps 😅",,
+171256035296673793,antihax,10/22/2020 3:49 PM,yeah 😦,,
+171256035296673793,antihax,10/22/2020 3:51 PM,looks like they are redesigning the master list server and adding lobbies or something,,
+171256035296673793,antihax,10/22/2020 3:52 PM,and using usernames and passwords for authentication 😬,,
+135226527473336320,inclementdab,10/22/2020 3:52 PM,:monkaomega: the what,,
+171256035296673793,antihax,10/22/2020 3:52 PM,"```        EBREQ_LOBBY_RoomsRegister,
+        EBREQ_LOBBY_RoomsJoin,
+        EBREQ_LOBBY_RoomsAcceptPlayer,
+        EBREQ_LOBBY_RoomsHeartBeat,
+        EBREQ_LOBBY_RoomsUpdate,
+        EBREQ_LOBBY_RoomsRemovePlayer,
+        EBREQ_LOBBY_RoomsSearch,
+        EBREQ_LOBBY_RoomsGetByIds,
+        EBREQ_LOBBY_RoomsGetByHostIds,
+        EBREQ_LOBBY_GetActiveScenarios,```",,
+561680015578759196,wrdg,10/22/2020 3:53 PM,Pretty much allows for proper spawn select,,
+561680015578759196,wrdg,10/22/2020 3:53 PM,Holding players in limbo,,
+207902577713479680,simonvic,10/22/2020 3:53 PM,yeah they fixed player select,,
+561680015578759196,wrdg,10/22/2020 3:53 PM,Instead of teleporting the player object,,
+171256035296673793,antihax,10/22/2020 3:54 PM,"```    /**
+    \brief Invoke credentials update (authenticate with new name+password)
+    */
+    proto native void VerifyCredentials();``` is a little scary though",,
+171256035296673793,antihax,10/22/2020 3:54 PM,should really use jwt or some other token,,
+561680015578759196,wrdg,10/22/2020 3:55 PM,Do you even know what it’s even used for?,,
+171256035296673793,antihax,10/22/2020 3:55 PM,unless it is just for the backend,,
+561680015578759196,wrdg,10/22/2020 3:55 PM,It’s nothing over network my guy,,
+561680015578759196,wrdg,10/22/2020 3:55 PM,Idk why you’re freaking out over local login,,
+171256035296673793,antihax,10/22/2020 3:56 PM,"doesn't say that anywhere, unless i am missing it 😛",,
+171256035296673793,antihax,10/22/2020 3:57 PM,"```        // user api request <> response
+        EBREQ_USER_Login,
+        EBREQ_USER_Auth,``` maybe.. this looks interesting",,
+202828762310508554,daemonforge,10/22/2020 3:57 PM,"```
+//! Credential parameters
+    enum EBackendCredentials
+    {
+        EBCRED_NAME,
+        EBCRED_PWD,
+        EBCRED_BASEURI,
+    };
+```
+there is a base uri?",,
+171256035296673793,antihax,10/22/2020 3:58 PM,"yeah, could be to swap backends.",,
+202828762310508554,daemonforge,10/22/2020 3:58 PM,Yeah point multiple servers to same backend?,,
+171256035296673793,antihax,10/22/2020 3:58 PM,"not enough here yet to tell, looks like they have a ways to go to implement this",,
+202828762310508554,daemonforge,10/22/2020 3:59 PM,It's also in the HTTP folder which makes me think its going to be external request not internal? but yeah no enough to go off of here,,
+171256035296673793,antihax,10/22/2020 4:15 PM,aww it's a separate JSON implementation 😦,,
+171256035296673793,antihax,10/22/2020 4:15 PM,"oh well, i think i have a workaround anyway",,
+87168005758283776,streatman,10/22/2020 6:44 PM,"Hello, need a little help
+wanted to test our server mod with experimental and i am getting this error now
+```Circle inheritance in class 'PlayerConstants@258#1'```",,
+87168005758283776,streatman,10/22/2020 6:44 PM,has anyone got a clue maybe?,,
+168481931288117249,ondra,10/22/2020 6:45 PM,I have this too,,
+181864632216977408,arkensor,10/22/2020 6:46 PM,That is the first time I ever saw that message. Congratulations. What did you try to do when this started to pop up?,,
+168481931288117249,ondra,10/22/2020 6:46 PM,nothing just put it on exp,,
+168481931288117249,ondra,10/22/2020 6:46 PM,(server mod),,
+181864632216977408,arkensor,10/22/2020 6:46 PM,0.o,,
+168481931288117249,ondra,10/22/2020 6:46 PM,"```modded class PlayerConstants 
+{    
+    static const float METABOLIC_SPEED_ENERGY_WALK        = 0.070;     //energy loss per second
+    static const float METABOLIC_SPEED_ENERGY_JOG        = 0.220;    //energy loss per second
+    static const float METABOLIC_SPEED_ENERGY_SPRINT    = 0.5;         //energy loss per second
+    static const float METABOLIC_SPEED_WATER_WALK        = 0.075;     //water loss per second
+    static const float METABOLIC_SPEED_WATER_JOG        = 0.25;     //water loss per second
+    static const float METABOLIC_SPEED_WATER_SPRINT        = 0.6;         //water loss per second
+    
+    //SHOES DAMAGE
+
+    static const float BAREFOOT_MOVEMENT_BLEED_MODIFIER = 0.065;    
+    static const float SHOES_MOVEMENT_DAMAGE_PER_STEP    = 0.010;
+   }```",,
+141917748476248064,bugs11,10/22/2020 6:47 PM,That promise great patch day,,
+141917748476248064,bugs11,10/22/2020 6:47 PM,xD,,
+168481931288117249,ondra,10/22/2020 6:47 PM,xD,,
+181864632216977408,arkensor,10/22/2020 6:47 PM,As soon as you comment out the modded player constants it works?,,
+168481931288117249,ondra,10/22/2020 6:47 PM,will try,,
+168481931288117249,ondra,10/22/2020 6:49 PM,i think it works,,
+87168005758283776,streatman,10/22/2020 6:49 PM,"we have edited the food and water values
+```hpp
+modded class PlayerConstants
+{
+    static const float SL_ENERGY_CRITICAL = 0;
+    static const float SL_ENERGY_LOW = 500;
+    static const float SL_ENERGY_NORMAL = 3000;
+    static const float SL_ENERGY_HIGH = 9000;
+    
+    static const float SL_WATER_CRITICAL = 0;
+    static const float SL_WATER_LOW = 500;
+    static const float SL_WATER_NORMAL = 1500;
+    static const float SL_WATER_HIGH = 4500;
+
+    static const float LOW_WATER_THRESHOLD = PlayerConstants.SL_WATER_LOW;
+    static const float LOW_ENERGY_THRESHOLD = PlayerConstants.SL_ENERGY_LOW;    
+};
+```",,
+181864632216977408,arkensor,10/22/2020 6:49 PM,oh no dont do that,,
+87168005758283776,streatman,10/22/2020 6:49 PM,in 1.09 works perfectly,,
+181864632216977408,arkensor,10/22/2020 6:50 PM,"that will indeed cause a circle, cause player constants will look for player constants which looks for player constants",,
+87168005758283776,streatman,10/22/2020 6:50 PM,https://tenor.com/view/husky-wat-what-sneeze-dog-gif-11588501,,
+181864632216977408,arkensor,10/22/2020 6:51 PM,"It should not have been working previously to be honest. There were fixes applied to Enfusion to fix another bug. Perheps that ""fixed"" this as well. You will have to put in the numeric value",,
+87168005758283776,streatman,10/22/2020 6:51 PM,"oh, you mean this one?```hpp
+static const float LOW_WATER_THRESHOLD = PlayerConstants.SL_WATER_LOW;
+static const float LOW_ENERGY_THRESHOLD = PlayerConstants.SL_ENERGY_LOW;```",,
+181864632216977408,arkensor,10/22/2020 6:52 PM,The question is @Ondra why would you have that error? you dont use an existing constant there,,PepeHands (1)
+181864632216977408,arkensor,10/22/2020 6:52 PM,yes i mean that one,,
+87168005758283776,streatman,10/22/2020 6:53 PM,"okay.... this is from experimental itself btw ```hpp
+static const float LOW_WATER_THRESHOLD = PlayerConstants.SL_WATER_LOW;    //threshold from which water affects health
+static const float LOW_ENERGY_THRESHOLD = 200;    //threshold from which energy affects health
+```",,
+87168005758283776,streatman,10/22/2020 6:53 PM,"but i will try that, thank you very much",,
+235718406492520448,niirozz,10/22/2020 6:54 PM,It's still not possible to mod static value in Enscript right ?,,
+87168005758283776,streatman,10/22/2020 6:55 PM,"works, thank you @Arkensor",,
+135226527473336320,inclementdab,10/22/2020 6:55 PM,should be able to afaik,,
+239201186933112833,da0ne_,10/22/2020 6:57 PM,by redefining it yea i guess,,
+239201186933112833,da0ne_,10/22/2020 6:57 PM,isn't that in the guide on the wiki?,,
+181864632216977408,arkensor,10/22/2020 6:57 PM,"you can mod those, but you need to redefine the value and not use another one. and yes its on the wiki",,👍 (1)
+561680015578759196,wrdg,10/22/2020 7:23 PM,Yeah don’t define a constant with another constant lmao,,
+561680015578759196,wrdg,10/22/2020 7:23 PM,That’s programming 101,,
+87168005758283776,streatman,10/22/2020 7:26 PM,"i am not a programmer though.
+i oriented myself on what the devs did before and just changed it to my likeing.",,
+561680015578759196,wrdg,10/22/2020 7:29 PM,"It’s all good, just a heads up",,
+211779129924780032,hlynge,10/22/2020 7:54 PM,Why is it a problem to get the Count of a TIntArray ??,https://cdn.discordapp.com/attachments/492295576470290433/768895187530547270/unknown.png,
+135226527473336320,inclementdab,10/22/2020 7:55 PM,its a method. not a variable,,
+137658517615149056,helkhiana,10/22/2020 8:10 PM,what's best way to destroy something initialized?,,
+137658517615149056,helkhiana,10/22/2020 8:10 PM,`delete variableName`?,,
+561680015578759196,wrdg,10/22/2020 8:11 PM,Yeah if it’s a custom class,,
+137658517615149056,helkhiana,10/22/2020 8:11 PM,yes it is,,
+137658517615149056,helkhiana,10/22/2020 8:11 PM,i want to sort of ensure there's only ever one instance of it running,,
+135226527473336320,inclementdab,10/22/2020 8:13 PM,@Helkhiana only 'ref' it in one place. That will be the actual storage of the variable. Call delete on that ref'd object when you are done,,
+135226527473336320,inclementdab,10/22/2020 8:13 PM,Ez clappers,,
+137658517615149056,helkhiana,10/22/2020 8:13 PM,yeah i have it in DayZGame,,
+137658517615149056,helkhiana,10/22/2020 8:14 PM,now in terms of persistency,,
+137658517615149056,helkhiana,10/22/2020 8:14 PM,if i wanted this custom class instance to persist between restarts,,
+137658517615149056,helkhiana,10/22/2020 8:15 PM,how should i go about it?,,
+171256035296673793,antihax,10/22/2020 8:15 PM,welcome to my world right now 😄,,
+137658517615149056,helkhiana,10/22/2020 8:16 PM,lol,,
+171256035296673793,antihax,10/22/2020 8:16 PM,"there's two serializers i've found, simple binary file and JSON",,
+137658517615149056,helkhiana,10/22/2020 8:16 PM,like can i just add `void OnStoreSave(ParamsWriteContext ctx)` ?,,
+171256035296673793,antihax,10/22/2020 8:17 PM,I am doing it when the mission starts and save when it gets dirty,,
+561680015578759196,wrdg,10/22/2020 8:34 PM,Use the bin,,
+561680015578759196,wrdg,10/22/2020 8:34 PM,Much better,,
+561680015578759196,wrdg,10/22/2020 8:34 PM,"If you don’t need the user to mess with it, it’s easy to write and read data",,
+141917748476248064,bugs11,10/22/2020 8:55 PM,"I'm a bit tired and the brain doesn't want to think straight. About the ghost items scripts, doesn't work with multiples mods running it. It obviously taking only the last mod that  Any suggestion to work that out for me tomorrow with fresh mind ? 🙂",https://cdn.discordapp.com/attachments/492295576470290433/768910456387010610/PartyOn_Custom_Ghost_Icons.c,
+665471546525220875,Zedmag#7576,10/22/2020 8:58 PM,Probably gonna need some sort of ‘super’ Im Guessing then?,,
+181864632216977408,arkensor,10/22/2020 8:59 PM,"I thought so @BuGs. That's the issue with them ... what a pity. I will pin your message regardles, but please edit it to warn the user about multiple mods issues.",,
+141917748476248064,bugs11,10/22/2020 8:59 PM,wait wait,,
+141917748476248064,bugs11,10/22/2020 9:00 PM,"I deleted that post, I'm gonna find the way to do it ^^ and remake it",,
+141917748476248064,bugs11,10/22/2020 9:00 PM,So everyone will be able to use it ^^,,
+181864632216977408,arkensor,10/22/2020 9:00 PM,alright. @ me when you are done.,,
+141917748476248064,bugs11,10/22/2020 9:03 PM,"Zedmag, should be that",,
+141917748476248064,bugs11,10/22/2020 9:03 PM,"Okay, last build for the evening xd",,
+141917748476248064,bugs11,10/22/2020 9:17 PM,Server finnaly loaded after couples of scripts errors,,
+141917748476248064,bugs11,10/22/2020 9:17 PM,*Drums for the moment or truth*,,
+141917748476248064,bugs11,10/22/2020 9:24 PM,https://tenor.com/view/back-to-the-future-to-be-continued-goodbye-bye-later-gif-12062047,,
+196845794513518592,shaggoth,10/22/2020 9:25 PM,:axNpDXW_460s:,,
+142681545159737345,taiwendo,10/22/2020 10:57 PM,Who here knows a lot about C#?,,
+721713331471384668,mikeyxb,10/22/2020 11:39 PM,Any of you awsome guys know how to override expansion loading screen with mine?,,
+171256035296673793,antihax,10/22/2020 11:57 PM,Found out why JSONFileLoader wont deserialize maps properly.. https://feedback.bistudio.com/T154507 tl;dr. First member in the class must be a string.,,
+135226527473336320,inclementdab,10/22/2020 11:58 PM,Whack,,
+171256035296673793,antihax,10/22/2020 11:58 PM,"well not why, but a workaround",,
+135226527473336320,inclementdab,10/22/2020 11:58 PM,@MikeyXB check expansion wiki,,
+135226527473336320,inclementdab,10/22/2020 11:58 PM,There's a tutorial,,
+721713331471384668,mikeyxb,10/22/2020 11:59 PM,Cheers @dab I just found it as you posted,,
+171256035296673793,antihax,10/22/2020 11:59 PM,oh i should make another bug report for `while (x-- > 3)` not compiling too...,,
+135226527473336320,inclementdab,10/23/2020 12:15 AM,I made a bug report for this not working ```for(int i = 0; i < x; i += 10)```,,
+171256035296673793,antihax,10/23/2020 12:15 AM,that doesn't work either?,,
+171256035296673793,antihax,10/23/2020 12:17 AM,+= not allowed here; welp,,
+171256035296673793,antihax,10/23/2020 12:17 AM,at least you get an error with that one 😛,,
+171256035296673793,antihax,10/23/2020 12:18 AM,`while (--x > 2)` works btw; and `while (x--)`,,
+298815811823337483,rubyninja_,10/23/2020 12:59 AM,"@antihax @dab I swear I was using += the other day, in fact I think it's part of the rotating light for the Expansion Lighthouse. I'll check when I'm home.",,
+171256035296673793,antihax,10/23/2020 1:00 AM,I just tried what he put above and it gives a compiler error in workbench,,
+171256035296673793,antihax,10/23/2020 1:00 AM,may not be the same compiler in the actual engine though,,
+298815811823337483,rubyninja_,10/23/2020 1:00 AM,Maybe it doesn't work in for loops?,,
+171256035296673793,antihax,10/23/2020 1:00 AM,right,,
+298815811823337483,rubyninja_,10/23/2020 1:01 AM,Oh. Got it.,,
+292234618667663361,kyhbka,10/23/2020 1:31 AM,@BuGs I can help with custom icons if necessary,,
+148370724900306944,jacob_mango,10/23/2020 5:49 AM,"> I'm a bit tired and the brain doesn't want to think straight. About the ghost items scripts, doesn't work with multiples mods running it. It obviously taking only the last mod that  Any suggestion to work that out for me tomorrow with fresh mind ? 🙂
+@BuGs  don't forget to call super. Just override what you need to be overridden, don't copy everything.",,
+214175043846930432,broman.dev,10/23/2020 7:16 AM,kind of ashamed i dont know this but: how would i read a file located in the mission folder from the game module?,,
+211779129924780032,hlynge,10/23/2020 7:16 AM,Does the array index start with the first element of a list in 1 or 0 ?,,
+214175043846930432,broman.dev,10/23/2020 7:16 AM,0,,
+214175043846930432,broman.dev,10/23/2020 7:16 AM,only 1-index language i know is... Lua?,,
+135226527473336320,inclementdab,10/23/2020 7:16 AM,python too right?,,
+214175043846930432,broman.dev,10/23/2020 7:16 AM,nope,,
+214175043846930432,broman.dev,10/23/2020 7:16 AM,python is 0,,
+135226527473336320,inclementdab,10/23/2020 7:16 AM,good,,
+214175043846930432,broman.dev,10/23/2020 7:17 AM,according to google most relevant langs are R Lua MATLAB,,
+135226527473336320,inclementdab,10/23/2020 7:17 AM,you can do OpenFile (or FileOpen) and go to the directory of the file,,
+214175043846930432,broman.dev,10/23/2020 7:17 AM,so data science and... lua 😄,,
+214175043846930432,broman.dev,10/23/2020 7:18 AM,"so if i have a structure like ```
+- missions
+-- Mission.chernarusplus
+--- file.txt
+- mod
+-- projectname
+--- scripts
+---- 3_game
+----- ...
+------ script.c
+```
+i can just `FileOpen(""/missions/mission.chernarusplus/file.txt"");`?",,
+214175043846930432,broman.dev,10/23/2020 7:19 AM,id check myself but im away from home,,
+214175043846930432,broman.dev,10/23/2020 7:19 AM,or would i have to do something like `../../../../` etc,,
+135226527473336320,inclementdab,10/23/2020 7:19 AM,uhh i dont think you can access missions with the filesystem,,
+214175043846930432,broman.dev,10/23/2020 7:19 AM,gotcha,,
+214175043846930432,broman.dev,10/23/2020 7:19 AM,i can also just put the file alongside the script,,
+135226527473336320,inclementdab,10/23/2020 7:19 AM,you can try,,
+135226527473336320,inclementdab,10/23/2020 7:19 AM,if it works let me know cause i might use that,,
+196845794513518592,shaggoth,10/23/2020 10:18 AM,did anyone succeeded in making an action to bury/destroy farming patch? cause they stay forever under the flag radius :S,,
+196845794513518592,shaggoth,10/23/2020 10:21 AM,:Peepo_PepeAgADTQEAAqghIQY:,,
+137658517615149056,helkhiana,10/23/2020 10:22 AM,you mean garden plots? @Any1 Kenobi,,
+196845794513518592,shaggoth,10/23/2020 10:23 AM,yeah ) sorry for my weird english,,
+137658517615149056,helkhiana,10/23/2020 10:24 AM,yea i got an action,,
+137658517615149056,helkhiana,10/23/2020 10:24 AM,,https://cdn.discordapp.com/attachments/492295576470290433/769114107998896168/ActionDestroyGardenPlot.c,👍 (1)
+196845794513518592,shaggoth,10/23/2020 10:25 AM,"babe, you're the best 🙂",,
+196845794513518592,shaggoth,10/23/2020 10:25 AM,have an awesome day 😄,,
+137658517615149056,helkhiana,10/23/2020 10:25 AM,:PES_Heart:,,
+196845794513518592,shaggoth,10/23/2020 10:26 AM,:axNpDXW_460s:,,
+177873624508661760,crimdrac,10/23/2020 1:59 PM,"Started a server a couple of weeks ago and now I feel the need to create a mod, extracted the game data and started playing around with DayZ Tools. Anyway, I wonder if you can give me a startpoint for doing what I am describing below.
+What I want to do is to create a mod that puts all kinds of vechicles in a god mode when in a territory you are part of. Guess it could be ran server side.",,
+141917748476248064,bugs11,10/23/2020 2:15 PM,@Crimdrac,,
+141917748476248064,bugs11,10/23/2020 2:15 PM,https://www.youtube.com/watch?v=tuhx1yCqG6c,,
+141917748476248064,bugs11,10/23/2020 2:15 PM,Texturing is one of the first steps you coudl easily do in modding,,
+141917748476248064,bugs11,10/23/2020 2:15 PM,That could be the way to get your first mod running and making sure it works before going any further,,
+177873624508661760,crimdrac,10/23/2020 2:16 PM,"Would prefer if I just to do some basic coding, not that good at doing textures so I wanted to do more coding in the background.",,
+141917748476248064,bugs11,10/23/2020 2:16 PM,"that video containes it all, packing, publishing etc",,
+141917748476248064,bugs11,10/23/2020 2:16 PM,tthat you'll need,,
+177873624508661760,crimdrac,10/23/2020 2:16 PM,Was thinking it should be kinda easy to just override something and check for territory and remove damage if you were in a friendly one,,
+141917748476248064,bugs11,10/23/2020 2:17 PM,"Trust me, just retexture a tishirt at first for the practice 😉",,
+177873624508661760,crimdrac,10/23/2020 2:17 PM,"Will do that, thanks.",,
+141917748476248064,bugs11,10/23/2020 2:17 PM,not sure if what you want to do is easy,,
+141917748476248064,bugs11,10/23/2020 2:17 PM,"How do you know when you enter the ""territory"" ?",,
+177873624508661760,crimdrac,10/23/2020 2:17 PM,"Well, maybe it is just in expansion you can add so you see when you enter someones territory",,
+141917748476248064,bugs11,10/23/2020 2:18 PM,"Yeah, territory is expansion",,
+141917748476248064,bugs11,10/23/2020 2:18 PM,And not even sure hows that work ^^,,
+177873624508661760,crimdrac,10/23/2020 2:18 PM,"But, could also be ok with just stopping vehicles from getting any kind of damage",,
+141917748476248064,bugs11,10/23/2020 2:18 PM,(I didn't played a lot with it),,
+177873624508661760,crimdrac,10/23/2020 2:19 PM,just so people don't just go and shot cars to pieces for example,,
+177873624508661760,crimdrac,10/23/2020 2:19 PM,"The mod NoVehicleDamage doesn't fix that, just handling the on impact event",,
+177873624508661760,crimdrac,10/23/2020 2:20 PM,Thanks for the link to the guide anyway. Will be a good start in modding.,,
+216961020038479874,freshandtasty,10/23/2020 6:04 PM,,https://cdn.discordapp.com/attachments/492295576470290433/769229842632933427/unknown.png,
+216961020038479874,freshandtasty,10/23/2020 6:05 PM,how would i go about changing values in that script i want it so bullets dont do bleed damage,,
+216961020038479874,freshandtasty,10/23/2020 6:06 PM,"id have a config.cpp then i would have DZ\weapons\projectiles to access a ""c"" script or would it be a ""cpp"" script because im editing a cpp,helps appreciated",,
+613627171642015744,FatherAnarchy#8345,10/23/2020 7:26 PM,"Hello all, i need help. I've stuck myself on this idea to create a ""workbench"" and write script to turn it into a ""drug lab"" (player adds x amount of ingredients and the lab makes this or that) 
+Im so overwhelmed by it when trying to do it because I have never wrote for dayZ and I am extremely busy with other life crap.... 
+I figured taking an existing object and adding the ""container"" aspect to it and creating a recipe class for the object to use. I just dont know the functions for the container part, player inventory adds and removes.... Or anything basic.  
+Not trying to be difficult or write a novel, but any help would be appreciated. Even just a generalized explanation would be helpful at this point. Thank you.",,
+665471546525220875,Zedmag#7576,10/23/2020 7:29 PM,Look at the barrels for tanning pelts.,,
+613627171642015744,FatherAnarchy#8345,10/23/2020 7:31 PM,Good idea. Ty,,
+222711381210824704,quadley,10/23/2020 8:26 PM,muchstuffpack by Helkhiana has a tool bench with proxies and i think it's ok to look at that too if you want,,
+222711381210824704,quadley,10/23/2020 8:27 PM,read the workshop page and make your own mind up about that,,
+456226577798135808,Deleted User,10/23/2020 8:28 PM,i have created my own item with an imported model. the config class inherits from flashlight. the script class inherits from itembase. in SetActions() i am also calling super which registers the take item actions. but in game i don't get the options for that. i can only drag it in the inventory for example. anyone has a clue what i could have done wrong or what i am missing? do i need to set something specific up in the model for example?,,
+222711381210824704,quadley,10/23/2020 8:29 PM,do you have view geometry lod,,
+665471546525220875,Zedmag#7576,10/23/2020 8:29 PM,This ☝️☝️,,
+456226577798135808,Deleted User,10/23/2020 8:30 PM,"i don't think so. at least i never created one specifically. how do i do that. i set a geometry box and in memory i set min, max and invView",,
+222711381210824704,quadley,10/23/2020 8:30 PM,"view geometry, just copy over your geometry lod",,
+222711381210824704,quadley,10/23/2020 8:31 PM,duplicate and rename to view geometry,,
+456226577798135808,Deleted User,10/23/2020 8:31 PM,will give it a try. thanks,,
+222711381210824704,quadley,10/23/2020 8:31 PM,gl,,
+456226577798135808,Deleted User,10/23/2020 8:44 PM,fixed it. thank you ❤️,,
+222711381210824704,quadley,10/23/2020 8:50 PM,feelsgoodman,,
+216045334697213952,dtacgaming,10/24/2020 2:01 AM,"https://gyazo.com/c0b42a06d9693b236b999a7101beb365
+
+does at the end of the description need a ;       ?
+It hasn't made it not work/not display what the description is",,
+222711381210824704,quadley,10/24/2020 2:13 AM,:feelsGunMan: follow game files,,
+216045334697213952,dtacgaming,10/24/2020 2:51 AM,so the answer is yes 😄,,
+196845794513518592,shaggoth,10/24/2020 2:52 AM,Yes :exPepeGun:,,
+228312873619816448,britto,10/24/2020 2:54 AM,Suggestion for you @DTACFrostfire,,
+228312873619816448,britto,10/24/2020 2:55 AM,If you check all standard items there is #description_bla_bla_bla,,
+228312873619816448,britto,10/24/2020 2:55 AM,This translates your item into several languages.,,
+228312873619816448,britto,10/24/2020 2:56 AM,,https://cdn.discordapp.com/attachments/492295576470290433/769363529978347550/unknown.png,
+228312873619816448,britto,10/24/2020 2:57 AM,,https://cdn.discordapp.com/attachments/492295576470290433/769364021450375178/unknown.png,
+216045334697213952,dtacgaming,10/24/2020 3:07 AM,Thats cool. i'll check it out later,,
+216045334697213952,dtacgaming,10/24/2020 3:08 AM,thanks @BRITTO,,
+216045334697213952,dtacgaming,10/24/2020 4:10 AM,btw adding a ; at the end of the descriptionShort made my mod crash my server XD,,
+192347542854434816,dylan255,10/24/2020 4:22 AM,"i have created a custom gun and mag to go with the gun and notice that using the ""R"" to reload isnt working. what would cause that ?",,
+99298225999056896,cashewsan,10/24/2020 5:52 AM,Has DayZ been having error log issues where it shows the error coming from the incorrect file on fail to load?,,
+99298225999056896,cashewsan,10/24/2020 5:53 AM,because that `WE_PicatinnyRail` does not exist in that script and never has,https://cdn.discordapp.com/attachments/492295576470290433/769408149261647882/Screenshot_150.png,
+99298225999056896,cashewsan,10/24/2020 6:06 AM,"It's definitely picking it up from another script, but unsure why it's showing it for that script",,
+665471546525220875,Zedmag#7576,10/24/2020 6:22 AM,It’s probably some sort of back trace. Meaning it’s being called or refd in some way and it stems from there.,,
+135226527473336320,inclementdab,10/24/2020 6:25 AM,"Sometimes if you throw a certain type of error, it will just tell you the error stems from the last compiled .c file in the module",,
+135226527473336320,inclementdab,10/24/2020 6:25 AM,JSONFileLoader throws an error every time I have something wrong in 3_game. You should try to load in WB if you can @CashewSan,,
+270079988617707520,.johnnybravo,10/24/2020 6:28 AM,"I am currently trying to update the Trader Economy mod for Astral, and I've come to an issue. I cannot get the prices to visually update in the UI. I can see the price flash for a split second but it doesn't show the correct price when it does do it, and then it reverts back to what it displayed prior.
+
+The prices are correct when you press the buy/sell buttons, but not sure why the amounts are not correctly displaying.
+
+I am wondering if someone is able to give me a hand on this?",,
+241370201222938626,kegan.eth,10/24/2020 4:37 PM,You're joking right,,
+241370201222938626,kegan.eth,10/24/2020 4:37 PM,Did dayz completely prevent opening file handles to $currentdir?,,
+241370201222938626,kegan.eth,10/24/2020 4:37 PM,even on the server?,,
+561680015578759196,wrdg,10/24/2020 4:43 PM,"Nope, you’re just doing something wrong",,
+241370201222938626,kegan.eth,10/24/2020 5:02 PM,I can't imagine I am doing something wrong,,
+241370201222938626,kegan.eth,10/24/2020 5:02 PM,Can you not open a file as WRITE?,,
+241370201222938626,kegan.eth,10/24/2020 5:02 PM,Can you not open an existing file as WRITE?,,
+241370201222938626,kegan.eth,10/24/2020 5:03 PM,"I need to replace all of the text in a specific file in ""$CurrentDir:""",,
+241370201222938626,kegan.eth,10/24/2020 5:03 PM,"ex file: ""$CurrentDir:temp.txt""",,
+241370201222938626,kegan.eth,10/24/2020 5:04 PM,OpenFile is returning `0`,,
+148370724900306944,jacob_mango,10/24/2020 5:29 PM,"you can read from CurrentDir, not write",,
+241370201222938626,kegan.eth,10/24/2020 5:32 PM,🙂,,
+561680015578759196,wrdg,10/24/2020 5:32 PM,You can only write in saves and profile,,
+561680015578759196,wrdg,10/24/2020 5:32 PM,Why do you need to write in root?,,
+241370201222938626,kegan.eth,10/24/2020 5:33 PM,because I don't want an external application to write my ban list,,
+241370201222938626,kegan.eth,10/24/2020 5:34 PM,i want to include access to the banlist throughh the internal API functionality in BR,,
+241370201222938626,kegan.eth,10/24/2020 5:34 PM,which would work if I could write to ban.txt,,
+241370201222938626,kegan.eth,10/24/2020 5:56 PM,ya i found where it does the check,,
+241370201222938626,kegan.eth,10/24/2020 5:56 PM,"they have a function
+`char valid_path(char* string, int32_t mode)`
+which takes in our path like ""$CurrentDir:file.txt"" and the mode as an enum, where READ is 1",,
+241370201222938626,kegan.eth,10/24/2020 5:57 PM,"if the mode is not READ, it checks for $profile: and $saves:",,
+241370201222938626,kegan.eth,10/24/2020 5:57 PM,so only those two prefixes would be writable paths,,
+241370201222938626,kegan.eth,10/24/2020 5:57 PM,"so it'll see i don't have profile or saves, and that my mode is write, and not open my file",,
+665471546525220875,Zedmag#7576,10/24/2020 5:59 PM,Is this on a dedi box or on a hosted sever?,,
+241370201222938626,kegan.eth,10/24/2020 6:02 PM,Dedi box,,
+241370201222938626,kegan.eth,10/24/2020 6:02 PM,I am just patching the server.exe to allow write to all paths,,
+665471546525220875,Zedmag#7576,10/24/2020 6:02 PM,"I ask cuz if it’s a dedi box, you could ￼ theoretically make a hardlink from the $profiles:ban.txt to the $currentdir:ban.txt  so when it WRITES to the profile txt the OS is actually writing to the CurrentDir.",,
+241370201222938626,kegan.eth,10/24/2020 6:03 PM,"Yeah that'd be doable, but not easily maintainable for a public distribution of BR",,
+241370201222938626,kegan.eth,10/24/2020 6:03 PM,"""hey guys to get banning to work on your server setup a symlink oh and you can't use a host, gotta have a dedi""",,
+665471546525220875,Zedmag#7576,10/24/2020 6:03 PM,Well patching the server.exe isn’t distrib either.,,
+241370201222938626,kegan.eth,10/24/2020 6:04 PM,Well I am not going to distribute a patched Exe no,,
+665471546525220875,Zedmag#7576,10/24/2020 6:04 PM,That’s why I asked if it was hosted or not. Or just for your use.,,
+241370201222938626,kegan.eth,10/24/2020 6:04 PM,I want this ban system to be it's own standalone mod anyone can plug into their server,,
+665471546525220875,Zedmag#7576,10/24/2020 6:04 PM,I get what your doing,,
+241370201222938626,kegan.eth,10/24/2020 6:09 PM,,https://cdn.discordapp.com/attachments/492295576470290433/769593410549186645/xu1lUb1xxUBdUCuB.png,
+241370201222938626,kegan.eth,10/24/2020 6:09 PM,ya I was 100% right,,
+241370201222938626,kegan.eth,10/24/2020 6:09 PM,changing two bytes in the assembly and now I can write/read from anywhere again,,
+241370201222938626,kegan.eth,10/24/2020 6:09 PM,sue me BI,,
+241370201222938626,kegan.eth,10/24/2020 6:10 PM,"so dumb, why don't they have a permissions system or some config to enable/disable write to currentdir?",,
+171256035296673793,antihax,10/24/2020 6:18 PM,Is that the same directory with the server executable and such?,,
+171256035296673793,antihax,10/24/2020 6:19 PM,"that would be a pretty good reason why, if so.",,
+665471546525220875,Zedmag#7576,10/24/2020 6:25 PM,Yes and yes,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:42 PM,so now EXP has changed the SetActions in playerbase... what was the purpose of this?? such a pain in the ass now i have to go change aLL of my mods to match the new SetActions,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:42 PM,so damn frustrating,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:43 PM,"it was ```    void SetActions()
+    {
+        AddAction(ActionOpenDoors);
+..and so on...
+}``` now its ```    void SetActions(out TInputActionMap InputActionMap)
+    {
+        AddAction(ActionOpenDoors, InputActionMap);
+and so on...}```",,
+171256035296673793,antihax,10/24/2020 6:45 PM,you could prob write a regex to do it if you have a significant amount,,
+171256035296673793,antihax,10/24/2020 6:45 PM,vscode will let you do it over multiple files,,
+561680015578759196,wrdg,10/24/2020 6:49 PM,Only thing with that is when the minor updates and hot fixes comes through @Kegan,,
+561680015578759196,wrdg,10/24/2020 6:49 PM,You’ll have to repatch it,,
+561680015578759196,wrdg,10/24/2020 6:50 PM,Or you could just setup a pattern and patch it without modifying the executable like a normal person,,
+561680015578759196,wrdg,10/24/2020 6:51 PM,"Also @ƃɐɯnɐΛ | פɐɹ | not sure if hardlinking will work, worth a shot though, just junction link the root directory",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:52 PM,yea.. but it wouldnt work for him as he wants an easy distrub to subscribers that can set it up..,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:52 PM,"but yes, the links do work..",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:52 PM,ive used them for my personal testing server,,
+241370201222938626,kegan.eth,10/24/2020 6:54 PM,"Current solution is to pattern match and patch, but I think the symlink will be the most likely distribution method as it'll be the easiest to coordinate & automate.",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:55 PM,"yea, you could include a bat that does it for the client",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:56 PM,sorry. for the subscriber,,
+561680015578759196,wrdg,10/24/2020 6:56 PM,Symlinking won’t work on GSPs,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:56 PM,and also this,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:56 PM,lol,,
+99298225999056896,cashewsan,10/24/2020 6:56 PM,"So, I've got a script for a picatinny rail that blocks attachments being put on certain weapons. I've got it working and it blocks optics on weapons without it, BUT only if I list each individual optic. 
+
+Obviously can't list it for all modded optics, so didn't know if there was an easy workaround for that to modify, let's say, all of OpticBase and account all optics under that?",,
+99298225999056896,cashewsan,10/24/2020 6:57 PM,"I used to have it where it did this, but stuff changed over updates I'm guessing",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:57 PM,"well if all optics are inherted from something, use the inhertired parent?",,
+99298225999056896,cashewsan,10/24/2020 6:58 PM,ItemOptics is an engine class so can't do that specific classname,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:59 PM,Wardog does exp use #defines? im trying to patch some of my mods before it drops to get ahead. like patching the SetACtions in playbase.c,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 6:59 PM,ahh gotcha,,
+561680015578759196,wrdg,10/24/2020 7:02 PM,Yeah it does,,
+561680015578759196,wrdg,10/24/2020 7:03 PM,`#ifdef DAYZ_1_10`,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:04 PM,ok cool thanks,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:04 PM,did you see what they changed the SetActions to in EXP vs 1.09 in the playerbase.c,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:07 PM,sorry i ment experimental,,
+141917748476248064,bugs11,10/24/2020 7:07 PM,♥,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:07 PM,not expansion,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:10 PM,is there away to tell if its exper vs stable?,,
+561680015578759196,wrdg,10/24/2020 7:11 PM,Only pragma we have is for minor versions,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:12 PM,so experl doest have its own define then?,,
+561680015578759196,wrdg,10/24/2020 7:12 PM,No.,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:12 PM,boooooo,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:12 PM,lol,,
+561680015578759196,wrdg,10/24/2020 7:12 PM,Why do you need it? You have DAYZ_1_10,,
+561680015578759196,wrdg,10/24/2020 7:12 PM,It’s currently DAYZ_1_09 in stable,,
+561680015578759196,wrdg,10/24/2020 7:13 PM,You can do if else statements with the compiler definitions as well,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:13 PM,this is where im confused where deos the DAYZ_1_10 come from?,,
+561680015578759196,wrdg,10/24/2020 7:14 PM,"It’s compiled into the game, it’s not available in the Scripts because BI doesn’t have a use for them",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:14 PM,i got confused when Bugs started thorwing out Expansion Defines,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:14 PM,so i CAN use it then gotcha,,
+561680015578759196,wrdg,10/24/2020 7:16 PM,"I’m currently working on a class reference module for Drudge, so you can ask drudge for “documentation” for script classes in either stable or experimental",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:17 PM,nice...,,
+561680015578759196,wrdg,10/24/2020 7:17 PM,It’s a mess currently and won’t be available until *Drudge 2: The Lost Druid*,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:17 PM,haha,,
+561680015578759196,wrdg,10/24/2020 7:18 PM,He’s getting a major rewrite to support a database and large services,,
+561680015578759196,wrdg,10/24/2020 7:18 PM,Also will be integrating in workshop crawler’s api,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:18 PM,:succ:,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:32 PM,ok im pulling my hair out.. how the hell do we add actions in 110 now to playerbase..,,
+241370201222938626,kegan.eth,10/24/2020 7:33 PM,thank god I didn't do custom actions yet in BR,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:34 PM,yea its being so dumb.. ive copied it exactly and i get random erros of missin ; broken expressins all sorts of shit,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:35 PM,seesm to be related to doing the super.SetActions..,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:36 PM,overriding and adding just my action works.. but with out super all the oterh actions are gone,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:37 PM,oo wait i might have found it..,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:38 PM,"so this is the new format ```void SetActions(out TInputActionMap InputActionMap)
+    {
+        AddAction(ActionOpenDoors, InputActionMap);
+and so on...}``` to do the super it needs to be ```super.SetActions(InputActionMap); ``` i just needed to vent a little to come to it.. haha",,
+561680015578759196,wrdg,10/24/2020 7:38 PM,Addition actions doesn’t look too different,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:39 PM,im just grumpy haha,,
+561680015578759196,wrdg,10/24/2020 7:39 PM,But it does mean I have to update my mods,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:39 PM,thats what im doing now,,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:40 PM,it didnt change for itembase.. just playerbase,,
+561680015578759196,wrdg,10/24/2020 7:40 PM,I haven’t had time to do much in terms of modding for a while,,
+561680015578759196,wrdg,10/24/2020 7:45 PM,"```cs
+modded class PlayerBase
+{
+#ifdef DAYZ_1_10
+    override void SetActions(out TInputActionMap InputActionMap)
+    {
+        super.SetActions(InputActionMap);
+
+        AddAction(ActionTakePiss, InputActionMap);
+    }
+#else
+    override void SetActions()
+    {
+        super.SetActions();
+
+        AddAction(ActionTakePiss);
+    }
+#endif
+}
+```",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 7:46 PM,"yea i got it sorted ```    //this is for 1.10
+    
+    #ifdef DAYZ_1_10    
+    override void SetActions(out TInputActionMap InputActionMap)
+    {
+        super.SetActions(InputActionMap);
+        AddAction(ActionSearchGarbage, InputActionMap);
+    };
+    
+    #else
+    //this is for 1.09
+    override void SetActions()
+    {
+        super.SetActions();
+        
+        AddAction(ActionSearchGarbage);            
+        
+    };
+    #endif
+```",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 9:18 PM,"so i dont spend hours looking, where is it that calls items to be spawned on infected when killed? vs when they are int.. i cant seem to find any besides, the zombiecontainer, im siplying trying to add an item to thier inventory when they die..",,
+225304935355383808,[S.C.] Zedmag#7605,10/24/2020 9:25 PM,and i dont want to use the xmls for it,,
